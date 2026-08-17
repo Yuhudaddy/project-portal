@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="連續壁單元施工時間循環、逐車灌漿與高度比對紀錄" />
+    <meta name="description" content="手機用連續壁單元施工時間循環、逐車澆置與高度比對紀錄" />
     <meta name="theme-color" content="#39434c" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="連續壁紀錄" />
+    <meta name="apple-mobile-web-app-title" content="施工紀錄" />
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="icon.svg" />
-    <title>Project Portal Demo (legacy link)</title>
+    <title>Project Portal Record</title>
     <style>
       :root{--paper:oklch(98% .008 250);--surface:oklch(95.8% .009 250);--surface-2:oklch(91.9% .012 250);--line:oklch(77% .012 250);--line-dark:oklch(51% .017 250);--ink:oklch(23% .017 250);--soft:oklch(43% .014 250);--muted:oklch(56% .012 250);--alert:oklch(72% .018 80);--focus:oklch(36% .04 250);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:var(--paper)}
       *{box-sizing:border-box}html,body{margin:0;min-width:320px;background:var(--paper)}body{font-size:16px;line-height:1.5}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
@@ -33,7 +33,7 @@
     <main class="shell">
       <header class="top">
         <div><p class="eyebrow">CONTINUOUS WALL / TIME CYCLE RECORD</p><h1>連續壁施工時間循環紀錄</h1><p class="lede">以單元施工的時間軸串連成槽、清沉泥、鋼筋籠、特密管與逐車澆置；灌漿方量會同步換算預估上升高度，供營造廠複核。</p></div>
-        <div class="actions no-print"><span id="save-state" class="save-state" role="status">示範資料</span><span id="app-state" class="app-state" role="status">瀏覽器版</span><button id="install-app" class="button quiet" type="button" hidden>安裝到手機</button><button id="reset" class="button quiet" type="button">還原示範</button><button id="clear-all" class="button" type="button">清空所有輸入</button><button id="save" class="button" type="button">儲存本機草稿</button><button id="print" class="button primary" type="button">輸出 PDF</button></div>
+        <div class="actions no-print"><span id="save-state" class="save-state" role="status">空白表單</span><span id="app-state" class="app-state" role="status">瀏覽器版</span><button id="install-app" class="button quiet" type="button" hidden>安裝到手機</button><a class="button quiet" href="./">返回入口</a><button id="reset" class="button quiet" type="button">重新開始空白表單</button><button id="clear-all" class="button" type="button">清空所有輸入</button><button id="save" class="button" type="button">儲存本機草稿</button><button id="print" class="button primary" type="button">輸出 PDF</button></div>
       </header>
 
       <section class="record-id"><p class="unit-label">單元 <span data-general="unit">21</span>｜施工時間循環</p><p class="meta"><span>工程：<strong data-general="project">連續壁工程（示範）</strong></span><span>日期：<strong data-general="date">—</strong></span><span>填表人：<strong data-general="reviewer">—</strong></span></p></section>
@@ -97,7 +97,8 @@
     </section>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script>
-      const storageKey="continuous-wall-time-cycle-v1";
+      const storageKey="continuous-wall-record-v1";
+      const productionMode=true;
       const clone=value=>JSON.parse(JSON.stringify(value));
       const today=new Date().toISOString().slice(0,10);
       const defaultState={
@@ -107,7 +108,8 @@
         trucks:[{truck:"",unload:"",finish:"14:40",volume:"9",actual:""},{truck:"",unload:"",finish:"15:18",volume:"9",actual:""},{truck:"",unload:"",finish:"",volume:"",actual:""},{truck:"",unload:"",finish:"16:05",volume:"9",actual:""},{truck:"",unload:"",finish:"16:22",volume:"9",actual:""},{truck:"",unload:"",finish:"16:55",volume:"9",actual:""},{truck:"",unload:"",finish:"17:12",volume:"8",actual:""},{truck:"",unload:"",finish:"17:35",volume:"9",actual:""},{truck:"",unload:"",finish:"18:35",volume:"9",actual:""},{truck:"",unload:"",finish:"18:52",volume:"9",actual:""},{truck:"",unload:"",finish:"19:12",volume:"6",actual:""},{truck:"",unload:"",finish:"",volume:"",actual:""},{truck:"",unload:"",finish:"",volume:"",actual:""}],
         remarks:"照片可辨識：單元 21、順序編號疑似 1、深度 35.8 m、壁厚約 1.0 m、設計混凝土量 85 m³、澆置頂端約 GL -0.5 m。設計澆置高度 35.30 m 依深度與頂端高程推算；單元長度 2.37 m 依 85 ÷ 35.8 ÷ 1.0 推算，兩者都不是照片直接讀值。照片底部手寫實際澆置量為 80 m³，已填入人工記錄欄；逐車欄中的數字僅為照片暫讀，合計約 86 m³，與 80 m³ 不一致。車號、卸料時間、實測澆置高度及差異未填，請回查供料單與現場量測紀錄。"
       };
-      function load(){try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved?.general&&Array.isArray(saved?.depthRows)&&Array.isArray(saved?.phaseRows)&&Array.isArray(saved?.trucks))return saved}catch(error){}return clone(defaultState)}
+      function blankState(){return {general:{project:"",date:"",unit:"",orderNo:"",depth:"",thickness:"",wallLength:"",designVolume:"",actualVolume:"",designHeight:"",targetElevation:"",threshold:"0.30",contractor:"",reviewer:""},depthRows:Array.from({length:8},()=>({zone:"",time:"",depth:"",note:""})),phaseRows:defaultState.phaseRows.map(row=>({item:row.item,time:"",depth:"",note:""})),trucks:defaultState.trucks.map(()=>({truck:"",unload:"",finish:"",volume:"",actual:""})),remarks:""}}
+      function load(){try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved?.general&&Array.isArray(saved?.depthRows)&&Array.isArray(saved?.phaseRows)&&Array.isArray(saved?.trucks))return saved}catch(error){}return clone(productionMode?blankState():defaultState)}
       let state=load(),toastTimer,autoSaveTimer,deferredInstallPrompt;
       const $=selector=>document.querySelector(selector),number=value=>{const parsed=parseFloat(value);return Number.isFinite(parsed)?parsed:null},fixed=value=>Number.isFinite(value)?value.toFixed(2):"—",esc=value=>String(value??"").replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;").replaceAll(">","&gt;");
       function field(value,attributes=""){return `<input class="cell-input" ${attributes} value="${esc(value)}" />`}
@@ -150,7 +152,7 @@
       function textInput(event){const node=event.target;if(node.dataset.generalInput){state.general[node.dataset.generalInput]=node.value;updateGeneral();if(["designVolume","designHeight","threshold"].includes(node.dataset.generalInput))renderTrucks();else renderPrint();mark();return}if(node.dataset.depthRow!==undefined){state.depthRows[Number(node.dataset.depthRow)][node.dataset.depthField]=node.value;renderPrint();mark();return}if(node.dataset.phaseRow!==undefined){state.phaseRows[Number(node.dataset.phaseRow)][node.dataset.phaseField]=node.value;renderPrint();mark();return}if(node.dataset.truckRow!==undefined){const focus={row:node.dataset.truckRow,field:node.dataset.truckField,position:node.selectionStart??node.value.length};state.trucks[Number(node.dataset.truckRow)][node.dataset.truckField]=node.value;renderTrucks(focus);mark();return}if(node.id==="remarks"){state.remarks=node.value;renderPrint();mark()}}
       document.addEventListener("input",textInput);document.addEventListener("change",event=>{if(event.target.dataset.generalInput||event.target.dataset.depthRow!==undefined||event.target.dataset.phaseRow!==undefined||event.target.dataset.truckRow!==undefined||event.target.id==="remarks")textInput(event)});
       document.addEventListener("click",event=>{const button=event.target.closest("button");if(!button)return;if(button.dataset.removeDepth!==undefined){state.depthRows.splice(Number(button.dataset.removeDepth),1);renderDepth();renderPrint();mark()}else if(button.dataset.removePhase!==undefined){state.phaseRows.splice(Number(button.dataset.removePhase),1);renderPhase();renderPrint();mark()}else if(button.dataset.removeTruck!==undefined){state.trucks.splice(Number(button.dataset.removeTruck),1);renderTrucks();mark()}});
-      $("#add-depth").addEventListener("click",()=>{state.depthRows.push({zone:"自訂確認位置",time:"",depth:"",note:""});renderDepth();renderPrint();mark();document.querySelector("#depth-rows tr:last-child input").focus()});$("#add-phase").addEventListener("click",()=>{state.phaseRows.push({item:"自訂工序",time:"",depth:"",note:""});renderPhase();renderPrint();mark();document.querySelector("#phase-rows tr:last-child input").focus()});$("#add-truck").addEventListener("click",()=>{state.trucks.push({truck:"",unload:"",finish:"",volume:"",actual:""});renderTrucks();mark();document.querySelector("#truck-rows tr:last-child input").focus()});$("#save").addEventListener("click",save);$("#print").addEventListener("click",()=>window.print());$("#reset").addEventListener("click",()=>{state=clone(defaultState);renderAll();persistDraft();$("#save-state").textContent="已還原示範資料";toast("已還原示範資料")});$("#clear-all").addEventListener("click",()=>{if(!window.confirm("確定清空目前所有輸入值嗎？示範資料將被移除。"))return;state=emptyState();renderAll();persistDraft();$("#save-state").textContent="已清空所有輸入值";toast("已清空所有輸入值")});renderAll();setupInstall();updateAppState();
+      $("#add-depth").addEventListener("click",()=>{state.depthRows.push({zone:"自訂確認位置",time:"",depth:"",note:""});renderDepth();renderPrint();mark();document.querySelector("#depth-rows tr:last-child input").focus()});$("#add-phase").addEventListener("click",()=>{state.phaseRows.push({item:"自訂工序",time:"",depth:"",note:""});renderPhase();renderPrint();mark();document.querySelector("#phase-rows tr:last-child input").focus()});$("#add-truck").addEventListener("click",()=>{state.trucks.push({truck:"",unload:"",finish:"",volume:"",actual:""});renderTrucks();mark();document.querySelector("#truck-rows tr:last-child input").focus()});$("#save").addEventListener("click",save);$("#print").addEventListener("click",()=>window.print());$("#reset").addEventListener("click",()=>{state=clone(productionMode?blankState():defaultState);renderAll();persistDraft();$("#save-state").textContent=productionMode?"已回到空白表單":"已還原示範資料";toast(productionMode?"已回到空白表單":"已還原示範資料")});$("#clear-all").addEventListener("click",()=>{if(!window.confirm("確定清空目前所有輸入值嗎？示範資料將被移除。"))return;state=emptyState();renderAll();persistDraft();$("#save-state").textContent="已清空所有輸入值";toast("已清空所有輸入值")});renderAll();setupInstall();updateAppState();
     </script>
   </body>
 </html>

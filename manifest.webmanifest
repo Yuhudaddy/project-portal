@@ -2,11 +2,11 @@
   "name": "Project Portal",
   "short_name": "Project Portal",
   "description": "A local field record entry prototype.",
-  "start_url": "./example.html",
+  "start_url": "./record.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f6f8",
-  "theme_color": "#39434c",
+  "background_color": "#f8f9fa",
+  "theme_color": "#eef0f2",
   "icons": [
     {
       "src": "./icon.svg",
@@ -16,4 +16,3 @@
     }
   ]
 }
-

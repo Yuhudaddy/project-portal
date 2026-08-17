@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="連續壁單元施工時間循環、逐車灌漿與高度比對紀錄" />
+    <meta name="description" content="連續壁施工紀錄照片資料示範與 PDF 輸出預覽" />
     <meta name="theme-color" content="#39434c" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -12,7 +12,7 @@
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="icon.svg" />
-    <title>Project Portal Demo (legacy link)</title>
+    <title>Project Portal Demo</title>
     <style>
       :root{--paper:oklch(98% .008 250);--surface:oklch(95.8% .009 250);--surface-2:oklch(91.9% .012 250);--line:oklch(77% .012 250);--line-dark:oklch(51% .017 250);--ink:oklch(23% .017 250);--soft:oklch(43% .014 250);--muted:oklch(56% .012 250);--alert:oklch(72% .018 80);--focus:oklch(36% .04 250);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:var(--paper)}
       *{box-sizing:border-box}html,body{margin:0;min-width:320px;background:var(--paper)}body{font-size:16px;line-height:1.5}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
@@ -33,7 +33,7 @@
     <main class="shell">
       <header class="top">
         <div><p class="eyebrow">CONTINUOUS WALL / TIME CYCLE RECORD</p><h1>連續壁施工時間循環紀錄</h1><p class="lede">以單元施工的時間軸串連成槽、清沉泥、鋼筋籠、特密管與逐車澆置；灌漿方量會同步換算預估上升高度，供營造廠複核。</p></div>
-        <div class="actions no-print"><span id="save-state" class="save-state" role="status">示範資料</span><span id="app-state" class="app-state" role="status">瀏覽器版</span><button id="install-app" class="button quiet" type="button" hidden>安裝到手機</button><button id="reset" class="button quiet" type="button">還原示範</button><button id="clear-all" class="button" type="button">清空所有輸入</button><button id="save" class="button" type="button">儲存本機草稿</button><button id="print" class="button primary" type="button">輸出 PDF</button></div>
+        <div class="actions no-print"><span id="save-state" class="save-state" role="status">照片示範資料</span><span id="app-state" class="app-state" role="status">瀏覽器版</span><button id="install-app" class="button quiet" type="button" hidden>安裝到手機</button><a class="button quiet" href="./">返回入口</a><button id="reset" class="button quiet" type="button">還原照片示範</button><button id="clear-all" class="button" type="button">清空所有輸入</button><button id="save" class="button" type="button">儲存本機草稿</button><button id="print" class="button primary" type="button">輸出 PDF</button></div>
       </header>
 
       <section class="record-id"><p class="unit-label">單元 <span data-general="unit">21</span>｜施工時間循環</p><p class="meta"><span>工程：<strong data-general="project">連續壁工程（示範）</strong></span><span>日期：<strong data-general="date">—</strong></span><span>填表人：<strong data-general="reviewer">—</strong></span></p></section>

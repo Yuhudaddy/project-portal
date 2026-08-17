@@ -1,5 +1,5 @@
-const CACHE_NAME = "project-portal-v3";
-const APP_SHELL = ["./example.html", "./manifest.webmanifest", "./icon.svg"];
+const CACHE_NAME = "project-portal-v4";
+const APP_SHELL = ["./index.html", "./record.html", "./demo.html", "./example.html", "./checklists.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
@@ -29,6 +29,6 @@ self.addEventListener("fetch", event => {
         }
         return response;
       }))
-      .catch(() => caches.match("./example.html", { ignoreSearch: true }))
+      .catch(() => caches.match("./index.html", { ignoreSearch: true }))
   );
 });
