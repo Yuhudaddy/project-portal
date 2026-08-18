@@ -18,8 +18,8 @@
 
     <header class="app-header">
       <nav class="header-nav" aria-label="主要功能">
-        <button class="header-action" id="project-tool-button" type="button" aria-current="page" aria-haspopup="dialog">
-          專案工具 <span class="header-caret" aria-hidden="true">⌄</span>
+        <button class="header-action" id="project-tool-button" type="button" aria-current="page" aria-controls="record-switcher">
+          專案工具
         </button>
         <button class="header-action help-action" id="help-button" type="button">
           使用說明 <span aria-hidden="true">?</span>
@@ -35,6 +35,12 @@
         </div>
         <span id="record-identity">尚未指定單元</span>
       </div>
+
+      <nav class="record-switcher" id="record-switcher" aria-label="施工紀錄類型">
+        <button type="button" data-select-tool="unit" aria-current="page"><span>01</span><strong>單元施工</strong></button>
+        <button type="button" data-select-tool="trench"><span>02</span><strong>導溝複核</strong></button>
+        <button type="button" data-select-tool="cage"><span>03</span><strong>鋼筋籠複核</strong></button>
+      </nav>
 
       <section class="tool-view" id="tool-unit" data-tool-view="unit">
       <nav class="tab-navigation" aria-label="施工紀錄分頁">
@@ -206,19 +212,10 @@
     <dialog class="sheet-dialog help-dialog" id="help-dialog">
       <div class="dialog-header"><div><span>HELP</span><h2>使用說明</h2></div><button type="button" data-close-dialog aria-label="關閉使用說明">×</button></div>
       <div class="dialog-body help-content">
-        <section><h3>選擇紀錄工具</h3><p>按 Header 的「專案工具」，可切換單元施工、導溝複核與鋼筋籠複核；所有內容都在同一個 App 內填寫。</p></section>
+        <section><h3>選擇紀錄工具</h3><p>使用頁面上方的「單元施工／導溝複核／鋼筋籠複核」切換表單；所有內容都在同一個 App 內填寫。</p></section>
         <section><h3>填寫方式</h3><p>單元施工依五個分頁填寫。開挖與澆置紀錄請按「＋新增」，確認後才會加入主控顯示板。</p></section>
         <section><h3>高度比對</h3><p>預估高度＝設計澆置高度 × 累積方量 ÷ 設計數量；高度差異＝實測累積高度－預估高度。</p></section>
         <section><h3>資料與輸出</h3><p>本工具沒有儲存或同步功能，重新整理或關閉頁面後資料會清空。完成後請立即輸出 PDF。</p></section>
-      </div>
-    </dialog>
-
-    <dialog class="sheet-dialog tool-dialog" id="tool-dialog">
-      <div class="dialog-header"><div><span>PROJECT TOOLS</span><h2>選擇施工紀錄</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
-      <div class="dialog-body tool-options">
-        <button type="button" data-select-tool="unit"><span>01</span><strong>單元施工紀錄</strong><small>工程概要、壁體、開挖、前置及澆置</small></button>
-        <button type="button" data-select-tool="trench"><span>02</span><strong>導溝施工複核</strong><small>成槽前位置、尺寸與放行條件</small></button>
-        <button type="button" data-select-tool="cage"><span>03</span><strong>鋼筋籠吊放前複核</strong><small>配筋明細、組裝與吊放條件</small></button>
       </div>
     </dialog>
 

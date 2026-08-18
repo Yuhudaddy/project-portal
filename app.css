@@ -80,7 +80,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .header-action:last-child { border-right: 0; }
 .header-action[aria-current="page"] { background: var(--surface); }
 .header-action:active { background: var(--surface-strong); }
-.header-caret { margin-left: 4px; color: var(--muted); font-size: 0.75rem; }
 .help-action span {
   display: inline-grid;
   width: 19px;
@@ -125,6 +124,37 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   color: var(--soft);
   font-size: 0.75rem;
   text-align: right;
+}
+
+.record-switcher {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  scroll-margin-top: calc(var(--header-height) + env(safe-area-inset-top));
+  background: var(--surface);
+  border-top: 1px solid var(--line-dark);
+  border-bottom: 1px solid var(--line-dark);
+}
+.record-switcher button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 7px 8px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: transparent;
+  color: var(--soft);
+  text-align: left;
+}
+.record-switcher button:last-child { border-right: 0; }
+.record-switcher button span { color: var(--muted); font-size: 0.625rem; font-weight: 800; }
+.record-switcher button strong { min-width: 0; font-size: 0.75rem; white-space: nowrap; }
+.record-switcher button[aria-current="page"] {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: inset 0 -2px var(--accent);
 }
 
 .tab-navigation {
@@ -526,21 +556,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .help-content section:last-child { padding: 0; border: 0; }
 .help-content h3 { margin: 0; font-size: 0.8125rem; }
 .help-content p { margin: 4px 0 0; color: var(--soft); font-size: 0.75rem; line-height: 1.65; }
-.tool-options { display: grid; gap: 7px; }
-.tool-options button {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: 1px 8px;
-  min-height: 66px;
-  padding: 10px 11px;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  text-align: left;
-}
-.tool-options button[aria-current] { background: var(--surface-strong); border-color: var(--line-dark); }
-.tool-options button > span { grid-row: span 2; align-self: start; color: var(--muted); font-size: 0.6875rem; font-weight: 800; }
-.tool-options strong { font-size: 0.875rem; }
-.tool-options small { color: var(--muted); font-size: 0.6875rem; }
 .export-options { display: grid; gap: 8px; }
 .export-options button {
   display: grid;
@@ -613,7 +628,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 @media (hover: hover) {
   .header-action:hover, .tab-row button:hover, .add-button:hover, .secondary-button:hover { background: var(--surface-strong); }
   .confirm-button:hover, .action-dock button:hover { background: var(--soft); border-color: var(--soft); }
-  .tool-options button:hover { background: var(--surface-strong); }
+  .record-switcher button:hover { background: var(--surface-strong); }
 }
 
 @media (pointer: coarse) {

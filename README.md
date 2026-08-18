@@ -10,7 +10,7 @@ The field entry tool runs directly from `index.html`. The unit record, guide-tre
 
 ## Field workflow
 
-1. Open the Pages URL on a phone and select the unit, guide-trench, or reinforcement-cage record from Project Tools.
+1. Open the Pages URL on a phone and select the unit, guide-trench, or reinforcement-cage record from the visible record switcher.
 2. Enter the project and wall baseline, then add excavation, pre-work, and concrete records.
 3. Review calculated counts, cumulative volume, estimated rise, measured rise, and differences.
 4. Choose **Export PDF**, select the current form or the complete seven-page record, and share the result to LINE or Files.

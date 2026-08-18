@@ -165,23 +165,19 @@ function showTab(tab, focusPanel = false) {
   if (focusPanel) $(`#panel-${tab}`).focus({ preventScroll: true });
 }
 
-function showTool(tool, scroll = true) {
+function showTool(tool) {
   if (!TOOL_LABELS[tool]) return;
   activeTool = tool;
+  document.body.dataset.activeTool = tool;
   $$('[data-tool-view]').forEach(view => { view.hidden = view.dataset.toolView !== tool; });
-  $$('[data-select-tool]').forEach(button => button.toggleAttribute("aria-current", button.dataset.selectTool === tool));
+  $$('[data-select-tool]').forEach(button => {
+    if (button.dataset.selectTool === tool) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  });
   const label = tool === "unit" ? TAB_LABELS[activeTab] : TOOL_LABELS[tool];
   $("#active-tab-label").textContent = label;
   $("#export-current-label").textContent = label;
   updateIdentity();
-  if ($("#tool-dialog").open) $("#tool-dialog").close();
-  if (scroll) {
-    const root = document.documentElement;
-    const previousBehavior = root.style.scrollBehavior;
-    root.style.scrollBehavior = "auto";
-    window.scrollTo(0, 0);
-    root.style.scrollBehavior = previousBehavior;
-  }
 }
 
 function emptyState(text) {
@@ -596,7 +592,7 @@ function initialize() {
     });
   });
 
-  $("#project-tool-button").addEventListener("click", () => $("#tool-dialog").showModal());
+  $("#project-tool-button").addEventListener("click", () => $("#record-switcher").scrollIntoView({ behavior: "smooth", block: "start" }));
   $("#help-button").addEventListener("click", () => $("#help-dialog").showModal());
   $("#export-button").addEventListener("click", () => {
     $("#export-current-label").textContent = activeTool === "unit" ? TAB_LABELS[activeTab] : TOOL_LABELS[activeTool];
@@ -694,7 +690,7 @@ function initialize() {
   });
 
   window.addEventListener("afterprint", () => { document.body.dataset.printScope = "none"; });
-  showTool("unit", false);
+  showTool("unit");
   if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
 
