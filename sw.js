@@ -1,4 +1,4 @@
-const CACHE_NAME = "project-portal-v10";
+const CACHE_NAME = "project-portal-v11";
 const APP_SHELL = ["./index.html", "./app.css", "./app.js", "./record.html", "./checklists.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", event => {
