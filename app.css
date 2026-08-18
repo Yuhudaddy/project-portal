@@ -248,6 +248,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  /* iOS WebKit incorrectly adds horizontal padding to the calculated width
+     of date/time controls. Spacing is provided by .native-field-display. */
+  padding: 0;
   height: 44px;
   max-height: 44px;
   overflow: hidden;
