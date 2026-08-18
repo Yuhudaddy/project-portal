@@ -31,7 +31,7 @@
       <div class="tool-title">
         <div>
           <p>CONTINUOUS WALL / FIELD RECORD</p>
-          <h1>正式施工紀錄</h1>
+          <h1>施工管理檢核表</h1>
         </div>
         <span id="record-identity">尚未指定單元</span>
       </div>
@@ -64,8 +64,8 @@
           <div class="form-grid overview-grid">
             <label class="field span-two"><span>工程名稱</span><input type="text" data-bind="overview.project" autocomplete="organization" /></label>
             <label class="field span-two"><span>施工廠商</span><input type="text" data-bind="overview.contractor" autocomplete="organization" /></label>
-            <label class="field"><span>施工日期</span><input type="date" data-bind="overview.date" /></label>
-            <label class="field"><span>填表人</span><input type="text" data-bind="overview.reviewer" autocomplete="name" /></label>
+            <label class="field span-two"><span>施工日期</span><input type="date" data-bind="overview.date" /></label>
+            <label class="field span-two"><span>填表人</span><input type="text" data-bind="overview.reviewer" autocomplete="name" /></label>
           </div>
         </section>
 
@@ -158,8 +158,8 @@
           <div class="form-grid checklist-meta-grid">
             <label class="field span-two"><span>工程名稱</span><input type="text" data-check-bind="trench.project" /></label>
             <label class="field span-two"><span>施工廠商</span><input type="text" data-check-bind="trench.contractor" /></label>
-            <label class="field"><span>複核日期</span><input type="date" data-check-bind="trench.date" /></label>
-            <label class="field"><span>單元編號</span><input type="text" data-check-bind="trench.unitNo" /></label>
+            <label class="field span-two"><span>複核日期</span><input type="date" data-check-bind="trench.date" /></label>
+            <label class="field span-two"><span>單元編號</span><input type="text" data-check-bind="trench.unitNo" /></label>
             <label class="field span-two"><span>營造廠複核人</span><input type="text" data-check-bind="trench.reviewer" /></label>
           </div>
           <dl class="check-progress" aria-live="polite">
@@ -182,7 +182,7 @@
           </div>
           <div class="form-grid checklist-meta-grid">
             <label class="field span-two"><span>工程名稱</span><input type="text" data-check-bind="cage.project" /></label>
-            <label class="field"><span>複核日期</span><input type="date" data-check-bind="cage.date" /></label>
+            <label class="field span-two"><span>複核日期</span><input type="date" data-check-bind="cage.date" /></label>
             <label class="field"><span>單元編號</span><input type="text" data-check-bind="cage.unitNo" /></label>
             <label class="field"><span>鋼筋籠編號</span><input type="text" data-check-bind="cage.cageNo" /></label>
             <label class="field"><span>營造廠複核人</span><input type="text" data-check-bind="cage.reviewer" /></label>
