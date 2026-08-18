@@ -18,8 +18,8 @@
 
     <header class="app-header">
       <nav class="header-nav" aria-label="主要功能">
-        <button class="header-action" id="project-tool-button" type="button" aria-current="page">
-          專案工具
+        <button class="header-action" id="project-tool-button" type="button" aria-current="page" aria-haspopup="dialog">
+          專案工具 <span class="header-caret" aria-hidden="true">⌄</span>
         </button>
         <button class="header-action help-action" id="help-button" type="button">
           使用說明 <span aria-hidden="true">?</span>
@@ -30,12 +30,13 @@
     <main class="app-shell" id="project-tool">
       <div class="tool-title">
         <div>
-          <p>FIELD RECORD / PDF TOOL</p>
-          <h1>連續壁施工紀錄</h1>
+          <p>CONTINUOUS WALL / FIELD RECORD</p>
+          <h1>正式施工紀錄</h1>
         </div>
         <span id="record-identity">尚未指定單元</span>
       </div>
 
+      <section class="tool-view" id="tool-unit" data-tool-view="unit">
       <nav class="tab-navigation" aria-label="施工紀錄分頁">
         <div class="tab-row tab-row-two" role="tablist" aria-label="基本資料">
           <button id="tab-overview" role="tab" type="button" data-tab="overview" aria-controls="panel-overview" aria-selected="true" tabindex="0">工程概要</button>
@@ -140,8 +141,61 @@
           <div class="warning-list" id="pour-warnings" aria-live="polite"></div>
         </section>
       </section>
+      </section>
 
-      <a class="supplement-link" href="./checklists.html"><span>補充複核表</span><strong>導溝／鋼筋籠</strong><span aria-hidden="true">→</span></a>
+      <section class="tool-view" id="tool-trench" data-tool-view="trench" hidden>
+        <section class="panel-frame integrated-checklist">
+          <div class="panel-heading">
+            <div><span>導溝</span><h2>施工複核</h2></div>
+            <p>成槽前停留點</p>
+          </div>
+          <div class="form-grid checklist-meta-grid">
+            <label class="field span-two"><span>工程名稱</span><input type="text" data-check-bind="trench.project" /></label>
+            <label class="field span-two"><span>施工廠商</span><input type="text" data-check-bind="trench.contractor" /></label>
+            <label class="field"><span>複核日期</span><input type="date" data-check-bind="trench.date" /></label>
+            <label class="field"><span>單元編號</span><input type="text" data-check-bind="trench.unitNo" /></label>
+            <label class="field span-two"><span>營造廠複核人</span><input type="text" data-check-bind="trench.reviewer" /></label>
+          </div>
+          <dl class="check-progress" aria-live="polite">
+            <div><dt>已完成複核</dt><dd id="trench-progress">0 / 7</dd></div>
+            <div><dt>尚待確認</dt><dd id="trench-pending">7</dd></div>
+          </dl>
+          <section class="record-section" aria-labelledby="trench-check-heading">
+            <div class="record-heading"><div><span>01</span><h3 id="trench-check-heading">導溝複核項目</h3></div></div>
+            <div class="check-card-list" id="trench-check-list"></div>
+          </section>
+          <label class="field note-field"><span>複核意見／備註</span><textarea data-check-bind="trench.note" rows="3"></textarea></label>
+        </section>
+      </section>
+
+      <section class="tool-view" id="tool-cage" data-tool-view="cage" hidden>
+        <section class="panel-frame integrated-checklist">
+          <div class="panel-heading">
+            <div><span>鋼筋籠</span><h2>吊放前複核</h2></div>
+            <p>配筋、組裝與吊放條件</p>
+          </div>
+          <div class="form-grid checklist-meta-grid">
+            <label class="field span-two"><span>工程名稱</span><input type="text" data-check-bind="cage.project" /></label>
+            <label class="field"><span>複核日期</span><input type="date" data-check-bind="cage.date" /></label>
+            <label class="field"><span>單元編號</span><input type="text" data-check-bind="cage.unitNo" /></label>
+            <label class="field"><span>鋼筋籠編號</span><input type="text" data-check-bind="cage.cageNo" /></label>
+            <label class="field"><span>營造廠複核人</span><input type="text" data-check-bind="cage.reviewer" /></label>
+          </div>
+          <dl class="check-progress cage-progress" aria-live="polite">
+            <div><dt>配筋明細完成</dt><dd id="cage-rebar-progress">0 / 9</dd></div>
+            <div><dt>吊放條件完成</dt><dd id="cage-check-progress">0 / 7</dd></div>
+          </dl>
+          <section class="record-section" aria-labelledby="cage-rebar-heading">
+            <div class="record-heading"><div><span>01</span><h3 id="cage-rebar-heading">配筋複核明細</h3></div><button class="add-button" id="add-rebar" type="button"><span aria-hidden="true">＋</span> 新增</button></div>
+            <div class="rebar-card-list" id="cage-rebar-list"></div>
+          </section>
+          <section class="record-section" aria-labelledby="cage-check-heading">
+            <div class="record-heading"><div><span>02</span><h3 id="cage-check-heading">組裝與吊放條件</h3></div></div>
+            <div class="check-card-list" id="cage-check-list"></div>
+          </section>
+          <label class="field note-field"><span>複核意見／備註</span><textarea data-check-bind="cage.note" rows="3"></textarea></label>
+        </section>
+      </section>
     </main>
 
     <aside class="action-dock" aria-label="輸出工具">
@@ -152,9 +206,19 @@
     <dialog class="sheet-dialog help-dialog" id="help-dialog">
       <div class="dialog-header"><div><span>HELP</span><h2>使用說明</h2></div><button type="button" data-close-dialog aria-label="關閉使用說明">×</button></div>
       <div class="dialog-body help-content">
-        <section><h3>填寫方式</h3><p>依五個分頁填寫資料。開挖與澆置紀錄請按「＋新增」，確認後才會加入主控顯示板。</p></section>
+        <section><h3>選擇紀錄工具</h3><p>按 Header 的「專案工具」，可切換單元施工、導溝複核與鋼筋籠複核；所有內容都在同一個 App 內填寫。</p></section>
+        <section><h3>填寫方式</h3><p>單元施工依五個分頁填寫。開挖與澆置紀錄請按「＋新增」，確認後才會加入主控顯示板。</p></section>
         <section><h3>高度比對</h3><p>預估高度＝設計澆置高度 × 累積方量 ÷ 設計數量；高度差異＝實測累積高度－預估高度。</p></section>
         <section><h3>資料與輸出</h3><p>本工具沒有儲存或同步功能，重新整理或關閉頁面後資料會清空。完成後請立即輸出 PDF。</p></section>
+      </div>
+    </dialog>
+
+    <dialog class="sheet-dialog tool-dialog" id="tool-dialog">
+      <div class="dialog-header"><div><span>PROJECT TOOLS</span><h2>選擇施工紀錄</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+      <div class="dialog-body tool-options">
+        <button type="button" data-select-tool="unit"><span>01</span><strong>單元施工紀錄</strong><small>工程概要、壁體、開挖、前置及澆置</small></button>
+        <button type="button" data-select-tool="trench"><span>02</span><strong>導溝施工複核</strong><small>成槽前位置、尺寸與放行條件</small></button>
+        <button type="button" data-select-tool="cage"><span>03</span><strong>鋼筋籠吊放前複核</strong><small>配筋明細、組裝與吊放條件</small></button>
       </div>
     </dialog>
 
@@ -193,11 +257,26 @@
       </form>
     </dialog>
 
+    <dialog class="sheet-dialog" id="rebar-dialog">
+      <form id="rebar-form">
+        <div class="dialog-header"><div><span>REBAR CHECK</span><h2 id="rebar-dialog-title">填寫配筋項目</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+        <div class="dialog-body compact-form two-fields">
+          <label class="field span-two"><span>位置／用途</span><input id="rebar-part" type="text" required /></label>
+          <label class="field"><span>設計鋼筋號數</span><input id="rebar-design-no" type="text" placeholder="例如：D32" /></label>
+          <label class="field"><span>設計數量／間距</span><input id="rebar-design-qty" type="text" placeholder="例如：28 支、@200 mm" /></label>
+          <label class="field"><span>實際鋼筋號數</span><input id="rebar-actual-no" type="text" /></label>
+          <label class="field"><span>實際數量／間距</span><input id="rebar-actual-qty" type="text" /></label>
+          <label class="field span-two"><span>複核結果</span><select id="rebar-result"><option>待確認</option><option>符合</option><option>不符合</option><option>不適用</option></select></label>
+        </div>
+        <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>取消</button><button class="confirm-button" type="submit">確認更新</button></div>
+      </form>
+    </dialog>
+
     <dialog class="sheet-dialog export-dialog" id="export-dialog">
       <div class="dialog-header"><div><span>PDF</span><h2>選擇輸出範圍</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
       <div class="dialog-body export-options">
-        <button type="button" data-export-scope="current"><span>輸出目前頁面</span><strong id="export-current-label">工程概要</strong></button>
-        <button type="button" data-export-scope="all"><span>輸出完整紀錄</span><strong>全部五個頁面</strong></button>
+        <button type="button" data-export-scope="current"><span>輸出目前表單</span><strong id="export-current-label">工程概要</strong></button>
+        <button type="button" data-export-scope="all"><span>輸出完整紀錄</span><strong>施工紀錄及複核表</strong><small>共 7 頁</small></button>
       </div>
     </dialog>
 
@@ -209,6 +288,8 @@
       <article class="print-page" data-print-tab="excavation" id="print-excavation"></article>
       <article class="print-page" data-print-tab="prework" id="print-prework"></article>
       <article class="print-page print-landscape" data-print-tab="pouring" id="print-pouring"></article>
+      <article class="print-page" data-print-tab="trench" id="print-trench"></article>
+      <article class="print-page print-landscape" data-print-tab="cage" id="print-cage"></article>
     </section>
 
     <script src="./app.js" defer></script>

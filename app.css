@@ -32,9 +32,9 @@ body {
   line-height: 1.5;
 }
 
-button, input, select { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button { color: inherit; cursor: pointer; }
-button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
@@ -80,6 +80,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .header-action:last-child { border-right: 0; }
 .header-action[aria-current="page"] { background: var(--surface); }
 .header-action:active { background: var(--surface-strong); }
+.header-caret { margin-left: 4px; color: var(--muted); font-size: 0.75rem; }
 .help-action span {
   display: inline-grid;
   width: 19px;
@@ -95,6 +96,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   width: min(100%, 880px);
   margin: 0 auto;
   padding: 16px 14px 28px;
+  scroll-margin-top: calc(var(--header-height) + env(safe-area-inset-top));
 }
 
 .tool-title {
@@ -133,6 +135,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   border-top: 1px solid var(--line-dark);
   border-bottom: 1px solid var(--line-dark);
 }
+.tool-view[hidden] { display: none; }
 .tab-row { display: grid; gap: 5px; }
 .tab-row-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .tab-row-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -198,7 +201,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   font-size: 0.71875rem;
   font-weight: 700;
 }
-.field input, .field select, .phase-editor select {
+.field input, .field select, .field textarea, .phase-editor select {
   width: 100%;
   min-width: 0;
   min-height: 44px;
@@ -209,7 +212,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   color: var(--ink);
   font-size: 1rem;
 }
-.field input::placeholder { color: var(--muted); opacity: 0.78; }
+.field textarea { min-height: 76px; resize: vertical; }
+.field input::placeholder, .field textarea::placeholder { color: var(--muted); opacity: 0.78; }
 .field input:invalid:not(:placeholder-shown) { border-color: var(--danger); }
 
 .unit-type {
@@ -410,20 +414,41 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   font-size: 0.75rem;
 }
 
-.supplement-link {
+.integrated-checklist { padding: 19px 2px 28px; }
+.check-progress {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 9px;
-  min-height: 48px;
-  margin-top: 14px;
-  padding: 8px 11px;
-  border: 1px solid var(--line);
-  color: var(--ink);
-  text-decoration: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 16px 0 0;
+  background: var(--surface);
+  border-top: 1px solid var(--line-dark);
+  border-bottom: 1px solid var(--line-dark);
 }
-.supplement-link span { color: var(--muted); font-size: 0.6875rem; }
-.supplement-link strong { font-size: 0.8125rem; }
+.check-progress > div { padding: 9px 11px; border-right: 1px solid var(--line); }
+.check-progress > div:last-child { border-right: 0; }
+.check-progress dt { color: var(--muted); font-size: 0.6875rem; font-weight: 700; }
+.check-progress dd { margin: 2px 0 0; font-family: "Noto Serif TC", "PMingLiU", serif; font-size: 1.125rem; font-weight: 700; }
+.check-card-list, .rebar-card-list { display: grid; gap: 8px; }
+.check-card, .rebar-card {
+  border: 1px solid var(--line);
+  background: color-mix(in oklch, var(--paper) 91%, var(--surface));
+}
+.check-card.is-failed, .rebar-card.is-failed { background: var(--warning); border-color: var(--line-dark); }
+.check-card { padding: 10px; }
+.check-card-head { display: flex; align-items: baseline; gap: 8px; }
+.check-card-head span, .rebar-card-title > span { color: var(--muted); font-size: 0.6875rem; font-weight: 800; }
+.check-card-head strong { font-size: 0.8125rem; }
+.check-card > p { margin: 3px 0 9px 25px; color: var(--soft); font-size: 0.6875rem; line-height: 1.5; }
+.check-card-fields { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(100px, 0.8fr); gap: 8px; }
+.note-field { margin-top: 18px; }
+.rebar-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 10px; }
+.rebar-card-main { min-width: 0; }
+.rebar-card-title { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; gap: 7px; }
+.rebar-card-title strong { min-width: 0; font-size: 0.8125rem; }
+.rebar-card-title em { color: var(--soft); font-size: 0.6875rem; font-style: normal; }
+.rebar-card dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; margin: 6px 0 0 22px; }
+.rebar-card dl > div { min-width: 0; }
+.rebar-card dt { color: var(--muted); font-size: 0.625rem; }
+.rebar-card dd { margin: 1px 0 0; overflow-wrap: anywhere; color: var(--soft); font-size: 0.71875rem; }
 
 .action-dock {
   position: fixed;
@@ -501,6 +526,21 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .help-content section:last-child { padding: 0; border: 0; }
 .help-content h3 { margin: 0; font-size: 0.8125rem; }
 .help-content p { margin: 4px 0 0; color: var(--soft); font-size: 0.75rem; line-height: 1.65; }
+.tool-options { display: grid; gap: 7px; }
+.tool-options button {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 1px 8px;
+  min-height: 66px;
+  padding: 10px 11px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  text-align: left;
+}
+.tool-options button[aria-current] { background: var(--surface-strong); border-color: var(--line-dark); }
+.tool-options button > span { grid-row: span 2; align-self: start; color: var(--muted); font-size: 0.6875rem; font-weight: 800; }
+.tool-options strong { font-size: 0.875rem; }
+.tool-options small { color: var(--muted); font-size: 0.6875rem; }
 .export-options { display: grid; gap: 8px; }
 .export-options button {
   display: grid;
@@ -563,6 +603,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   .phase-editor .confirm-button { width: auto; min-width: 110px; }
   .record-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .truck-list { grid-template-columns: 1fr; }
+  .checklist-meta-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .check-card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rebar-card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .action-dock { right: max(0px, calc((100vw - 880px) / 2)); left: max(0px, calc((100vw - 880px) / 2)); }
   .undo-toast { right: max(14px, calc((100vw - 720px) / 2)); left: max(14px, calc((100vw - 720px) / 2)); }
 }
@@ -570,7 +613,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 @media (hover: hover) {
   .header-action:hover, .tab-row button:hover, .add-button:hover, .secondary-button:hover { background: var(--surface-strong); }
   .confirm-button:hover, .action-dock button:hover { background: var(--soft); border-color: var(--soft); }
-  .supplement-link:hover { background: var(--surface); }
+  .tool-options button:hover { background: var(--surface-strong); }
 }
 
 @media (pointer: coarse) {
@@ -625,4 +668,12 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   .print-summary strong { display: block; margin-top: 1mm; font-size: 8.5pt; }
   .print-footer { margin-top: 3mm; color: #666; font-size: 6pt; text-align: right; }
   .print-page, .print-section, .print-table tr { break-inside: avoid; }
+  .compact-meta > div { min-height: 9mm; }
+  .compact-print-section { margin-top: 2.5mm; }
+  .cage-print-table th, .cage-check-print-table th { padding: 1mm 0.8mm; font-size: 5.8pt; }
+  .cage-print-table td, .cage-check-print-table td { height: 5.5mm; padding: 0.7mm 1mm; font-size: 6.3pt; }
+  .checklist-print-table th:first-child, .cage-print-table th:first-child, .cage-check-print-table th:first-child { width: 7%; }
+  .checklist-print-table th:nth-child(2), .cage-check-print-table th:nth-child(2) { width: 20%; }
+  .checklist-print-table th:nth-child(3), .cage-check-print-table th:nth-child(3) { width: 30%; }
+  .checklist-print-table th:last-child, .cage-check-print-table th:last-child { width: 12%; }
 }

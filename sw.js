@@ -1,4 +1,4 @@
-const CACHE_NAME = "project-portal-v6";
+const CACHE_NAME = "project-portal-v7";
 const APP_SHELL = ["./index.html", "./app.css", "./app.js", "./record.html", "./checklists.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", event => {
@@ -20,6 +20,17 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   if (new URL(event.request.url).pathname.endsWith("/sw.js")) return;
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          if (response.ok) caches.open(CACHE_NAME).then(cache => cache.put("./index.html", response.clone()));
+          return response;
+        })
+        .catch(() => caches.match("./index.html", { ignoreSearch: true }))
+    );
+    return;
+  }
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true })
       .then(cached => cached || fetch(event.request).then(response => {

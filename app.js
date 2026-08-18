@@ -6,6 +6,37 @@ const TAB_LABELS = {
   pouring: "澆置紀錄"
 };
 
+const TOOL_LABELS = {
+  unit: "單元施工紀錄",
+  trench: "導溝施工複核",
+  cage: "鋼筋籠吊放前複核"
+};
+
+const TRENCH_CHECKS = [
+  ["單元位置與中心線", "放樣點位、單元順序與核定圖說相符"],
+  ["導溝寬度與淨寬", "依核定施工圖；尺寸容許差依圖說"],
+  ["導溝頂高程／深度", "依核定施工圖與測量基準"],
+  ["壁面與底部完整性", "無鬆動、剝落、裂縫；底部無堆積物"],
+  ["單元界面與接頭區", "界面位置、接頭區淨空可供後續施工"],
+  ["施工平台與排水", "平台平整，排水及運輸動線無阻"],
+  ["成槽前放行條件", "測量複核、現場條件及廠商自檢紀錄齊備"]
+];
+
+const CAGE_PARTS = [
+  "A 面縱向主筋", "B 面縱向主筋", "A 面水平分布筋", "B 面水平分布筋",
+  "垂直補強筋", "桁架筋／剛性補強", "吊筋／吊環", "接頭區補強筋", "保護層定位筋／墊塊"
+];
+
+const CAGE_CHECKS = [
+  ["籠號與單元對應", "籠號、單元號與核定配筋圖一致"],
+  ["籠體幾何尺寸", "長度、寬度、厚度與圖說相符"],
+  ["接頭、搭接與焊接", "位置、長度與施工規範相符"],
+  ["保護層墊塊與固定", "位置、數量及固定方式可確保保護層"],
+  ["吊點、吊具及臨時補強", "吊點、吊筋、桁架及補強可安全吊放"],
+  ["接頭構件／預埋件", "止水、接頭鋼板及預埋件位置依圖說"],
+  ["外觀與吊放前狀態", "無顯著變形、鬆脫、污染或妨礙吊放之雜物"]
+];
+
 const PHASES = [
   { id: "slurry", label: "清沉泥", start: "開始時間", end: "完成時間" },
   { id: "lowerCage", label: "下方鋼筋籠吊放", start: "開始時間", end: "完成時間" },
@@ -34,11 +65,21 @@ const state = {
   soil: [],
   depth: [],
   prework: Object.fromEntries(PHASES.map(phase => [phase.id, { start: "", end: "" }])),
-  trucks: []
+  trucks: [],
+  trench: {
+    project: "", contractor: "", date: today, unitNo: "", reviewer: "", note: "",
+    checks: TRENCH_CHECKS.map(([item, standard]) => ({ item, standard, actual: "", result: "待確認" }))
+  },
+  cage: {
+    project: "", date: today, unitNo: "", cageNo: "", reviewer: "", note: "",
+    rebars: CAGE_PARTS.map(part => ({ part, designNo: "", designQty: "", actualNo: "", actualQty: "", result: "待確認" })),
+    checks: CAGE_CHECKS.map(([item, standard]) => ({ item, standard, actual: "", result: "待確認" }))
+  }
 };
 
 let activeTab = "overview";
-const editIndex = { soil: null, depth: null, truck: null };
+let activeTool = "unit";
+const editIndex = { soil: null, depth: null, truck: null, rebar: null };
 let undoTimer;
 let undoAction = null;
 
@@ -87,6 +128,14 @@ function setInitialInputs() {
 }
 
 function updateIdentity() {
+  if (activeTool === "trench") {
+    $("#record-identity").textContent = state.trench.unitNo ? `導溝｜${state.trench.unitNo}` : "導溝施工複核";
+    return;
+  }
+  if (activeTool === "cage") {
+    $("#record-identity").textContent = state.cage.cageNo || state.cage.unitNo ? [state.cage.unitNo, state.cage.cageNo].filter(Boolean).join("｜") : "鋼筋籠吊放前複核";
+    return;
+  }
   const parts = [state.wall.unitType, state.wall.unitNo].filter(Boolean);
   $("#record-identity").textContent = parts.length ? parts.join("｜") : "尚未指定單元";
 }
@@ -109,9 +158,30 @@ function showTab(tab, focusPanel = false) {
     button.setAttribute("aria-selected", String(selected));
     button.tabIndex = selected ? 0 : -1;
   });
-  $("#active-tab-label").textContent = TAB_LABELS[tab];
-  $("#export-current-label").textContent = TAB_LABELS[tab];
+  if (activeTool === "unit") {
+    $("#active-tab-label").textContent = TAB_LABELS[tab];
+    $("#export-current-label").textContent = TAB_LABELS[tab];
+  }
   if (focusPanel) $(`#panel-${tab}`).focus({ preventScroll: true });
+}
+
+function showTool(tool, scroll = true) {
+  if (!TOOL_LABELS[tool]) return;
+  activeTool = tool;
+  $$('[data-tool-view]').forEach(view => { view.hidden = view.dataset.toolView !== tool; });
+  $$('[data-select-tool]').forEach(button => button.toggleAttribute("aria-current", button.dataset.selectTool === tool));
+  const label = tool === "unit" ? TAB_LABELS[activeTab] : TOOL_LABELS[tool];
+  $("#active-tab-label").textContent = label;
+  $("#export-current-label").textContent = label;
+  updateIdentity();
+  if ($("#tool-dialog").open) $("#tool-dialog").close();
+  if (scroll) {
+    const root = document.documentElement;
+    const previousBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+    root.style.scrollBehavior = previousBehavior;
+  }
 }
 
 function emptyState(text) {
@@ -215,10 +285,68 @@ function renderPouring() {
   $("#pour-warnings").innerHTML = warnings.map(row => `<div class="warning-item"><strong>第 ${row.index + 1} 車差異 ${fixed(row.difference)} m：</strong>請確認量測基準、實際方量、超挖或坍孔可能性。</div>`).join("");
 }
 
+function resultOptions(selected) {
+  return ["待確認", "符合", "不符合", "不適用"]
+    .map(value => `<option value="${value}" ${value === selected ? "selected" : ""}>${value}</option>`)
+    .join("");
+}
+
+function renderCheckCards(type) {
+  const target = $(`#${type}-check-list`);
+  target.innerHTML = state[type].checks.map((check, index) => `
+    <article class="check-card ${check.result === "不符合" ? "is-failed" : ""}">
+      <div class="check-card-head"><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(check.item)}</strong></div>
+      <p>${esc(check.standard)}</p>
+      <div class="check-card-fields">
+        <label class="field"><span>現場紀錄／實測</span><input type="text" value="${esc(check.actual)}" data-check-item="${type}" data-check-index="${index}" data-check-field="actual" /></label>
+        <label class="field result-field"><span>複核結果</span><select data-check-item="${type}" data-check-index="${index}" data-check-field="result">${resultOptions(check.result)}</select></label>
+      </div>
+    </article>`).join("");
+  const completed = state[type].checks.filter(check => check.result !== "待確認").length;
+  if (type === "trench") {
+    $("#trench-progress").textContent = `${completed} / ${state.trench.checks.length}`;
+    $("#trench-pending").textContent = String(state.trench.checks.length - completed);
+  } else {
+    $("#cage-check-progress").textContent = `${completed} / ${state.cage.checks.length}`;
+  }
+}
+
+function renderRebars() {
+  const rows = state.cage.rebars;
+  $("#cage-rebar-list").innerHTML = rows.length ? rows.map((rebar, index) => `
+    <article class="rebar-card ${rebar.result === "不符合" ? "is-failed" : ""}">
+      <div class="rebar-card-main">
+        <div class="rebar-card-title"><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(rebar.part)}</strong><em>${esc(rebar.result)}</em></div>
+        <dl>
+          <div><dt>設計</dt><dd>${esc([rebar.designNo, rebar.designQty].filter(Boolean).join("／") || "尚未填寫")}</dd></div>
+          <div><dt>實際</dt><dd>${esc([rebar.actualNo, rebar.actualQty].filter(Boolean).join("／") || "尚未填寫")}</dd></div>
+        </dl>
+      </div>
+      <div class="record-item-actions"><button type="button" data-edit-rebar="${index}">填寫</button><button type="button" data-delete-rebar="${index}">刪除</button></div>
+    </article>`).join("") : emptyState("尚無配筋項目，請按＋新增。 ");
+  const completed = rows.filter(rebar => rebar.result !== "待確認").length;
+  $("#cage-rebar-progress").textContent = `${completed} / ${rows.length}`;
+}
+
+function setChecklistInputs() {
+  $$('[data-check-bind]').forEach(input => {
+    const [type, key] = input.dataset.checkBind.split(".");
+    input.value = state[type][key] ?? "";
+  });
+}
+
+function renderChecklists() {
+  setChecklistInputs();
+  renderCheckCards("trench");
+  renderCheckCards("cage");
+  renderRebars();
+}
+
 function renderAll() {
   updateIdentity();
   updateWallCalculation();
   renderPrework();
+  renderChecklists();
 }
 
 function openSoilDialog(index = null) {
@@ -253,6 +381,22 @@ function openTruckDialog(index = null) {
   $("#truck-dialog").showModal();
 }
 
+function openRebarDialog(index = null) {
+  editIndex.rebar = index;
+  const record = index === null
+    ? { part: "", designNo: "", designQty: "", actualNo: "", actualQty: "", result: "待確認" }
+    : state.cage.rebars[index];
+  $("#rebar-part").value = record.part;
+  $("#rebar-design-no").value = record.designNo;
+  $("#rebar-design-qty").value = record.designQty;
+  $("#rebar-actual-no").value = record.actualNo;
+  $("#rebar-actual-qty").value = record.actualQty;
+  $("#rebar-result").value = record.result;
+  $("#rebar-dialog-title").textContent = index === null ? "新增配筋項目" : `填寫第 ${index + 1} 項配筋`;
+  $("#rebar-form [type='submit']").textContent = index === null ? "確認加入" : "確認更新";
+  $("#rebar-dialog").showModal();
+}
+
 function showUndo(message, action) {
   clearTimeout(undoTimer);
   undoAction = action;
@@ -277,9 +421,18 @@ function removeRecord(type, index) {
   });
 }
 
-function printHeader(title, sequence) {
-  const identity = [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
-  return `<header class="print-document-header"><div><p>CONTINUOUS WALL FIELD RECORD / ${sequence}</p><h1>${esc(title)}</h1></div><strong>${esc(display(state.overview.project))}<br />${esc(identity)}</strong></header>`;
+function removeRebar(index) {
+  const [removed] = state.cage.rebars.splice(index, 1);
+  renderRebars();
+  showUndo("已刪除配筋項目", () => {
+    state.cage.rebars.splice(index, 0, removed);
+    renderRebars();
+  });
+}
+
+function printHeader(title, sequence, project = state.overview.project, recordIdentity = null) {
+  const identity = recordIdentity || [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
+  return `<header class="print-document-header"><div><p>CONTINUOUS WALL FIELD RECORD / ${sequence}</p><h1>${esc(title)}</h1></div><strong>${esc(display(project))}<br />${esc(identity)}</strong></header>`;
 }
 
 function printFooter() {
@@ -349,12 +502,39 @@ function renderPrint() {
       <div><span>預估／實測／差異</span><strong>${fixed(lastTruck?.expected ?? null)} ／ ${fixed(lastTruck?.measured ?? null)} ／ ${fixed(lastTruck?.difference ?? null)} m</strong></div>
     </div></section>
     <section class="print-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量<br />m³</th><th>累積<br />m³</th><th>預估高度<br />m</th><th>實測高度<br />m</th><th>差異<br />m</th></tr></thead><tbody>${pouringRows}</tbody></table></section>${printFooter()}`;
+
+  const trenchRows = state.trench.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
+  $("#print-trench").innerHTML = `${printHeader("導溝施工複核表", "06", state.trench.project, state.trench.unitNo || "未指定單元")}
+    <section class="print-section"><h2>基本資料</h2><div class="print-meta-grid three">
+      <div><span>工程名稱</span><strong>${esc(display(state.trench.project))}</strong></div>
+      <div><span>施工廠商</span><strong>${esc(display(state.trench.contractor))}</strong></div>
+      <div><span>複核日期</span><strong>${esc(display(state.trench.date))}</strong></div>
+      <div><span>單元編號</span><strong>${esc(display(state.trench.unitNo))}</strong></div>
+      <div><span>營造廠複核人</span><strong>${esc(display(state.trench.reviewer))}</strong></div>
+      <div><span>複核意見</span><strong>${esc(display(state.trench.note))}</strong></div>
+    </div></section>
+    <section class="print-section"><h2>導溝複核項目</h2><table class="print-table checklist-print-table"><thead><tr><th>項次</th><th>複核項目</th><th>確認基準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${trenchRows}</tbody></table></section>${printFooter()}`;
+
+  const rebarRows = state.cage.rebars.length ? state.cage.rebars.map((rebar, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(rebar.part)}</td><td>${esc(display(rebar.designNo))}</td><td>${esc(display(rebar.designQty))}</td><td>${esc(display(rebar.actualNo))}</td><td>${esc(display(rebar.actualQty))}</td><td>${esc(rebar.result)}</td></tr>`).join("") : `<tr><td colspan="7" class="print-empty">尚無配筋項目</td></tr>`;
+  const cageRows = state.cage.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
+  $("#print-cage").innerHTML = `${printHeader("鋼筋籠吊放前複核表", "07", state.cage.project, [state.cage.unitNo, state.cage.cageNo].filter(Boolean).join("｜") || "未指定鋼筋籠")}
+    <section class="print-section"><h2>基本資料</h2><div class="print-meta-grid three compact-meta">
+      <div><span>工程名稱</span><strong>${esc(display(state.cage.project))}</strong></div>
+      <div><span>複核日期</span><strong>${esc(display(state.cage.date))}</strong></div>
+      <div><span>營造廠複核人</span><strong>${esc(display(state.cage.reviewer))}</strong></div>
+      <div><span>單元編號</span><strong>${esc(display(state.cage.unitNo))}</strong></div>
+      <div><span>鋼筋籠編號</span><strong>${esc(display(state.cage.cageNo))}</strong></div>
+      <div><span>複核意見</span><strong>${esc(display(state.cage.note))}</strong></div>
+    </div></section>
+    <section class="print-section compact-print-section"><h2>配筋複核明細</h2><table class="print-table cage-print-table"><thead><tr><th>項次</th><th>位置／用途</th><th>設計號數</th><th>設計數量／間距</th><th>實際號數</th><th>實際數量／間距</th><th>結果</th></tr></thead><tbody>${rebarRows}</tbody></table></section>
+    <section class="print-section compact-print-section"><h2>組裝與吊放條件</h2><table class="print-table cage-check-print-table"><thead><tr><th>項次</th><th>複核項目</th><th>確認基準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${cageRows}</tbody></table></section>${printFooter()}`;
 }
 
 function exportPdf(scope) {
   renderPrint();
   document.body.dataset.printScope = scope;
-  $$('.print-page').forEach(page => page.classList.toggle("print-selected", page.dataset.printTab === activeTab));
+  const current = activeTool === "unit" ? activeTab : activeTool;
+  $$('.print-page').forEach(page => page.classList.toggle("print-selected", page.dataset.printTab === current));
   $("#export-dialog").close();
   window.print();
 }
@@ -368,11 +548,22 @@ function initialize() {
 
   document.addEventListener("input", event => {
     const input = event.target.closest("[data-bind]");
-    if (!input) return;
-    const [group, key] = input.dataset.bind.split(".");
-    state[group][key] = input.value;
-    if (group === "wall") updateWallCalculation();
-    else if (group === "overview") updateIdentity();
+    if (input) {
+      const [group, key] = input.dataset.bind.split(".");
+      state[group][key] = input.value;
+      if (group === "wall") updateWallCalculation();
+      else if (group === "overview") updateIdentity();
+      return;
+    }
+    const meta = event.target.closest("[data-check-bind]");
+    if (meta) {
+      const [type, key] = meta.dataset.checkBind.split(".");
+      state[type][key] = meta.value;
+      updateIdentity();
+      return;
+    }
+    const check = event.target.closest("[data-check-item]");
+    if (check) state[check.dataset.checkItem].checks[Number(check.dataset.checkIndex)][check.dataset.checkField] = check.value;
   });
 
   document.addEventListener("change", event => {
@@ -381,6 +572,13 @@ function initialize() {
       const [group, key] = input.dataset.bind.split(".");
       state[group][key] = input.value;
       updateIdentity();
+      return;
+    }
+    const check = event.target.closest("[data-check-item]");
+    if (check) {
+      const type = check.dataset.checkItem;
+      state[type].checks[Number(check.dataset.checkIndex)][check.dataset.checkField] = check.value;
+      if (check.dataset.checkField === "result") renderCheckCards(type);
     }
   });
 
@@ -398,18 +596,20 @@ function initialize() {
     });
   });
 
-  $("#project-tool-button").addEventListener("click", () => $("#project-tool").scrollIntoView({ behavior: "smooth", block: "start" }));
+  $("#project-tool-button").addEventListener("click", () => $("#tool-dialog").showModal());
   $("#help-button").addEventListener("click", () => $("#help-dialog").showModal());
   $("#export-button").addEventListener("click", () => {
-    $("#export-current-label").textContent = TAB_LABELS[activeTab];
+    $("#export-current-label").textContent = activeTool === "unit" ? TAB_LABELS[activeTab] : TOOL_LABELS[activeTool];
     $("#export-dialog").showModal();
   });
   $$('[data-close-dialog]').forEach(button => button.addEventListener("click", () => button.closest("dialog").close()));
   $$('[data-export-scope]').forEach(button => button.addEventListener("click", () => exportPdf(button.dataset.exportScope)));
+  $$('[data-select-tool]').forEach(button => button.addEventListener("click", () => showTool(button.dataset.selectTool)));
 
   $("#add-soil").addEventListener("click", () => openSoilDialog());
   $("#add-depth").addEventListener("click", () => openDepthDialog());
   $("#add-truck").addEventListener("click", () => openTruckDialog());
+  $("#add-rebar").addEventListener("click", () => openRebarDialog());
 
   $("#soil-form").addEventListener("submit", event => {
     event.preventDefault();
@@ -444,6 +644,22 @@ function initialize() {
     renderPouring();
   });
 
+  $("#rebar-form").addEventListener("submit", event => {
+    event.preventDefault();
+    const record = {
+      part: $("#rebar-part").value.trim(),
+      designNo: $("#rebar-design-no").value.trim(),
+      designQty: $("#rebar-design-qty").value.trim(),
+      actualNo: $("#rebar-actual-no").value.trim(),
+      actualQty: $("#rebar-actual-qty").value.trim(),
+      result: $("#rebar-result").value
+    };
+    if (editIndex.rebar === null) state.cage.rebars.push(record);
+    else state.cage.rebars[editIndex.rebar] = record;
+    $("#rebar-dialog").close();
+    renderRebars();
+  });
+
   $("#phase-select").addEventListener("change", renderPhaseEditor);
   $("#confirm-phase").addEventListener("click", () => {
     const phase = PHASES.find(item => item.id === $("#phase-select").value);
@@ -458,12 +674,16 @@ function initialize() {
     const deleteDepth = event.target.closest("[data-delete-depth]");
     const editTruck = event.target.closest("[data-edit-truck]");
     const deleteTruck = event.target.closest("[data-delete-truck]");
+    const editRebar = event.target.closest("[data-edit-rebar]");
+    const deleteRebar = event.target.closest("[data-delete-rebar]");
     if (editSoil) openSoilDialog(Number(editSoil.dataset.editSoil));
     else if (deleteSoil) removeRecord("soil", Number(deleteSoil.dataset.deleteSoil));
     else if (editDepth) openDepthDialog(Number(editDepth.dataset.editDepth));
     else if (deleteDepth) removeRecord("depth", Number(deleteDepth.dataset.deleteDepth));
     else if (editTruck) openTruckDialog(Number(editTruck.dataset.editTruck));
     else if (deleteTruck) removeRecord("truck", Number(deleteTruck.dataset.deleteTruck));
+    else if (editRebar) openRebarDialog(Number(editRebar.dataset.editRebar));
+    else if (deleteRebar) removeRebar(Number(deleteRebar.dataset.deleteRebar));
   });
 
   $("#undo-button").addEventListener("click", () => {
@@ -474,6 +694,7 @@ function initialize() {
   });
 
   window.addEventListener("afterprint", () => { document.body.dataset.printScope = "none"; });
+  showTool("unit", false);
   if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
 
