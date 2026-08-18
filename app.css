@@ -136,21 +136,18 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 .record-switcher button {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 5px;
+  place-items: center;
   min-width: 0;
-  min-height: 48px;
-  padding: 7px 8px;
+  min-height: 44px;
+  padding: 7px 5px;
   border: 0;
   border-right: 1px solid var(--line);
   background: transparent;
   color: var(--soft);
-  text-align: left;
+  text-align: center;
 }
 .record-switcher button:last-child { border-right: 0; }
-.record-switcher button span { color: var(--muted); font-size: 0.625rem; font-weight: 800; }
-.record-switcher button strong { min-width: 0; font-size: 0.75rem; white-space: nowrap; }
+.record-switcher button strong { min-width: 0; font-size: 0.8125rem; white-space: nowrap; }
 .record-switcher button[aria-current="page"] {
   background: var(--paper);
   color: var(--ink);
@@ -224,6 +221,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 11px 10px;
 }
+.overview-grid, .checklist-meta-grid { grid-template-columns: minmax(0, 176px) minmax(0, 1fr); }
 .span-two { grid-column: span 2; }
 .field { display: grid; gap: 4px; min-width: 0; }
 .field > span, .unit-type legend {
@@ -241,6 +239,14 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   background: color-mix(in oklch, var(--paper) 94%, var(--surface));
   color: var(--ink);
   font-size: 1rem;
+}
+.field input[type="date"] {
+  display: block;
+  max-width: 100%;
+}
+.field input[type="date"]::-webkit-date-and-time-value {
+  min-width: 0;
+  text-align: left;
 }
 .field textarea { min-height: 76px; resize: vertical; }
 .field input::placeholder, .field textarea::placeholder { color: var(--muted); opacity: 0.78; }
@@ -495,19 +501,31 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   background: color-mix(in oklch, var(--paper) 96%, transparent);
   border-top: 1px solid var(--line-dark);
 }
-.action-dock > div { display: grid; }
+.action-dock > div:first-child { display: grid; min-width: 0; }
 .action-dock span { color: var(--muted); font-size: 0.625rem; }
-.action-dock strong { font-size: 0.8125rem; }
-.action-dock button {
-  min-width: 124px;
+.action-dock strong { overflow: hidden; font-size: 0.8125rem; text-overflow: ellipsis; white-space: nowrap; }
+.dock-actions { display: flex; flex: 0 0 auto; gap: 7px; }
+.action-dock #export-button {
+  min-width: 104px;
   min-height: 44px;
-  padding: 8px 16px;
+  padding: 8px 13px;
   border: 1px solid var(--accent);
   border-radius: 2px;
   background: var(--accent);
   color: var(--paper);
   font-size: 0.8125rem;
   font-weight: 800;
+}
+.action-dock .clear-button {
+  min-width: 58px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--line-dark);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--soft);
+  font-size: 0.78125rem;
+  font-weight: 700;
 }
 
 .sheet-dialog {
@@ -556,6 +574,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .help-content section:last-child { padding: 0; border: 0; }
 .help-content h3 { margin: 0; font-size: 0.8125rem; }
 .help-content p { margin: 4px 0 0; color: var(--soft); font-size: 0.75rem; line-height: 1.65; }
+.clear-confirmation p { margin: 0; color: var(--soft); font-size: 0.8125rem; line-height: 1.7; }
+.danger-button { border-color: var(--danger); background: var(--danger); }
 .export-options { display: grid; gap: 8px; }
 .export-options button {
   display: grid;
@@ -627,7 +647,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 @media (hover: hover) {
   .header-action:hover, .tab-row button:hover, .add-button:hover, .secondary-button:hover { background: var(--surface-strong); }
-  .confirm-button:hover, .action-dock button:hover { background: var(--soft); border-color: var(--soft); }
+  .confirm-button:hover, .action-dock #export-button:hover { background: var(--soft); border-color: var(--soft); }
+  .action-dock .clear-button:hover { background: var(--surface-strong); }
   .record-switcher button:hover { background: var(--surface-strong); }
 }
 

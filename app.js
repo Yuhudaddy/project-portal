@@ -7,7 +7,7 @@ const TAB_LABELS = {
 };
 
 const TOOL_LABELS = {
-  unit: "單元施工紀錄",
+  unit: "連續壁施工紀錄",
   trench: "導溝施工複核",
   cage: "鋼筋籠吊放前複核"
 };
@@ -345,6 +345,37 @@ function renderAll() {
   renderChecklists();
 }
 
+function clearAllData() {
+  state.overview = { project: "", contractor: "", date: "", reviewer: "" };
+  state.wall = {
+    unitType: "", unitNo: "", designDepth: "", strength: "", thickness: "", length: "",
+    topElevation: "", designVolume: "", actualVolume: ""
+  };
+  state.soil = [];
+  state.depth = [];
+  state.prework = Object.fromEntries(PHASES.map(phase => [phase.id, { start: "", end: "" }]));
+  state.trucks = [];
+  state.trench = {
+    project: "", contractor: "", date: "", unitNo: "", reviewer: "", note: "",
+    checks: TRENCH_CHECKS.map(([item, standard]) => ({ item, standard, actual: "", result: "待確認" }))
+  };
+  state.cage = {
+    project: "", date: "", unitNo: "", cageNo: "", reviewer: "", note: "",
+    rebars: CAGE_PARTS.map(part => ({ part, designNo: "", designQty: "", actualNo: "", actualQty: "", result: "待確認" })),
+    checks: CAGE_CHECKS.map(([item, standard]) => ({ item, standard, actual: "", result: "待確認" }))
+  };
+  Object.keys(editIndex).forEach(key => { editIndex[key] = null; });
+  clearTimeout(undoTimer);
+  undoAction = null;
+  $("#undo-toast").hidden = true;
+  setInitialInputs();
+  setChecklistInputs();
+  $("#phase-select").value = PHASES[0].id;
+  renderPhaseEditor();
+  renderAll();
+  $("#clear-dialog").close();
+}
+
 function openSoilDialog(index = null) {
   editIndex.soil = index;
   const record = index === null ? { time: "" } : state.soil[index];
@@ -594,6 +625,8 @@ function initialize() {
 
   $("#project-tool-button").addEventListener("click", () => $("#record-switcher").scrollIntoView({ behavior: "smooth", block: "start" }));
   $("#help-button").addEventListener("click", () => $("#help-dialog").showModal());
+  $("#clear-button").addEventListener("click", () => $("#clear-dialog").showModal());
+  $("#confirm-clear").addEventListener("click", clearAllData);
   $("#export-button").addEventListener("click", () => {
     $("#export-current-label").textContent = activeTool === "unit" ? TAB_LABELS[activeTab] : TOOL_LABELS[activeTool];
     $("#export-dialog").showModal();
