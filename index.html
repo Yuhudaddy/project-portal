@@ -2,39 +2,215 @@
 <html lang="zh-Hant-TW">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="手機現場用施工紀錄入口" />
-    <meta name="theme-color" content="#eef0f2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Field construction record PDF tool" />
+    <meta name="theme-color" content="#eceff1" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="施工紀錄" />
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./app.css" />
     <title>Project Portal</title>
-    <style>
-      :root{--paper:#f8f9fa;--panel:#eef0f2;--panel-2:#e3e6e9;--line:#c4c9ce;--line-dark:#85909a;--ink:#35404a;--soft:#53606b;--muted:#6d7882;--accent:#5a6874;--focus:#33424d;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:var(--paper)}
-      *{box-sizing:border-box}html,body{margin:0;min-width:320px;background:var(--paper)}body{font-size:16px;line-height:1.6}a{color:inherit}button{font:inherit;cursor:pointer}
-      .wrap{max-width:1120px;margin:0 auto;padding:28px clamp(18px,5vw,66px) 58px}.mast{display:flex;justify-content:space-between;gap:28px;border-top:2px solid var(--line-dark);border-bottom:1px solid var(--line-dark);padding:0 0 27px}.eyebrow{margin:22px 0 4px;color:var(--muted);font-size:.7rem;font-weight:800;letter-spacing:.16em}.mast h1{margin:0;font-family:"Noto Serif TC","PMingLiU",serif;font-size:clamp(2rem,5vw,3rem);line-height:1.2;letter-spacing:.035em}.mast p{max-width:41rem;margin:11px 0 0;color:var(--soft);font-size:.9rem}.status{align-self:flex-end;white-space:nowrap;padding:7px 10px;border:1px solid var(--line);color:var(--soft);font-size:.76rem;font-weight:700}
-      .hero{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:35px;padding:39px 0 30px}.hero h2{margin:0;font-size:1.42rem;line-height:1.4}.hero p{max-width:39rem;margin:10px 0 0;color:var(--soft);font-size:.88rem}.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}.button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:9px 17px;border:1px solid var(--line-dark);border-radius:3px;background:transparent;color:var(--ink);text-decoration:none;font-size:.85rem;font-weight:800}.button:hover{background:var(--panel-2)}.button.primary{background:var(--accent);border-color:var(--accent);color:#fff}.button.primary:hover{background:#4d5a65}.small-note{margin-top:12px!important;color:var(--muted)!important;font-size:.76rem!important}.quick{align-self:start;padding:17px 16px;background:var(--panel);border-top:1px solid var(--line-dark);border-bottom:1px solid var(--line-dark)}.quick p{margin:0;color:var(--muted);font-size:.72rem;font-weight:800;letter-spacing:.1em}.quick strong{display:block;margin-top:3px;font-family:"Noto Serif TC","PMingLiU",serif;font-size:1.7rem;line-height:1.25}.quick span{display:block;margin-top:8px;color:var(--soft);font-size:.78rem;line-height:1.55}
-      .section{padding:26px 0 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--line)}.section-head h2{margin:0;font-size:1.12rem}.section-head p{margin:0;color:var(--muted);font-size:.76rem}.routes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.route{display:flex;min-height:160px;flex-direction:column;padding:17px 16px;border:1px solid var(--line);background:#fbfbfc;text-decoration:none}.route:hover{border-color:var(--line-dark);background:var(--panel)}.route .tag{color:var(--muted);font-size:.68rem;font-weight:800;letter-spacing:.1em}.route h3{margin:7px 0 4px;font-size:1.02rem}.route p{margin:0;color:var(--soft);font-size:.78rem;line-height:1.6}.route .go{margin-top:auto;padding-top:16px;color:var(--accent);font-size:.78rem;font-weight:800}.route.legacy{background:var(--panel)}
-      .steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--line-dark);border-bottom:1px solid var(--line-dark)}.step{min-height:122px;padding:15px 14px;border-right:1px solid var(--line)}.step:last-child{border-right:0}.step b{display:block;color:var(--muted);font-size:.68rem;letter-spacing:.11em}.step strong{display:block;margin-top:5px;font-size:.93rem}.step span{display:block;margin-top:5px;color:var(--soft);font-size:.76rem;line-height:1.55}
-      .rules{display:grid;grid-template-columns:1.1fr 1fr;gap:35px;padding:24px 0 0}.rules h2{margin:0;font-size:1.12rem}.rules ul{margin:9px 0 0;padding:0;list-style:none}.rules li{padding:8px 0;border-bottom:1px solid var(--line);color:var(--soft);font-size:.8rem}.rules li::before{content:"✓";display:inline-block;width:20px;color:var(--accent);font-weight:800}.data-note{padding:14px 15px;background:var(--panel);border-left:3px solid var(--line-dark);color:var(--soft);font-size:.79rem;line-height:1.7}.data-note strong{color:var(--ink)}footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:.72rem}
-      @media(max-width:720px){.wrap{padding:0 16px 40px}.mast{display:block;margin:0 -16px;padding:0 16px 20px}.eyebrow{margin-top:18px}.mast h1{font-size:2rem}.mast p{font-size:.82rem;line-height:1.65;overflow-wrap:anywhere}.status{display:inline-block;margin-top:17px}.hero{display:block;padding:27px 0 22px}.hero h2{font-size:1.28rem}.hero p{font-size:.83rem;overflow-wrap:anywhere}.hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hero-actions .button:first-child{grid-column:span 2}.button{min-height:46px;padding:9px 11px;font-size:.8rem;white-space:normal}.quick{margin-top:22px}.section{padding-top:25px}.section-head{display:block}.section-head p{margin-top:5px;overflow-wrap:anywhere}.routes{grid-template-columns:1fr;gap:9px}.route{min-height:0;padding:14px}.route .go{padding-top:11px}.steps{display:grid;grid-template-columns:1fr 1fr}.step{min-height:111px;border-bottom:1px solid var(--line)}.step:nth-child(2n){border-right:0}.step:nth-last-child(-n+2){border-bottom:0}.rules{display:block;padding-top:25px}.rules h2{font-size:1.05rem}.data-note{margin-top:18px}.small-note{font-size:.72rem!important}}
-    </style>
   </head>
-  <body>
-    <main class="wrap">
-      <header class="mast"><div><p class="eyebrow">PROJECT PORTAL / FIELD RECORDS</p><h1>連續壁施工管理</h1><p>現場以手機填寫施工時間、深度、鋼筋籠與逐車澆置紀錄；完成後輸出一份可列印、可傳 LINE 的 PDF。</p></div><span class="status">手機現場版</span></header>
+  <body data-active-tab="overview" data-print-scope="none">
+    <a class="skip-link" href="#project-tool">跳至專案工具</a>
 
-      <section class="hero"><div><h2>今天要建立哪一筆施工紀錄？</h2><p>每個施工單元建立一份紀錄。表單會在這支手機的瀏覽器暫存草稿，不必連接辦公室電腦；輸出 PDF 後再交回群組或電腦歸檔。</p><div class="hero-actions"><a class="button primary" href="./record.html">新增施工單元</a><a class="button" href="./demo.html">查看照片範例</a></div><p class="small-note">第一次使用：請先點「新增施工單元」，輸入基本資料，再依現場完成時間逐項填寫。</p></div><aside class="quick"><p>現場交付</p><strong>一單元<br />一份 PDF</strong><span>輸出後使用手機的分享功能傳到 LINE，或選擇儲存到檔案。</span></aside></section>
+    <header class="app-header">
+      <nav class="header-nav" aria-label="主要功能">
+        <button class="header-action" id="project-tool-button" type="button" aria-current="page">
+          專案工具
+        </button>
+        <button class="header-action help-action" id="help-button" type="button">
+          使用說明 <span aria-hidden="true">?</span>
+        </button>
+      </nav>
+    </header>
 
-      <section class="section"><div class="section-head"><h2>入口分流</h2><p>正式填寫與參考資料分開，降低誤填風險</p></div><div class="routes"><a class="route" href="./record.html"><span class="tag">PRODUCTION</span><h3>正式施工紀錄</h3><p>空白表單。包含成槽深度、關鍵工序、鋼筋籠／特密管時間與逐車澆置高度比對。</p><span class="go">開始填寫 →</span></a><a class="route" href="./demo.html"><span class="tag">REFERENCE</span><h3>照片資料示範</h3><p>已帶入照片可辨識的單元 21 資料，供確認欄位意義與 PDF 排版；不作為正式紀錄。</p><span class="go">查看示範 →</span></a><a class="route legacy" href="./checklists.html"><span class="tag">SUPPLEMENT</span><h3>導溝／鋼筋籠複核表</h3><p>補充複核表，已提供手機版排版；正式施工紀錄仍以第一入口為主。</p><span class="go">開啟補充表 →</span></a></div></section>
+    <main class="app-shell" id="project-tool">
+      <div class="tool-title">
+        <div>
+          <p>FIELD RECORD / PDF TOOL</p>
+          <h1>連續壁施工紀錄</h1>
+        </div>
+        <span id="record-identity">尚未指定單元</span>
+      </div>
 
-      <section class="section"><div class="section-head"><h2>現場使用流程</h2><p>四個步驟完成一筆可交付紀錄</p></div><div class="steps"><div class="step"><b>01 / 建立</b><strong>輸入單元基本資料</strong><span>工程、日期、單元、設計量與設計澆置高度。</span></div><div class="step"><b>02 / 記錄</b><strong>依時間軸填寫</strong><span>成槽深度與每個關鍵工序完成時間。</span></div><div class="step"><b>03 / 比對</b><strong>逐車輸入方量與高度</strong><span>系統自動計算累積量、預估高度與差異。</span></div><div class="step"><b>04 / 交付</b><strong>輸出 PDF 分享</strong><span>按輸出 PDF，再用手機分享或儲存檔案。</span></div></div></section>
+      <nav class="tab-navigation" aria-label="施工紀錄分頁">
+        <div class="tab-row tab-row-two" role="tablist" aria-label="基本資料">
+          <button id="tab-overview" role="tab" type="button" data-tab="overview" aria-controls="panel-overview" aria-selected="true" tabindex="0">工程概要</button>
+          <button id="tab-wall" role="tab" type="button" data-tab="wall" aria-controls="panel-wall" aria-selected="false" tabindex="-1">壁體資訊</button>
+        </div>
+        <div class="tab-row tab-row-three" role="tablist" aria-label="施工紀錄">
+          <button id="tab-excavation" role="tab" type="button" data-tab="excavation" aria-controls="panel-excavation" aria-selected="false" tabindex="-1">開挖紀錄</button>
+          <button id="tab-prework" role="tab" type="button" data-tab="prework" aria-controls="panel-prework" aria-selected="false" tabindex="-1">前置作業</button>
+          <button id="tab-pouring" role="tab" type="button" data-tab="pouring" aria-controls="panel-pouring" aria-selected="false" tabindex="-1">澆置紀錄</button>
+        </div>
+      </nav>
 
-      <section class="rules"><div><h2>填寫原則</h2><ul><li>時間以現場完成或確認時間為準。</li><li>高度均以槽底往上記錄，避免正負號混用。</li><li>方量以供料單／車次資料填寫；系統只做營造廠複核提示。</li><li>出現負高度差時，立即確認量測基準、超挖或坍孔可能性。</li></ul></div><div class="data-note"><strong>資料會存在哪裡？</strong><br />草稿只儲存在目前手機的瀏覽器。清除瀏覽器資料、換手機或使用無痕模式可能會遺失草稿；正式交付請務必輸出 PDF。此版本沒有後端同步，也不會自動上傳現場資料。</div></section>
-      <footer>Project Portal · 現場施工紀錄入口　｜　建議使用 Safari 或 Chrome 的 HTTPS 網址開啟</footer>
+      <section class="panel-frame">
+        <section class="tab-panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+          <div class="panel-heading">
+            <div><span>01</span><h2>工程概要</h2></div>
+            <p>本次施工的基本識別資料</p>
+          </div>
+          <div class="form-grid overview-grid">
+            <label class="field span-two"><span>工程名稱</span><input type="text" data-bind="overview.project" autocomplete="organization" /></label>
+            <label class="field span-two"><span>施工廠商</span><input type="text" data-bind="overview.contractor" autocomplete="organization" /></label>
+            <label class="field"><span>施工日期</span><input type="date" data-bind="overview.date" /></label>
+            <label class="field"><span>填表人</span><input type="text" data-bind="overview.reviewer" autocomplete="name" /></label>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-wall" role="tabpanel" aria-labelledby="tab-wall" hidden>
+          <div class="panel-heading">
+            <div><span>02</span><h2>壁體資訊</h2></div>
+            <p>設計基準與完工數量</p>
+          </div>
+          <div class="form-grid wall-grid">
+            <fieldset class="unit-type span-two">
+              <legend>單元類型</legend>
+              <label><input type="radio" name="unit-type" value="公單元" data-bind="wall.unitType" /><span>公單元</span></label>
+              <label><input type="radio" name="unit-type" value="母單元" data-bind="wall.unitType" /><span>母單元</span></label>
+            </fieldset>
+            <label class="field span-two"><span>樁／壁編號</span><input type="text" data-bind="wall.unitNo" placeholder="例如：單元 21" /></label>
+            <label class="field"><span>設計深度（m）</span><input type="number" min="0" step="0.01" inputmode="decimal" data-bind="wall.designDepth" /></label>
+            <label class="field"><span>混凝土強度</span><input type="text" data-bind="wall.strength" placeholder="例如：350 kgf/cm²" /></label>
+            <label class="field"><span>壁厚（m）</span><input type="number" min="0" step="0.01" inputmode="decimal" data-bind="wall.thickness" /></label>
+            <label class="field"><span>單元長度（m）</span><input type="number" min="0" step="0.01" inputmode="decimal" data-bind="wall.length" /></label>
+            <label class="field"><span>澆置頂端高程（GL, m）</span><input type="number" step="0.01" inputmode="decimal" data-bind="wall.topElevation" placeholder="例如：-0.50" /></label>
+            <label class="field"><span>設計數量（m³）</span><input type="number" min="0" step="0.01" inputmode="decimal" data-bind="wall.designVolume" /></label>
+            <label class="field"><span>實際數量（m³）</span><input type="number" min="0" step="0.01" inputmode="decimal" data-bind="wall.actualVolume" /></label>
+          </div>
+          <div class="calculation-strip" aria-live="polite">
+            <span>設計澆置高度</span><strong id="design-height-preview">— m</strong><small>依設計深度與澆置頂端高程計算</small>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-excavation" role="tabpanel" aria-labelledby="tab-excavation" hidden>
+          <div class="panel-heading">
+            <div><span>03</span><h2>開挖紀錄</h2></div>
+            <p>出土次數與深度確認</p>
+          </div>
+          <dl class="control-board excavation-board">
+            <div><dt>出土次數</dt><dd id="soil-count">0 <small>次</small></dd></div>
+            <div><dt>深度確認</dt><dd id="depth-count">0 <small>次</small></dd></div>
+            <div><dt>最新深度</dt><dd id="latest-depth">— <small>m</small></dd></div>
+            <div id="depth-difference-cell"><dt>設計差異</dt><dd id="depth-difference">— <small>m</small></dd></div>
+          </dl>
+
+          <section class="record-section" aria-labelledby="soil-heading">
+            <div class="record-heading"><div><span>A</span><h3 id="soil-heading">出土紀錄</h3></div><button class="add-button" id="add-soil" type="button" aria-label="新增出土紀錄"><span aria-hidden="true">＋</span> 新增</button></div>
+            <div class="record-list" id="soil-list"></div>
+          </section>
+
+          <section class="record-section" aria-labelledby="depth-heading">
+            <div class="record-heading"><div><span>B</span><h3 id="depth-heading">深度確認</h3></div><button class="add-button" id="add-depth" type="button" aria-label="新增深度確認"><span aria-hidden="true">＋</span> 新增</button></div>
+            <div class="record-list" id="depth-list"></div>
+          </section>
+        </section>
+
+        <section class="tab-panel" id="panel-prework" role="tabpanel" aria-labelledby="tab-prework" hidden>
+          <div class="panel-heading">
+            <div><span>04</span><h2>前置作業</h2></div>
+            <p>選擇工序後填寫起迄時間</p>
+          </div>
+          <div class="phase-editor">
+            <label class="field"><span>前置作業項目</span><select id="phase-select" aria-label="選擇前置作業"></select></label>
+            <div class="phase-time-grid" id="phase-time-fields"></div>
+            <button class="confirm-button" id="confirm-phase" type="button">確認更新</button>
+          </div>
+          <div class="phase-summary" id="phase-summary"></div>
+        </section>
+
+        <section class="tab-panel" id="panel-pouring" role="tabpanel" aria-labelledby="tab-pouring" hidden>
+          <div class="panel-heading">
+            <div><span>05</span><h2>澆置紀錄</h2></div>
+            <p>逐車方量與實測高度比對</p>
+          </div>
+          <dl class="control-board pouring-board">
+            <div><dt>車次</dt><dd id="truck-count">0 <small>車</small></dd></div>
+            <div><dt>累積方量</dt><dd id="pour-volume">0.00 <small>m³</small></dd></div>
+            <div><dt>預估高度</dt><dd id="pour-expected">— <small>m</small></dd></div>
+            <div><dt>最後實測</dt><dd id="pour-measured">— <small>m</small></dd></div>
+            <div id="pour-difference-cell"><dt>高度差異</dt><dd id="pour-difference">— <small>m</small></dd></div>
+          </dl>
+          <div class="record-heading pouring-record-heading"><div><span>逐車</span><h3>混凝土車次</h3></div><button class="add-button" id="add-truck" type="button" aria-label="新增混凝土車次"><span aria-hidden="true">＋</span> 新增車次</button></div>
+          <div class="record-list truck-list" id="truck-list"></div>
+          <div class="warning-list" id="pour-warnings" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <a class="supplement-link" href="./checklists.html"><span>補充複核表</span><strong>導溝／鋼筋籠</strong><span aria-hidden="true">→</span></a>
     </main>
-    <script>if("serviceWorker" in navigator && location.protocol!=="file:"){navigator.serviceWorker.register("./sw.js").catch(()=>{})}</script>
+
+    <aside class="action-dock" aria-label="輸出工具">
+      <div><span>目前頁面</span><strong id="active-tab-label">工程概要</strong></div>
+      <button id="export-button" type="button">輸出 PDF</button>
+    </aside>
+
+    <dialog class="sheet-dialog help-dialog" id="help-dialog">
+      <div class="dialog-header"><div><span>HELP</span><h2>使用說明</h2></div><button type="button" data-close-dialog aria-label="關閉使用說明">×</button></div>
+      <div class="dialog-body help-content">
+        <section><h3>填寫方式</h3><p>依五個分頁填寫資料。開挖與澆置紀錄請按「＋新增」，確認後才會加入主控顯示板。</p></section>
+        <section><h3>高度比對</h3><p>預估高度＝設計澆置高度 × 累積方量 ÷ 設計數量；高度差異＝實測累積高度－預估高度。</p></section>
+        <section><h3>資料與輸出</h3><p>本工具沒有儲存或同步功能，重新整理或關閉頁面後資料會清空。完成後請立即輸出 PDF。</p></section>
+      </div>
+    </dialog>
+
+    <dialog class="sheet-dialog" id="soil-dialog">
+      <form id="soil-form">
+        <div class="dialog-header"><div><span>EXCAVATION</span><h2 id="soil-dialog-title">新增出土紀錄</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+        <div class="dialog-body compact-form">
+          <label class="field"><span>出土時間</span><input id="soil-time" type="time" required /></label>
+        </div>
+        <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>取消</button><button class="confirm-button" type="submit">確認加入</button></div>
+      </form>
+    </dialog>
+
+    <dialog class="sheet-dialog" id="depth-dialog">
+      <form id="depth-form">
+        <div class="dialog-header"><div><span>DEPTH CHECK</span><h2 id="depth-dialog-title">新增深度確認</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+        <div class="dialog-body compact-form two-fields">
+          <label class="field"><span>確認時間</span><input id="depth-time" type="time" required /></label>
+          <label class="field"><span>深度值（m）</span><input id="depth-value" type="number" min="0" step="0.01" inputmode="decimal" required /></label>
+        </div>
+        <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>取消</button><button class="confirm-button" type="submit">確認加入</button></div>
+      </form>
+    </dialog>
+
+    <dialog class="sheet-dialog truck-dialog" id="truck-dialog">
+      <form id="truck-form">
+        <div class="dialog-header"><div><span>CONCRETE</span><h2 id="truck-dialog-title">新增第 1 車</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+        <div class="dialog-body compact-form truck-fields">
+          <label class="field span-two"><span>車號</span><input id="truck-number" type="text" required /></label>
+          <label class="field"><span>卸料時間</span><input id="truck-unload" type="time" required /></label>
+          <label class="field"><span>結束時間</span><input id="truck-finish" type="time" required /></label>
+          <label class="field"><span>方量（m³）</span><input id="truck-volume" type="number" min="0" step="0.01" inputmode="decimal" required /></label>
+          <label class="field"><span>實測累積高度（m）</span><input id="truck-measured" type="number" min="0" step="0.01" inputmode="decimal" required /></label>
+        </div>
+        <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>取消</button><button class="confirm-button" type="submit">確認加入</button></div>
+      </form>
+    </dialog>
+
+    <dialog class="sheet-dialog export-dialog" id="export-dialog">
+      <div class="dialog-header"><div><span>PDF</span><h2>選擇輸出範圍</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+      <div class="dialog-body export-options">
+        <button type="button" data-export-scope="current"><span>輸出目前頁面</span><strong id="export-current-label">工程概要</strong></button>
+        <button type="button" data-export-scope="all"><span>輸出完整紀錄</span><strong>全部五個頁面</strong></button>
+      </div>
+    </dialog>
+
+    <div class="undo-toast" id="undo-toast" role="status" aria-live="polite" hidden><span id="undo-message"></span><button id="undo-button" type="button">復原</button></div>
+
+    <section class="print-report" id="print-report" aria-label="施工紀錄列印版">
+      <article class="print-page" data-print-tab="overview" id="print-overview"></article>
+      <article class="print-page" data-print-tab="wall" id="print-wall"></article>
+      <article class="print-page" data-print-tab="excavation" id="print-excavation"></article>
+      <article class="print-page" data-print-tab="prework" id="print-prework"></article>
+      <article class="print-page print-landscape" data-print-tab="pouring" id="print-pouring"></article>
+    </section>
+
+    <script src="./app.js" defer></script>
   </body>
 </html>

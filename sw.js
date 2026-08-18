@@ -1,5 +1,5 @@
-const CACHE_NAME = "project-portal-v4";
-const APP_SHELL = ["./index.html", "./record.html", "./demo.html", "./example.html", "./checklists.html", "./manifest.webmanifest", "./icon.svg"];
+const CACHE_NAME = "project-portal-v6";
+const APP_SHELL = ["./index.html", "./app.css", "./app.js", "./record.html", "./checklists.html", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", event => {
   event.waitUntil(

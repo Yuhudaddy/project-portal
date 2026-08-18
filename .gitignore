@@ -1,2 +1,3 @@
-# Local print QA artifact; the HTML example can generate the PDF on demand.
-photo-unit-21-example.pdf
+.DS_Store
+.playwright-cli/
+tmp/

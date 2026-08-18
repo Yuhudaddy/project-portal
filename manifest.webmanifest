@@ -2,7 +2,7 @@
   "name": "Project Portal",
   "short_name": "Project Portal",
   "description": "A local field record entry prototype.",
-  "start_url": "./record.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f8f9fa",
