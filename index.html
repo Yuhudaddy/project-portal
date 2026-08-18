@@ -64,7 +64,7 @@
           <div class="form-grid overview-grid">
             <label class="field span-two"><span>工程名稱</span><input type="text" data-bind="overview.project" autocomplete="organization" /></label>
             <label class="field span-two"><span>施工廠商</span><input type="text" data-bind="overview.contractor" autocomplete="organization" /></label>
-            <label class="field span-two"><span>施工日期</span><input type="date" data-bind="overview.date" /></label>
+            <label class="field span-two"><span>施工日期</span><span class="native-field-wrap"><input type="date" data-bind="overview.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
             <label class="field span-two"><span>填表人</span><input type="text" data-bind="overview.reviewer" autocomplete="name" /></label>
           </div>
         </section>
@@ -158,7 +158,7 @@
           <div class="form-grid checklist-meta-grid">
             <label class="field span-two"><span>工程名稱</span><input type="text" data-check-bind="trench.project" /></label>
             <label class="field span-two"><span>施工廠商</span><input type="text" data-check-bind="trench.contractor" /></label>
-            <label class="field span-two"><span>複核日期</span><input type="date" data-check-bind="trench.date" /></label>
+            <label class="field span-two"><span>複核日期</span><span class="native-field-wrap"><input type="date" data-check-bind="trench.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
             <label class="field span-two"><span>單元編號</span><input type="text" data-check-bind="trench.unitNo" /></label>
             <label class="field span-two"><span>營造廠複核人</span><input type="text" data-check-bind="trench.reviewer" /></label>
           </div>
@@ -182,7 +182,7 @@
           </div>
           <div class="form-grid checklist-meta-grid">
             <label class="field span-two"><span>工程名稱</span><input type="text" data-check-bind="cage.project" /></label>
-            <label class="field span-two"><span>複核日期</span><input type="date" data-check-bind="cage.date" /></label>
+            <label class="field span-two"><span>複核日期</span><span class="native-field-wrap"><input type="date" data-check-bind="cage.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
             <label class="field"><span>單元編號</span><input type="text" data-check-bind="cage.unitNo" /></label>
             <label class="field"><span>鋼筋籠編號</span><input type="text" data-check-bind="cage.cageNo" /></label>
             <label class="field"><span>營造廠複核人</span><input type="text" data-check-bind="cage.reviewer" /></label>
@@ -234,7 +234,7 @@
       <form id="soil-form">
         <div class="dialog-header"><div><span>EXCAVATION</span><h2 id="soil-dialog-title">新增出土紀錄</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
         <div class="dialog-body compact-form">
-          <label class="field"><span>出土時間</span><input id="soil-time" type="time" required /></label>
+          <label class="field"><span>出土時間</span><span class="native-field-wrap"><input id="soil-time" type="time" required /><span class="native-field-display" aria-hidden="true"></span></span></label>
         </div>
         <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>取消</button><button class="confirm-button" type="submit">確認加入</button></div>
       </form>
@@ -244,7 +244,7 @@
       <form id="depth-form">
         <div class="dialog-header"><div><span>DEPTH CHECK</span><h2 id="depth-dialog-title">新增深度確認</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
         <div class="dialog-body compact-form two-fields">
-          <label class="field"><span>確認時間</span><input id="depth-time" type="time" required /></label>
+          <label class="field"><span>確認時間</span><span class="native-field-wrap"><input id="depth-time" type="time" required /><span class="native-field-display" aria-hidden="true"></span></span></label>
           <label class="field"><span>深度值（m）</span><input id="depth-value" type="number" min="0" step="0.01" inputmode="decimal" required /></label>
         </div>
         <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>取消</button><button class="confirm-button" type="submit">確認加入</button></div>
@@ -256,8 +256,8 @@
         <div class="dialog-header"><div><span>CONCRETE</span><h2 id="truck-dialog-title">新增第 1 車</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
         <div class="dialog-body compact-form truck-fields">
           <label class="field span-two"><span>車號</span><input id="truck-number" type="text" required /></label>
-          <label class="field"><span>卸料時間</span><input id="truck-unload" type="time" required /></label>
-          <label class="field"><span>結束時間</span><input id="truck-finish" type="time" required /></label>
+          <label class="field"><span>卸料時間</span><span class="native-field-wrap"><input id="truck-unload" type="time" required /><span class="native-field-display" aria-hidden="true"></span></span></label>
+          <label class="field"><span>結束時間</span><span class="native-field-wrap"><input id="truck-finish" type="time" required /><span class="native-field-display" aria-hidden="true"></span></span></label>
           <label class="field"><span>方量（m³）</span><input id="truck-volume" type="number" min="0" step="0.01" inputmode="decimal" required /></label>
           <label class="field"><span>實測累積高度（m）</span><input id="truck-measured" type="number" min="0" step="0.01" inputmode="decimal" required /></label>
         </div>

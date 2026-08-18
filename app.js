@@ -98,6 +98,26 @@ const esc = value => String(value ?? "")
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
 
+const formatDateDisplay = value => {
+  const [y, m, d] = String(value ?? "").split("-");
+  return y && m && d ? `${y}/${m}/${d}` : "";
+};
+
+function syncDateTimeDisplay(input) {
+  const wrap = input.closest(".native-field-wrap");
+  const display = wrap ? wrap.querySelector(".native-field-display") : null;
+  if (!display) return;
+  const value = input.value;
+  display.classList.toggle("is-empty", !value);
+  display.textContent = value
+    ? (input.type === "date" ? formatDateDisplay(value) : value)
+    : (input.type === "date" ? "尚未選擇日期" : "尚未選擇時間");
+}
+
+function syncAllDateTimeDisplays() {
+  $$('input[type="date"], input[type="time"]').forEach(syncDateTimeDisplay);
+}
+
 function designHeight() {
   const depth = number(state.wall.designDepth);
   const elevation = number(state.wall.topElevation);
@@ -236,9 +256,10 @@ function renderPhaseEditor() {
   const phase = PHASES.find(item => item.id === $("#phase-select").value) || PHASES[0];
   const record = state.prework[phase.id];
   const fields = [];
-  if (phase.start) fields.push(`<label class="field"><span>${esc(phase.start)}</span><input type="time" data-phase-input="start" value="${esc(record.start)}" /></label>`);
-  if (phase.end) fields.push(`<label class="field"><span>${esc(phase.end)}</span><input type="time" data-phase-input="end" value="${esc(record.end)}" /></label>`);
+  if (phase.start) fields.push(`<label class="field"><span>${esc(phase.start)}</span><span class="native-field-wrap"><input type="time" data-phase-input="start" value="${esc(record.start)}" /><span class="native-field-display" aria-hidden="true"></span></span></label>`);
+  if (phase.end) fields.push(`<label class="field"><span>${esc(phase.end)}</span><span class="native-field-wrap"><input type="time" data-phase-input="end" value="${esc(record.end)}" /><span class="native-field-display" aria-hidden="true"></span></span></label>`);
   $("#phase-time-fields").innerHTML = fields.join("");
+  syncAllDateTimeDisplays();
 }
 
 function renderPrework() {
@@ -373,6 +394,7 @@ function clearAllData() {
   $("#phase-select").value = PHASES[0].id;
   renderPhaseEditor();
   renderAll();
+  syncAllDateTimeDisplays();
   $("#clear-dialog").close();
 }
 
@@ -380,6 +402,7 @@ function openSoilDialog(index = null) {
   editIndex.soil = index;
   const record = index === null ? { time: "" } : state.soil[index];
   $("#soil-time").value = record.time;
+  syncDateTimeDisplay($("#soil-time"));
   $("#soil-dialog-title").textContent = index === null ? "新增出土紀錄" : `修改第 ${index + 1} 次出土`;
   $("#soil-form [type='submit']").textContent = index === null ? "確認加入" : "確認更新";
   $("#soil-dialog").showModal();
@@ -389,6 +412,7 @@ function openDepthDialog(index = null) {
   editIndex.depth = index;
   const record = index === null ? { time: "", value: "" } : state.depth[index];
   $("#depth-time").value = record.time;
+  syncDateTimeDisplay($("#depth-time"));
   $("#depth-value").value = record.value;
   $("#depth-dialog-title").textContent = index === null ? "新增深度確認" : `修改第 ${index + 1} 次深度`;
   $("#depth-form [type='submit']").textContent = index === null ? "確認加入" : "確認更新";
@@ -401,6 +425,8 @@ function openTruckDialog(index = null) {
   $("#truck-number").value = record.truckNo;
   $("#truck-unload").value = record.unload;
   $("#truck-finish").value = record.finish;
+  syncDateTimeDisplay($("#truck-unload"));
+  syncDateTimeDisplay($("#truck-finish"));
   $("#truck-volume").value = record.volume;
   $("#truck-measured").value = record.measured;
   $("#truck-dialog-title").textContent = index === null ? `新增第 ${state.trucks.length + 1} 車` : `修改第 ${index + 1} 車`;
@@ -571,9 +597,11 @@ function initialize() {
   $("#phase-select").innerHTML = PHASES.map(phase => `<option value="${phase.id}">${esc(phase.label)}</option>`).join("");
   renderPhaseEditor();
   renderAll();
+  syncAllDateTimeDisplays();
   showTab("overview");
 
   document.addEventListener("input", event => {
+    if (event.target.matches('input[type="date"], input[type="time"]')) syncDateTimeDisplay(event.target);
     const input = event.target.closest("[data-bind]");
     if (input) {
       const [group, key] = input.dataset.bind.split(".");
