@@ -231,6 +231,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   font-size: 0.71875rem;
   font-weight: 700;
 }
+.calculated-field > span em {
+  margin-left: 4px;
+  color: var(--muted);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 600;
+}
+.calculated-field input[readonly] {
+  background: var(--surface);
+  color: var(--soft);
+}
 .field input, .field select, .field textarea, .phase-editor select {
   width: 100%;
   min-width: 0;

@@ -12,6 +12,16 @@ const TOOL_LABELS = {
   cage: "鋼筋籠吊放前複核"
 };
 
+const PRINT_TAB_GROUPS = {
+  overview: "overview-wall",
+  wall: "overview-wall",
+  excavation: "excavation-prework",
+  prework: "excavation-prework",
+  pouring: "pouring",
+  trench: "trench",
+  cage: "cage"
+};
+
 const TRENCH_CHECKS = [
   ["單元位置與中心線", "放樣點位、單元順序與核定圖說相符"],
   ["導溝寬度與淨寬", "依核定施工圖；尺寸容許差依圖說"],
@@ -125,6 +135,14 @@ function designHeight() {
   return Math.max(0, depth + elevation);
 }
 
+function calculatedDesignVolume() {
+  const height = designHeight();
+  const thickness = number(state.wall.thickness);
+  const length = number(state.wall.length);
+  if (height === null || thickness === null || length === null) return null;
+  return height * thickness * length;
+}
+
 function calculatedTrucks() {
   const designVolume = number(state.wall.designVolume);
   const height = designHeight();
@@ -162,10 +180,24 @@ function updateIdentity() {
 
 function updateWallCalculation() {
   const height = designHeight();
+  const volume = calculatedDesignVolume();
+  state.wall.designVolume = volume === null ? "" : volume.toFixed(2);
+  const volumeInput = $('[data-bind="wall.designVolume"]');
+  if (volumeInput) volumeInput.value = state.wall.designVolume;
   $("#design-height-preview").textContent = height === null ? "— m" : `${fixed(height)} m`;
+  $("#design-volume-preview").textContent = volume === null ? "— m³" : `${fixed(volume)} m³`;
   updateIdentity();
   renderExcavation();
   renderPouring();
+}
+
+function currentExportLabel(tool = activeTool, tab = activeTab) {
+  if (tool === "unit") {
+    if (PRINT_TAB_GROUPS[tab] === "overview-wall") return "工程概要＋壁體資訊";
+    if (PRINT_TAB_GROUPS[tab] === "excavation-prework") return "開挖紀錄＋前置作業";
+    return TAB_LABELS[tab];
+  }
+  return TOOL_LABELS[tool];
 }
 
 function showTab(tab, focusPanel = false) {
@@ -180,7 +212,7 @@ function showTab(tab, focusPanel = false) {
   });
   if (activeTool === "unit") {
     $("#active-tab-label").textContent = TAB_LABELS[tab];
-    $("#export-current-label").textContent = TAB_LABELS[tab];
+    $("#export-current-label").textContent = currentExportLabel("unit", tab);
   }
   if (focusPanel) $(`#panel-${tab}`).focus({ preventScroll: true });
 }
@@ -196,7 +228,7 @@ function showTool(tool) {
   });
   const label = tool === "unit" ? TAB_LABELS[activeTab] : TOOL_LABELS[tool];
   $("#active-tab-label").textContent = label;
-  $("#export-current-label").textContent = label;
+  $("#export-current-label").textContent = currentExportLabel(tool, activeTab);
   updateIdentity();
 }
 
@@ -500,16 +532,14 @@ function renderPrint() {
   const truckRows = calculatedTrucks();
   const lastTruck = truckRows.at(-1);
 
-  $("#print-overview").innerHTML = `${printHeader("工程概要", "01")}
-    <section class="print-section"><h2>工程基本資料</h2><div class="print-meta-grid">
+  $("#print-overview-wall").innerHTML = `${printHeader("連續壁施工紀錄", "01–02")}
+    <section class="print-section"><h2>01｜工程概要</h2><div class="print-meta-grid">
       <div><span>工程名稱</span><strong>${esc(display(state.overview.project))}</strong></div>
       <div><span>施工廠商</span><strong>${esc(display(state.overview.contractor))}</strong></div>
       <div><span>施工日期</span><strong>${esc(display(state.overview.date))}</strong></div>
       <div><span>填表人</span><strong>${esc(display(state.overview.reviewer))}</strong></div>
-    </div></section>${printFooter()}`;
-
-  $("#print-wall").innerHTML = `${printHeader("壁體資訊", "02")}
-    <section class="print-section"><h2>單元與設計基準</h2><div class="print-meta-grid three">
+    </div></section>
+    <section class="print-section"><h2>02｜壁體資訊</h2><div class="print-meta-grid three">
       <div><span>單元類型</span><strong>${esc(display(state.wall.unitType))}</strong></div>
       <div><span>樁／壁編號</span><strong>${esc(display(state.wall.unitNo))}</strong></div>
       <div><span>混凝土強度</span><strong>${esc(display(state.wall.strength))}</strong></div>
@@ -527,22 +557,20 @@ function renderPrint() {
     const diff = value !== null && number(state.wall.designDepth) !== null ? value - number(state.wall.designDepth) : null;
     return `<tr><td>${index + 1}</td><td>${esc(record.time)}</td><td>${fixed(value)}</td><td>${fixed(diff)}</td></tr>`;
   }).join("") : `<tr><td colspan="4" class="print-empty">尚無深度確認</td></tr>`;
-  $("#print-excavation").innerHTML = `${printHeader("開挖紀錄", "03")}
-    <section class="print-section"><h2>開挖主控摘要</h2><div class="print-summary">
+  const phaseRows = PHASES.map((phase, index) => {
+    const record = state.prework[phase.id];
+    return `<tr><td>${index + 1}</td><td class="text-left">${esc(phase.label)}</td><td>${phase.start ? esc(display(record.start)) : "—"}</td><td>${phase.end ? esc(display(record.end)) : "—"}</td></tr>`;
+  }).join("");
+  $("#print-excavation-prework").innerHTML = `${printHeader("開挖與前置作業紀錄", "03–04")}
+    <section class="print-section"><h2>03｜開挖紀錄</h2><div class="print-summary">
       <div><span>出土次數</span><strong>${state.soil.length} 次</strong></div>
       <div><span>深度確認</span><strong>${state.depth.length} 次</strong></div>
       <div><span>最新深度</span><strong>${fixed(latestDepthValue)} m</strong></div>
       <div><span>與設計差異</span><strong>${fixed(depthDiff)} m</strong></div>
     </div></section>
     <section class="print-section"><h2>出土紀錄</h2><table class="print-table"><thead><tr><th>次數</th><th>出土時間</th></tr></thead><tbody>${soilRows}</tbody></table></section>
-    <section class="print-section"><h2>深度確認</h2><table class="print-table"><thead><tr><th>次數</th><th>確認時間</th><th>深度（m）</th><th>與設計差異（m）</th></tr></thead><tbody>${depthRows}</tbody></table></section>${printFooter()}`;
-
-  const phaseRows = PHASES.map((phase, index) => {
-    const record = state.prework[phase.id];
-    return `<tr><td>${index + 1}</td><td class="text-left">${esc(phase.label)}</td><td>${phase.start ? esc(display(record.start)) : "—"}</td><td>${phase.end ? esc(display(record.end)) : "—"}</td></tr>`;
-  }).join("");
-  $("#print-prework").innerHTML = `${printHeader("前置作業", "04")}
-    <section class="print-section"><h2>前置作業時間紀錄</h2><table class="print-table"><thead><tr><th>項次</th><th>作業項目</th><th>開始時間</th><th>完成時間</th></tr></thead><tbody>${phaseRows}</tbody></table></section>${printFooter()}`;
+    <section class="print-section"><h2>深度確認</h2><table class="print-table"><thead><tr><th>次數</th><th>確認時間</th><th>深度（m）</th><th>與設計差異（m）</th></tr></thead><tbody>${depthRows}</tbody></table></section>
+    <section class="print-section"><h2>04｜前置作業時間紀錄</h2><table class="print-table"><thead><tr><th>項次</th><th>作業項目</th><th>開始時間</th><th>完成時間</th></tr></thead><tbody>${phaseRows}</tbody></table></section>${printFooter()}`;
 
   const pouringRows = truckRows.length ? truckRows.map(row => `<tr>
     <td>${row.index + 1}</td><td>${esc(row.truckNo)}</td><td>${esc(row.unload)}</td><td>${esc(row.finish)}</td><td>${fixed(row.volume)}</td><td>${fixed(row.cumulative)}</td><td>${fixed(row.expected)}</td><td>${fixed(row.measured)}</td><td>${fixed(row.difference)}</td>
@@ -586,7 +614,7 @@ function renderPrint() {
 function exportPdf(scope) {
   renderPrint();
   document.body.dataset.printScope = scope;
-  const current = activeTool === "unit" ? activeTab : activeTool;
+  const current = activeTool === "unit" ? PRINT_TAB_GROUPS[activeTab] : PRINT_TAB_GROUPS[activeTool];
   $$('.print-page').forEach(page => page.classList.toggle("print-selected", page.dataset.printTab === current));
   $("#export-dialog").close();
   window.print();
@@ -656,7 +684,7 @@ function initialize() {
   $("#clear-button").addEventListener("click", () => $("#clear-dialog").showModal());
   $("#confirm-clear").addEventListener("click", clearAllData);
   $("#export-button").addEventListener("click", () => {
-    $("#export-current-label").textContent = activeTool === "unit" ? TAB_LABELS[activeTab] : TOOL_LABELS[activeTool];
+    $("#export-current-label").textContent = currentExportLabel();
     $("#export-dialog").showModal();
   });
   $$('[data-close-dialog]').forEach(button => button.addEventListener("click", () => button.closest("dialog").close()));
