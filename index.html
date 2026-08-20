@@ -37,9 +37,9 @@
       </div>
 
       <nav class="record-switcher" id="record-switcher" aria-label="施工紀錄類型">
-        <button type="button" data-select-tool="unit" aria-current="page"><strong>連續壁</strong></button>
         <button type="button" data-select-tool="trench"><strong>導溝</strong></button>
         <button type="button" data-select-tool="cage"><strong>鋼筋籠</strong></button>
+        <button type="button" data-select-tool="unit" aria-current="page"><strong>連續壁</strong></button>
       </nav>
 
       <section class="tool-view" id="tool-unit" data-tool-view="unit">
@@ -81,8 +81,8 @@
               <label><input type="radio" name="unit-type" value="母單元" data-bind="wall.unitType" /><span>母單元</span></label>
             </fieldset>
             <label class="field span-two"><span>樁／壁編號</span><input type="text" data-bind="wall.unitNo" placeholder="例如：單元 21" /></label>
-            <label class="field"><span>設計深度（m）</span><input type="number" min="0" step="0.01" inputmode="decimal" data-bind="wall.designDepth" /></label>
-            <label class="field"><span>混凝土強度</span><input type="text" data-bind="wall.strength" placeholder="例如：350 kgf/cm²" /></label>
+            <label class="field"><span>設計深度（GL, m）</span><input type="number" step="0.01" inputmode="decimal" data-bind="wall.designDepth" placeholder="例如：=-39.5" /></label>
+            <label class="field"><span>混凝土強度（kgf/cm2）</span><input type="text" data-bind="wall.strength" placeholder="例如：350" /></label>
             <label class="field"><span>壁厚（m）</span><input type="number" min="0" step="0.01" inputmode="decimal" data-bind="wall.thickness" /></label>
             <label class="field"><span>單元長度（m）</span><input type="number" min="0" step="0.01" inputmode="decimal" data-bind="wall.length" /></label>
             <label class="field"><span>澆置頂端高程（GL, m）</span><input type="number" step="0.01" inputmode="decimal" data-bind="wall.topElevation" placeholder="例如：-0.50" /></label>
@@ -216,7 +216,7 @@
     <dialog class="sheet-dialog help-dialog" id="help-dialog">
       <div class="dialog-header"><div><span>HELP</span><h2>使用說明</h2></div><button type="button" data-close-dialog aria-label="關閉使用說明">×</button></div>
       <div class="dialog-body help-content">
-        <section><h3>選擇紀錄工具</h3><p>使用頁面上方的「連續壁／導溝／鋼筋籠」切換表單；所有內容都在同一個 App 內填寫。</p></section>
+        <section><h3>選擇紀錄工具</h3><p>使用頁面上方的「導溝／鋼筋籠／連續壁」切換表單；所有內容都在同一個 App 內填寫。</p></section>
         <section><h3>填寫方式</h3><p>連續壁依五個分頁填寫。開挖與澆置紀錄請按「＋新增」，確認後才會加入主控顯示板。</p></section>
         <section><h3>高度比對</h3><p>預估高度＝設計澆置高度 × 累積方量 ÷ 設計數量；高度差異＝實測累積高度－預估高度。</p></section>
         <section><h3>資料與輸出</h3><p>本工具沒有儲存或同步功能，重新整理或關閉頁面後資料會清空。完成後請立即輸出 PDF；需要重填時，可使用底部的「清空」。</p></section>

@@ -132,7 +132,8 @@ function designHeight() {
   const depth = number(state.wall.designDepth);
   const elevation = number(state.wall.topElevation);
   if (depth === null || elevation === null) return null;
-  return Math.max(0, depth + elevation);
+  // Accept both a positive downward depth (e.g. 35.8) and a signed GL level (e.g. -39.5).
+  return Math.max(0, depth < 0 ? elevation - depth : depth + elevation);
 }
 
 function calculatedDesignVolume() {
@@ -542,8 +543,8 @@ function renderPrint() {
     <section class="print-section"><h2>02｜壁體資訊</h2><div class="print-meta-grid three">
       <div><span>單元類型</span><strong>${esc(display(state.wall.unitType))}</strong></div>
       <div><span>樁／壁編號</span><strong>${esc(display(state.wall.unitNo))}</strong></div>
-      <div><span>混凝土強度</span><strong>${esc(display(state.wall.strength))}</strong></div>
-      <div><span>設計深度</span><strong>${esc(display(state.wall.designDepth))} m</strong></div>
+      <div><span>混凝土強度（kgf/cm2）</span><strong>${esc(display(state.wall.strength))}</strong></div>
+      <div><span>設計深度（GL, m）</span><strong>GL ${esc(display(state.wall.designDepth))} m</strong></div>
       <div><span>壁厚／單元長度</span><strong>${esc(display(state.wall.thickness))} m ／ ${esc(display(state.wall.length))} m</strong></div>
       <div><span>澆置頂端高程</span><strong>GL ${number(state.wall.topElevation) !== null && number(state.wall.topElevation) >= 0 ? "+" : ""}${esc(display(state.wall.topElevation))} m</strong></div>
       <div><span>設計澆置高度</span><strong>${fixed(height)} m</strong></div>
