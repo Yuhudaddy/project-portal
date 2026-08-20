@@ -640,6 +640,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .quality-card-head strong { font-size: 0.8125rem; }
 .quality-card > p { margin: 5px 0 10px 24px; color: var(--soft); font-size: 0.75rem; line-height: 1.5; }
 .quality-card-fields { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 9px; margin-left: 24px; }
+.quality-context-note { margin: 0 0 12px; padding: 9px 11px; border-left: 3px solid var(--line-dark); background: var(--surface); color: var(--soft); font-size: 0.75rem; line-height: 1.6; }
 .example-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
 .example-button {
   display: grid;

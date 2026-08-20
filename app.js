@@ -50,8 +50,7 @@ const CAGE_CHECKS = [
 ];
 
 const QUALITY_CHECKS = [
-  ["連續壁單元位置、刃法順序確認", "單元編號 No.", "例如：單元 21／順序 05"],
-  ["挖掘深度確認", "依核定 GL 深度確認", "例如：GL -35.8 m"],
+  ["連續壁單元位置、刀法順序確認", "單元位置、順序與核定圖說相符", "例如：位置及順序符合"],
   ["底部沉渣及泥屑清除確認", "底部沉泥小於 20 cm", "例如：沉泥 12 cm"],
   ["端板接頭清洗（公及公母單元時）", "以大小鋼刷確實清洗", "填寫清洗狀況"],
   ["穩定液新鮮液之貯存量是否充裕", "大於單元用量", "填寫液量或確認說明"],
@@ -59,20 +58,16 @@ const QUALITY_CHECKS = [
   ["廢土清運是否正常", "不致影響挖掘進度", "填寫異常說明"],
   ["施工動線及運土車輛之安排", "不致延遲澆置時間", "填寫異常說明"],
   ["壁體坍塌處是否需作補強", "若需補強，說明方式", "填寫補強方式或無需補強"],
-  ["鋼筋籠吊放位置及高程確認", "橫向 ±5 cm、豎向 ±3 cm", "例如：橫向 +2 cm／豎向 -1 cm"],
   ["帆布是否破損（母單元時）", "單元起吊前及下放時檢查", "填寫檢查狀況"],
-  ["鋼筋籠吊放完成再測孔深", "依設計 GL 深度確認", "例如：GL -35.3 m"],
-  ["開挖深度與管長之配合", "管底與槽溝底部距離 ≤30 cm", "填寫距離"],
+  ["開挖深度與特密管長度之配合", "管底與槽溝底部距離 ≤30 cm", "填寫距離"],
   ["特密管之檢查（變形、破裂、堵塞、水密性）", "下放前及過程中目視檢查", "填寫檢查狀況"],
-  ["插入位置、深度、組合之記錄", "位置符合圖面；長度配合挖掘深度", "填寫左／中／右位置與管長"],
+  ["特密管插入位置、深度、組合記錄", "位置符合圖面；長度配合挖掘深度", "填寫左／中／右位置與管長"],
   ["放置橡皮碗", "澆置前放置於漏斗內", "填寫是／否"],
   ["穩定液回收池容積是否足夠", "同時間無挖掘，容積大於回收量", "填寫是／否或容積"],
   ["混凝土坍度之確認", "設計坍度 18 cm ±4 cm", "例如：實測 19 cm"],
   ["混凝土是否合乎設計強度", "記錄空打段、實打段 GL 與強度", "填寫 GL／psi"],
   ["特密管埋入混凝土內之確認", "母及公母單元 ≥1 m；公單元 ≥1.5 m", "填寫埋入深度"],
-  ["設計混凝土澆置完成面", "依設計 GL 高程", "例如：設計 GL -0.5 m／實測 GL -0.3 m"],
-  ["超音波記錄結果說明", "依單元型式及圖說完成檢測記錄", "填寫位置與垂直精度"],
-  ["混凝土設計及實際數量說明", "實際用量與設計用量誤差：超灌量 ±5%、少灌量 ±5%", "填寫空打／實打／整體方量與誤差"]
+  ["超音波記錄結果說明", "依單元型式及圖說完成檢測記錄", "填寫位置與垂直精度"]
 ];
 
 const PHASES = [
@@ -114,8 +109,7 @@ const state = {
     checks: CAGE_CHECKS.map(([item, standard]) => ({ item, standard, actual: "", result: "待確認" }))
   },
   quality: {
-    project: "", contractor: "", subcontractor: "", unitCategory: "", unitType: "", unitNo: "", sequence: "",
-    excavationStart: "", excavationEnd: "", constructionStart: "", constructionEnd: "", note: "",
+    note: "",
     checks: QUALITY_CHECKS.map(([item, standard, placeholder]) => ({ item, standard, placeholder, actual: "", result: "待確認" }))
   }
 };
@@ -218,8 +212,8 @@ function updateWallCalculation() {
   state.wall.designVolume = volume === null ? "" : volume.toFixed(2);
   const volumeInput = $('[data-bind="wall.designVolume"]');
   if (volumeInput) volumeInput.value = state.wall.designVolume;
-  $("#design-height-preview").textContent = height === null ? "— m" : `${fixed(height)} m`;
-  $("#design-volume-preview").textContent = volume === null ? "— m³" : `${fixed(volume)} m³`;
+  const heightInput = $("#design-height-value");
+  if (heightInput) heightInput.value = height === null ? "" : height.toFixed(2);
   updateIdentity();
   renderExcavation();
   renderPouring();
@@ -476,8 +470,7 @@ function clearAllData() {
     checks: CAGE_CHECKS.map(([item, standard]) => ({ item, standard, actual: "", result: "待確認" }))
   };
   state.quality = {
-    project: "", contractor: "", subcontractor: "", unitCategory: "", unitType: "", unitNo: "", sequence: "",
-    excavationStart: "", excavationEnd: "", constructionStart: "", constructionEnd: "", note: "",
+    note: "",
     checks: QUALITY_CHECKS.map(([item, standard, placeholder]) => ({ item, standard, placeholder, actual: "", result: "待確認" }))
   };
   Object.keys(editIndex).forEach(key => { editIndex[key] = null; });
@@ -616,19 +609,19 @@ function renderPrint() {
     </div></section>${printFooter()}`;
 
   const qualityRows = state.quality.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
-  const qualityProject = state.quality.project || state.overview.project;
-  const qualityIdentity = [state.quality.unitNo, state.quality.sequence ? `順序 ${state.quality.sequence}` : ""].filter(Boolean).join("｜") || "未指定單元";
+  const qualityProject = state.overview.project;
+  const qualityIdentity = [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
   $("#print-quality").innerHTML = `${printHeader("連續壁施工品質自檢總表", "03", qualityProject, qualityIdentity)}
     <section class="print-section"><h2>基本資料</h2><div class="print-meta-grid three compact-meta">
-      <div><span>工程名稱</span><strong>${esc(display(state.quality.project || state.overview.project))}</strong></div>
-      <div><span>承包商</span><strong>${esc(display(state.quality.contractor || state.overview.contractor))}</strong></div>
-      <div><span>分包商</span><strong>${esc(display(state.quality.subcontractor))}</strong></div>
-      <div><span>單元類別</span><strong>${esc(display(state.quality.unitCategory))}</strong></div>
-      <div><span>單元型式</span><strong>${esc(display(state.quality.unitType || state.wall.unitType))}</strong></div>
-      <div><span>單元編號</span><strong>${esc(display(state.quality.unitNo || state.wall.unitNo))}</strong></div>
-      <div><span>施工順序</span><strong>${esc(display(state.quality.sequence))}</strong></div>
-      <div><span>挖掘開始／結束</span><strong>${esc(display(state.quality.excavationStart))} ／ ${esc(display(state.quality.excavationEnd))}</strong></div>
-      <div><span>施工開始／結束</span><strong>${esc(display(state.quality.constructionStart))} ／ ${esc(display(state.quality.constructionEnd))}</strong></div>
+      <div><span>工程名稱</span><strong>${esc(display(state.overview.project))}</strong></div>
+      <div><span>施工廠商</span><strong>${esc(display(state.overview.contractor))}</strong></div>
+      <div><span>施工日期</span><strong>${esc(display(state.overview.date))}</strong></div>
+      <div><span>單元類型</span><strong>${esc(display(state.wall.unitType))}</strong></div>
+      <div><span>單元編號</span><strong>${esc(display(state.wall.unitNo))}</strong></div>
+      <div><span>混凝土強度</span><strong>${esc(display(state.wall.strength))}</strong></div>
+      <div><span>設計深度</span><strong>GL ${esc(display(state.wall.designDepth))} m</strong></div>
+      <div><span>澆置頂端高程</span><strong>GL ${esc(display(state.wall.topElevation))} m</strong></div>
+      <div><span>設計澆置高度／設計數量</span><strong>${fixed(height)} m ／ ${esc(display(state.wall.designVolume))} m³</strong></div>
     </div></section>
     <section class="print-section compact-print-section"><h2>品質自檢項目</h2><table class="print-table quality-print-table"><thead><tr><th>項次</th><th>檢查項目</th><th>檢查標準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${qualityRows}</tbody></table></section>
     <section class="print-section quality-note-section"><h2>缺失及改善結果</h2><div class="print-note">${esc(display(state.quality.note))}</div></section>${printFooter()}`;
