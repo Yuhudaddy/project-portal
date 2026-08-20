@@ -44,13 +44,14 @@
 
       <section class="tool-view" id="tool-unit" data-tool-view="unit">
       <nav class="tab-navigation" aria-label="施工紀錄分頁">
-        <div class="tab-row tab-row-two" role="tablist" aria-label="基本資料">
+        <div class="tab-row tab-row-three" role="tablist" aria-label="基本資料">
           <button id="tab-overview" role="tab" type="button" data-tab="overview" aria-controls="panel-overview" aria-selected="true" tabindex="0">工程概要</button>
           <button id="tab-wall" role="tab" type="button" data-tab="wall" aria-controls="panel-wall" aria-selected="false" tabindex="-1">壁體資訊</button>
+          <button id="tab-quality" role="tab" type="button" data-tab="quality" aria-controls="panel-quality" aria-selected="false" tabindex="-1">品質自檢</button>
         </div>
         <div class="tab-row tab-row-three" role="tablist" aria-label="施工紀錄">
           <button id="tab-excavation" role="tab" type="button" data-tab="excavation" aria-controls="panel-excavation" aria-selected="false" tabindex="-1">開挖紀錄</button>
-          <button id="tab-prework" role="tab" type="button" data-tab="prework" aria-controls="panel-prework" aria-selected="false" tabindex="-1">前置作業</button>
+          <button id="tab-prework" role="tab" type="button" data-tab="prework" aria-controls="panel-prework" aria-selected="false" tabindex="-1">前置紀錄</button>
           <button id="tab-pouring" role="tab" type="button" data-tab="pouring" aria-controls="panel-pouring" aria-selected="false" tabindex="-1">澆置紀錄</button>
         </div>
       </nav>
@@ -95,9 +96,35 @@
           </div>
         </section>
 
+        <section class="tab-panel quality-panel" id="panel-quality" role="tabpanel" aria-labelledby="tab-quality" hidden>
+          <div class="panel-heading">
+            <div><span>03</span><h2>品質自檢</h2></div>
+            <p>依施工品質自檢表逐項確認</p>
+          </div>
+          <div class="form-grid checklist-meta-grid quality-meta-grid">
+            <label class="field span-two"><span>工程名稱</span><input type="text" data-quality-bind="project" /></label>
+            <label class="field span-two"><span>承包商</span><input type="text" data-quality-bind="contractor" /></label>
+            <label class="field span-two"><span>分包商</span><input type="text" data-quality-bind="subcontractor" /></label>
+            <label class="field span-two"><span>單元類別</span><input type="text" data-quality-bind="unitCategory" placeholder="例如：連續壁／壁樁／扶壁" /></label>
+            <label class="field span-two"><span>單元型式</span><input type="text" data-quality-bind="unitType" placeholder="例如：母單元／公單元／公母單元" /></label>
+            <label class="field span-two"><span>單元編號</span><input type="text" data-quality-bind="unitNo" /></label>
+            <label class="field span-two"><span>施工順序</span><input type="text" data-quality-bind="sequence" /></label>
+            <label class="field span-two"><span>挖掘開始時間</span><span class="native-field-wrap"><input type="time" data-quality-bind="excavationStart" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field span-two"><span>挖掘結束時間</span><span class="native-field-wrap"><input type="time" data-quality-bind="excavationEnd" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field span-two"><span>施工開始時間</span><span class="native-field-wrap"><input type="time" data-quality-bind="constructionStart" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field span-two"><span>施工結束時間</span><span class="native-field-wrap"><input type="time" data-quality-bind="constructionEnd" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+          </div>
+          <dl class="check-progress" aria-live="polite">
+            <div><dt>已完成自檢</dt><dd id="quality-progress">0 / 23</dd></div>
+            <div><dt>尚待確認</dt><dd id="quality-pending">23</dd></div>
+          </dl>
+          <div class="quality-check-list" id="quality-check-list"></div>
+          <label class="field note-field quality-note-field"><span>缺失及改善結果</span><textarea data-quality-bind="note" rows="4" placeholder="填寫缺失內容、改善方式與追蹤結果"></textarea></label>
+        </section>
+
         <section class="tab-panel" id="panel-excavation" role="tabpanel" aria-labelledby="tab-excavation" hidden>
           <div class="panel-heading">
-            <div><span>03</span><h2>開挖紀錄</h2></div>
+            <div><span>04</span><h2>開挖紀錄</h2></div>
             <p>出土次數與深度確認</p>
           </div>
           <dl class="control-board excavation-board">
@@ -120,7 +147,7 @@
 
         <section class="tab-panel" id="panel-prework" role="tabpanel" aria-labelledby="tab-prework" hidden>
           <div class="panel-heading">
-            <div><span>04</span><h2>前置作業</h2></div>
+            <div><span>05</span><h2>前置紀錄</h2></div>
             <p>選擇工序後填寫起迄時間</p>
           </div>
           <div class="phase-editor">
@@ -133,7 +160,7 @@
 
         <section class="tab-panel" id="panel-pouring" role="tabpanel" aria-labelledby="tab-pouring" hidden>
           <div class="panel-heading">
-            <div><span>05</span><h2>澆置紀錄</h2></div>
+            <div><span>06</span><h2>澆置紀錄</h2></div>
             <p>逐車方量與實測高度比對</p>
           </div>
           <dl class="control-board pouring-board">
@@ -217,7 +244,7 @@
       <div class="dialog-header"><div><span>HELP</span><h2>使用說明</h2></div><button type="button" data-close-dialog aria-label="關閉使用說明">×</button></div>
       <div class="dialog-body help-content">
         <section><h3>選擇紀錄工具</h3><p>使用頁面上方的「導溝／鋼筋籠／連續壁」切換表單；所有內容都在同一個 App 內填寫。</p></section>
-        <section><h3>填寫方式</h3><p>連續壁依五個分頁填寫。開挖與澆置紀錄請按「＋新增」，確認後才會加入主控顯示板。</p></section>
+        <section><h3>填寫方式</h3><p>連續壁依六個分頁填寫。品質自檢逐項填寫現場紀錄與結果；開挖與澆置紀錄請按「＋新增」，確認後才會加入主控顯示板。</p></section>
         <section><h3>高度比對</h3><p>預估高度＝設計澆置高度 × 累積方量 ÷ 設計數量；高度差異＝實測累積高度－預估高度。</p></section>
         <section><h3>資料與輸出</h3><p>本工具沒有儲存或同步功能，重新整理或關閉頁面後資料會清空。完成後請立即輸出 PDF；需要重填時，可使用底部的「清空」。</p></section>
         <section class="help-examples"><h3>已填妥範例輸出</h3><p>先查看實際輸出外觀，再開始填寫現場紀錄。</p><div class="example-actions">
@@ -290,7 +317,7 @@
       <div class="dialog-header"><div><span>PDF</span><h2>選擇輸出範圍</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
       <div class="dialog-body export-options">
         <button type="button" data-export-scope="current"><span>輸出目前表單</span><strong id="export-current-label">工程概要</strong></button>
-        <button type="button" data-export-scope="all"><span>輸出完整紀錄</span><strong>施工紀錄及複核表</strong><small>共 5 頁</small></button>
+        <button type="button" data-export-scope="all"><span>輸出完整紀錄</span><strong>施工紀錄及複核表</strong><small>共 6 頁</small></button>
       </div>
     </dialog>
 
@@ -298,6 +325,7 @@
 
     <section class="print-report" id="print-report" aria-label="施工紀錄列印版">
       <article class="print-page" data-print-tab="overview-wall" id="print-overview-wall"></article>
+      <article class="print-page" data-print-tab="quality" id="print-quality"></article>
       <article class="print-page" data-print-tab="excavation-prework" id="print-excavation-prework"></article>
       <article class="print-page" data-print-tab="pouring" id="print-pouring"></article>
       <article class="print-page" data-print-tab="trench" id="print-trench"></article>

@@ -632,6 +632,14 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .help-content section:last-child { padding: 0; border: 0; }
 .help-content h3 { margin: 0; font-size: 0.8125rem; }
 .help-content p { margin: 4px 0 0; color: var(--soft); font-size: 0.75rem; line-height: 1.65; }
+.quality-check-list { display: grid; gap: 10px; margin-top: 14px; }
+.quality-card { padding: 12px; border: 1px solid var(--line); background: var(--paper); }
+.quality-card.is-failed { border-color: var(--danger); }
+.quality-card-head { display: flex; align-items: baseline; gap: 9px; }
+.quality-card-head span { color: var(--muted); font-size: 0.6875rem; font-variant-numeric: tabular-nums; }
+.quality-card-head strong { font-size: 0.8125rem; }
+.quality-card > p { margin: 5px 0 10px 24px; color: var(--soft); font-size: 0.75rem; line-height: 1.5; }
+.quality-card-fields { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 9px; margin-left: 24px; }
 .example-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
 .example-button {
   display: grid;
@@ -693,6 +701,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 @media (max-width: 560px) {
   .example-actions { grid-template-columns: 1fr; }
+  .quality-card-fields { grid-template-columns: 1fr; margin-left: 0; }
+  .quality-card > p { margin-left: 0; }
 }
 
 @media (min-width: 640px) {
@@ -760,7 +770,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-document-header p { margin: 2.5mm 0 0; color: #555; font-size: 6.5pt; letter-spacing: 0.12em; }
   .print-document-header h1 { margin: 1mm 0 0; font-family: "Noto Serif TC", "PMingLiU", serif; font-size: 16pt; }
   .print-header-meta { display: flex; align-items: center; justify-content: flex-end; gap: 4mm; min-width: 0; }
-  .print-logo { width: 18mm; height: 18mm; object-fit: contain; filter: grayscale(1); }
+  .print-logo { width: 12mm; height: 12mm; object-fit: contain; filter: grayscale(1); }
   .print-header-meta strong { font-size: 8.5pt; text-align: right; }
   .print-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); margin-top: 4mm; border-top: 0.5pt solid #888; border-left: 0.5pt solid #888; }
   .print-meta-grid.three { grid-template-columns: repeat(3, 1fr); }
@@ -778,13 +788,20 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-summary > div { padding: 1.5mm 2mm; border-right: 0.5pt solid #888; border-bottom: 0.5pt solid #888; }
   .print-summary span { display: block; color: #555; font-size: 6.5pt; }
   .print-summary strong { display: block; margin-top: 1mm; font-size: 8.5pt; }
+  .print-note { min-height: 18mm; padding: 2mm; border: 0.5pt solid #888; font-size: 7.5pt; white-space: pre-wrap; }
   .print-footer { margin-top: 3mm; color: #666; font-size: 6pt; text-align: right; }
   .print-page, .print-section, .print-table tr { break-inside: avoid; }
   .compact-meta > div { min-height: 9mm; }
   .compact-print-section { margin-top: 2.5mm; }
   .cage-print-table th, .cage-check-print-table th { padding: 1mm 0.8mm; font-size: 5.8pt; }
   .cage-print-table td, .cage-check-print-table td { height: 5.5mm; padding: 0.7mm 1mm; font-size: 6.3pt; }
+  .quality-print-table th { padding: 0.9mm 0.7mm; font-size: 5.8pt; }
+  .quality-print-table td { height: 5.5mm; padding: 0.7mm 0.9mm; font-size: 6.2pt; }
   .checklist-print-table th:first-child, .cage-print-table th:first-child, .cage-check-print-table th:first-child { width: 7%; }
+  .quality-print-table th:first-child { width: 6%; }
+  .quality-print-table th:nth-child(2) { width: 23%; }
+  .quality-print-table th:nth-child(3) { width: 28%; }
+  .quality-print-table th:last-child { width: 11%; }
   .checklist-print-table th:nth-child(2), .cage-check-print-table th:nth-child(2) { width: 20%; }
   .checklist-print-table th:nth-child(3), .cage-check-print-table th:nth-child(3) { width: 30%; }
   .checklist-print-table th:last-child, .cage-check-print-table th:last-child { width: 12%; }

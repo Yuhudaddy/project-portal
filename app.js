@@ -1,8 +1,9 @@
 const TAB_LABELS = {
   overview: "工程概要",
   wall: "壁體資訊",
+  quality: "品質自檢",
   excavation: "開挖紀錄",
-  prework: "前置作業",
+  prework: "前置紀錄",
   pouring: "澆置紀錄"
 };
 
@@ -15,6 +16,7 @@ const TOOL_LABELS = {
 const PRINT_TAB_GROUPS = {
   overview: "overview-wall",
   wall: "overview-wall",
+  quality: "quality",
   excavation: "excavation-prework",
   prework: "excavation-prework",
   pouring: "pouring",
@@ -45,6 +47,32 @@ const CAGE_CHECKS = [
   ["吊點、吊具及臨時補強", "吊點、吊筋、桁架及補強可安全吊放"],
   ["接頭構件／預埋件", "止水、接頭鋼板及預埋件位置依圖說"],
   ["外觀與吊放前狀態", "無顯著變形、鬆脫、污染或妨礙吊放之雜物"]
+];
+
+const QUALITY_CHECKS = [
+  ["連續壁單元位置、刃法順序確認", "單元編號 No.", "例如：單元 21／順序 05"],
+  ["挖掘深度確認", "依核定 GL 深度確認", "例如：GL -35.8 m"],
+  ["底部沉渣及泥屑清除確認", "底部沉泥小於 20 cm", "例如：沉泥 12 cm"],
+  ["端板接頭清洗（公及公母單元時）", "以大小鋼刷確實清洗", "填寫清洗狀況"],
+  ["穩定液新鮮液之貯存量是否充裕", "大於單元用量", "填寫液量或確認說明"],
+  ["槽溝穩定液面高度控制", "鋪面下 50 cm～100 cm 以內", "例如：鋪面下 70 cm"],
+  ["廢土清運是否正常", "不致影響挖掘進度", "填寫異常說明"],
+  ["施工動線及運土車輛之安排", "不致延遲澆置時間", "填寫異常說明"],
+  ["壁體坍塌處是否需作補強", "若需補強，說明方式", "填寫補強方式或無需補強"],
+  ["鋼筋籠吊放位置及高程確認", "橫向 ±5 cm、豎向 ±3 cm", "例如：橫向 +2 cm／豎向 -1 cm"],
+  ["帆布是否破損（母單元時）", "單元起吊前及下放時檢查", "填寫檢查狀況"],
+  ["鋼筋籠吊放完成再測孔深", "依設計 GL 深度確認", "例如：GL -35.3 m"],
+  ["開挖深度與管長之配合", "管底與槽溝底部距離 ≤30 cm", "填寫距離"],
+  ["特密管之檢查（變形、破裂、堵塞、水密性）", "下放前及過程中目視檢查", "填寫檢查狀況"],
+  ["插入位置、深度、組合之記錄", "位置符合圖面；長度配合挖掘深度", "填寫左／中／右位置與管長"],
+  ["放置橡皮碗", "澆置前放置於漏斗內", "填寫是／否"],
+  ["穩定液回收池容積是否足夠", "同時間無挖掘，容積大於回收量", "填寫是／否或容積"],
+  ["混凝土坍度之確認", "設計坍度 18 cm ±4 cm", "例如：實測 19 cm"],
+  ["混凝土是否合乎設計強度", "記錄空打段、實打段 GL 與強度", "填寫 GL／psi"],
+  ["特密管埋入混凝土內之確認", "母及公母單元 ≥1 m；公單元 ≥1.5 m", "填寫埋入深度"],
+  ["設計混凝土澆置完成面", "依設計 GL 高程", "例如：設計 GL -0.5 m／實測 GL -0.3 m"],
+  ["超音波記錄結果說明", "依單元型式及圖說完成檢測記錄", "填寫位置與垂直精度"],
+  ["混凝土設計及實際數量說明", "實際用量與設計用量誤差：超灌量 ±5%、少灌量 ±5%", "填寫空打／實打／整體方量與誤差"]
 ];
 
 const PHASES = [
@@ -84,6 +112,11 @@ const state = {
     project: "", date: today, unitNo: "", cageNo: "", reviewer: "", note: "",
     rebars: CAGE_PARTS.map(part => ({ part, designNo: "", designQty: "", actualNo: "", actualQty: "", result: "待確認" })),
     checks: CAGE_CHECKS.map(([item, standard]) => ({ item, standard, actual: "", result: "待確認" }))
+  },
+  quality: {
+    project: "", contractor: "", subcontractor: "", unitCategory: "", unitType: "", unitNo: "", sequence: "",
+    excavationStart: "", excavationEnd: "", constructionStart: "", constructionEnd: "", note: "",
+    checks: QUALITY_CHECKS.map(([item, standard, placeholder]) => ({ item, standard, placeholder, actual: "", result: "待確認" }))
   }
 };
 
@@ -195,7 +228,8 @@ function updateWallCalculation() {
 function currentExportLabel(tool = activeTool, tab = activeTab) {
   if (tool === "unit") {
     if (PRINT_TAB_GROUPS[tab] === "overview-wall") return "工程概要＋壁體資訊";
-    if (PRINT_TAB_GROUPS[tab] === "excavation-prework") return "開挖紀錄＋前置作業";
+    if (PRINT_TAB_GROUPS[tab] === "quality") return "品質自檢";
+    if (PRINT_TAB_GROUPS[tab] === "excavation-prework") return "開挖紀錄＋前置紀錄";
     return TAB_LABELS[tab];
   }
   return TOOL_LABELS[tool];
@@ -385,11 +419,34 @@ function setChecklistInputs() {
   });
 }
 
+function setQualityInputs() {
+  $$('[data-quality-bind]').forEach(input => {
+    input.value = state.quality[input.dataset.qualityBind] ?? "";
+  });
+}
+
+function renderQuality() {
+  setQualityInputs();
+  $("#quality-check-list").innerHTML = state.quality.checks.map((check, index) => `
+    <article class="quality-card ${check.result === "不符合" ? "is-failed" : ""}">
+      <div class="quality-card-head"><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(check.item)}</strong></div>
+      <p>${esc(check.standard)}</p>
+      <div class="quality-card-fields">
+        <label class="field"><span>現場紀錄／實測</span><input type="text" value="${esc(check.actual)}" placeholder="${esc(check.placeholder)}" data-quality-item="${index}" data-quality-field="actual" /></label>
+        <label class="field result-field"><span>檢查結果</span><select data-quality-item="${index}" data-quality-field="result">${resultOptions(check.result)}</select></label>
+      </div>
+    </article>`).join("");
+  const completed = state.quality.checks.filter(check => check.result !== "待確認").length;
+  $("#quality-progress").textContent = `${completed} / ${state.quality.checks.length}`;
+  $("#quality-pending").textContent = String(state.quality.checks.length - completed);
+}
+
 function renderChecklists() {
   setChecklistInputs();
   renderCheckCards("trench");
   renderCheckCards("cage");
   renderRebars();
+  renderQuality();
 }
 
 function renderAll() {
@@ -418,12 +475,18 @@ function clearAllData() {
     rebars: CAGE_PARTS.map(part => ({ part, designNo: "", designQty: "", actualNo: "", actualQty: "", result: "待確認" })),
     checks: CAGE_CHECKS.map(([item, standard]) => ({ item, standard, actual: "", result: "待確認" }))
   };
+  state.quality = {
+    project: "", contractor: "", subcontractor: "", unitCategory: "", unitType: "", unitNo: "", sequence: "",
+    excavationStart: "", excavationEnd: "", constructionStart: "", constructionEnd: "", note: "",
+    checks: QUALITY_CHECKS.map(([item, standard, placeholder]) => ({ item, standard, placeholder, actual: "", result: "待確認" }))
+  };
   Object.keys(editIndex).forEach(key => { editIndex[key] = null; });
   clearTimeout(undoTimer);
   undoAction = null;
   $("#undo-toast").hidden = true;
   setInitialInputs();
   setChecklistInputs();
+  setQualityInputs();
   $("#phase-select").value = PHASES[0].id;
   renderPhaseEditor();
   renderAll();
@@ -518,7 +581,7 @@ function removeRebar(index) {
 
 function printHeader(title, sequence, project = state.overview.project, recordIdentity = null) {
   const identity = recordIdentity || [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
-  return `<header class="print-document-header"><div><p>CONTINUOUS WALL FIELD RECORD / ${sequence}</p><h1>${esc(title)}</h1></div><div class="print-header-meta"><img class="print-logo" src="./taisei.png" alt="" /><strong>${esc(display(project))}<br />${esc(identity)}</strong></div></header>`;
+  return `<header class="print-document-header"><div><p>CONTINUOUS WALL FIELD RECORD / ${sequence}</p><h1>${esc(title)}</h1></div><div class="print-header-meta"><strong>${esc(display(project))}<br />${esc(identity)}</strong><img class="print-logo" src="./taisei.png" alt="" /></div></header>`;
 }
 
 function printFooter() {
@@ -552,6 +615,24 @@ function renderPrint() {
       <div><span>實際數量</span><strong>${esc(display(state.wall.actualVolume))} m³</strong></div>
     </div></section>${printFooter()}`;
 
+  const qualityRows = state.quality.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
+  const qualityProject = state.quality.project || state.overview.project;
+  const qualityIdentity = [state.quality.unitNo, state.quality.sequence ? `順序 ${state.quality.sequence}` : ""].filter(Boolean).join("｜") || "未指定單元";
+  $("#print-quality").innerHTML = `${printHeader("連續壁施工品質自檢總表", "03", qualityProject, qualityIdentity)}
+    <section class="print-section"><h2>基本資料</h2><div class="print-meta-grid three compact-meta">
+      <div><span>工程名稱</span><strong>${esc(display(state.quality.project || state.overview.project))}</strong></div>
+      <div><span>承包商</span><strong>${esc(display(state.quality.contractor || state.overview.contractor))}</strong></div>
+      <div><span>分包商</span><strong>${esc(display(state.quality.subcontractor))}</strong></div>
+      <div><span>單元類別</span><strong>${esc(display(state.quality.unitCategory))}</strong></div>
+      <div><span>單元型式</span><strong>${esc(display(state.quality.unitType || state.wall.unitType))}</strong></div>
+      <div><span>單元編號</span><strong>${esc(display(state.quality.unitNo || state.wall.unitNo))}</strong></div>
+      <div><span>施工順序</span><strong>${esc(display(state.quality.sequence))}</strong></div>
+      <div><span>挖掘開始／結束</span><strong>${esc(display(state.quality.excavationStart))} ／ ${esc(display(state.quality.excavationEnd))}</strong></div>
+      <div><span>施工開始／結束</span><strong>${esc(display(state.quality.constructionStart))} ／ ${esc(display(state.quality.constructionEnd))}</strong></div>
+    </div></section>
+    <section class="print-section compact-print-section"><h2>品質自檢項目</h2><table class="print-table quality-print-table"><thead><tr><th>項次</th><th>檢查項目</th><th>檢查標準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${qualityRows}</tbody></table></section>
+    <section class="print-section quality-note-section"><h2>缺失及改善結果</h2><div class="print-note">${esc(display(state.quality.note))}</div></section>${printFooter()}`;
+
   const soilRows = state.soil.length ? state.soil.map((record, index) => `<tr><td>${index + 1}</td><td>${esc(record.time)}</td></tr>`).join("") : `<tr><td colspan="2" class="print-empty">尚無出土紀錄</td></tr>`;
   const depthRows = state.depth.length ? state.depth.map((record, index) => {
     const value = number(record.value);
@@ -562,8 +643,8 @@ function renderPrint() {
     const record = state.prework[phase.id];
     return `<tr><td>${index + 1}</td><td class="text-left">${esc(phase.label)}</td><td>${phase.start ? esc(display(record.start)) : "—"}</td><td>${phase.end ? esc(display(record.end)) : "—"}</td></tr>`;
   }).join("");
-  $("#print-excavation-prework").innerHTML = `${printHeader("開挖與前置作業紀錄", "03–04")}
-    <section class="print-section"><h2>03｜開挖紀錄</h2><div class="print-summary">
+  $("#print-excavation-prework").innerHTML = `${printHeader("開挖與前置紀錄", "04–05")}
+    <section class="print-section"><h2>04｜開挖紀錄</h2><div class="print-summary">
       <div><span>出土次數</span><strong>${state.soil.length} 次</strong></div>
       <div><span>深度確認</span><strong>${state.depth.length} 次</strong></div>
       <div><span>最新深度</span><strong>${fixed(latestDepthValue)} m</strong></div>
@@ -571,12 +652,12 @@ function renderPrint() {
     </div></section>
     <section class="print-section"><h2>出土紀錄</h2><table class="print-table"><thead><tr><th>次數</th><th>出土時間</th></tr></thead><tbody>${soilRows}</tbody></table></section>
     <section class="print-section"><h2>深度確認</h2><table class="print-table"><thead><tr><th>次數</th><th>確認時間</th><th>深度（m）</th><th>與設計差異（m）</th></tr></thead><tbody>${depthRows}</tbody></table></section>
-    <section class="print-section"><h2>04｜前置作業時間紀錄</h2><table class="print-table"><thead><tr><th>項次</th><th>作業項目</th><th>開始時間</th><th>完成時間</th></tr></thead><tbody>${phaseRows}</tbody></table></section>${printFooter()}`;
+    <section class="print-section"><h2>05｜前置紀錄時間紀錄</h2><table class="print-table"><thead><tr><th>項次</th><th>作業項目</th><th>開始時間</th><th>完成時間</th></tr></thead><tbody>${phaseRows}</tbody></table></section>${printFooter()}`;
 
   const pouringRows = truckRows.length ? truckRows.map(row => `<tr>
     <td>${row.index + 1}</td><td>${esc(row.truckNo)}</td><td>${esc(row.unload)}</td><td>${esc(row.finish)}</td><td>${fixed(row.volume)}</td><td>${fixed(row.cumulative)}</td><td>${fixed(row.expected)}</td><td>${fixed(row.measured)}</td><td>${fixed(row.difference)}</td>
   </tr>`).join("") : `<tr><td colspan="9" class="print-empty">尚無澆置紀錄</td></tr>`;
-  $("#print-pouring").innerHTML = `${printHeader("澆置紀錄", "05")}
+  $("#print-pouring").innerHTML = `${printHeader("澆置紀錄", "06")}
     <section class="print-section"><h2>澆置主控摘要</h2><div class="print-summary">
       <div><span>車次</span><strong>${truckRows.length} 車</strong></div>
       <div><span>逐車累積量</span><strong>${fixed(lastTruck?.cumulative ?? 0)} m³</strong></div>
@@ -586,7 +667,7 @@ function renderPrint() {
     <section class="print-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量<br />m³</th><th>累積<br />m³</th><th>預估高度<br />m</th><th>實測高度<br />m</th><th>差異<br />m</th></tr></thead><tbody>${pouringRows}</tbody></table></section>${printFooter()}`;
 
   const trenchRows = state.trench.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
-  $("#print-trench").innerHTML = `${printHeader("導溝施工複核表", "06", state.trench.project, state.trench.unitNo || "未指定單元")}
+  $("#print-trench").innerHTML = `${printHeader("導溝施工複核表", "07", state.trench.project, state.trench.unitNo || "未指定單元")}
     <section class="print-section"><h2>基本資料</h2><div class="print-meta-grid three">
       <div><span>工程名稱</span><strong>${esc(display(state.trench.project))}</strong></div>
       <div><span>施工廠商</span><strong>${esc(display(state.trench.contractor))}</strong></div>
@@ -599,7 +680,7 @@ function renderPrint() {
 
   const rebarRows = state.cage.rebars.length ? state.cage.rebars.map((rebar, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(rebar.part)}</td><td>${esc(display(rebar.designNo))}</td><td>${esc(display(rebar.designQty))}</td><td>${esc(display(rebar.actualNo))}</td><td>${esc(display(rebar.actualQty))}</td><td>${esc(rebar.result)}</td></tr>`).join("") : `<tr><td colspan="7" class="print-empty">尚無配筋項目</td></tr>`;
   const cageRows = state.cage.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
-  $("#print-cage").innerHTML = `${printHeader("鋼筋籠吊放前複核表", "07", state.cage.project, [state.cage.unitNo, state.cage.cageNo].filter(Boolean).join("｜") || "未指定鋼筋籠")}
+  $("#print-cage").innerHTML = `${printHeader("鋼筋籠吊放前複核表", "08", state.cage.project, [state.cage.unitNo, state.cage.cageNo].filter(Boolean).join("｜") || "未指定鋼筋籠")}
     <section class="print-section"><h2>基本資料</h2><div class="print-meta-grid three compact-meta">
       <div><span>工程名稱</span><strong>${esc(display(state.cage.project))}</strong></div>
       <div><span>複核日期</span><strong>${esc(display(state.cage.date))}</strong></div>
@@ -646,8 +727,15 @@ function initialize() {
       updateIdentity();
       return;
     }
+    const qualityMeta = event.target.closest("[data-quality-bind]");
+    if (qualityMeta) {
+      state.quality[qualityMeta.dataset.qualityBind] = qualityMeta.value;
+      return;
+    }
     const check = event.target.closest("[data-check-item]");
     if (check) state[check.dataset.checkItem].checks[Number(check.dataset.checkIndex)][check.dataset.checkField] = check.value;
+    const qualityCheck = event.target.closest("[data-quality-item]");
+    if (qualityCheck) state.quality.checks[Number(qualityCheck.dataset.qualityItem)][qualityCheck.dataset.qualityField] = qualityCheck.value;
   });
 
   document.addEventListener("change", event => {
@@ -663,6 +751,11 @@ function initialize() {
       const type = check.dataset.checkItem;
       state[type].checks[Number(check.dataset.checkIndex)][check.dataset.checkField] = check.value;
       if (check.dataset.checkField === "result") renderCheckCards(type);
+    }
+    const qualityCheck = event.target.closest("[data-quality-item]");
+    if (qualityCheck) {
+      state.quality.checks[Number(qualityCheck.dataset.qualityItem)][qualityCheck.dataset.qualityField] = qualityCheck.value;
+      if (qualityCheck.dataset.qualityField === "result") renderQuality();
     }
   });
 
