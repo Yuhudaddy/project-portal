@@ -632,6 +632,20 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .help-content section:last-child { padding: 0; border: 0; }
 .help-content h3 { margin: 0; font-size: 0.8125rem; }
 .help-content p { margin: 4px 0 0; color: var(--soft); font-size: 0.75rem; line-height: 1.65; }
+.example-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.example-button {
+  display: grid;
+  gap: 2px;
+  min-height: 62px;
+  padding: 10px 11px;
+  border: 1px solid var(--line-dark);
+  background: var(--paper);
+  color: var(--ink);
+  text-decoration: none;
+}
+.example-button:active { background: var(--surface-strong); }
+.example-button span { font-size: 0.8125rem; font-weight: 800; }
+.example-button small { color: var(--muted); font-size: 0.6875rem; }
 .clear-confirmation p { margin: 0; color: var(--soft); font-size: 0.8125rem; line-height: 1.7; }
 .danger-button { border-color: var(--danger); background: var(--danger); }
 .export-options { display: grid; gap: 8px; }
@@ -676,6 +690,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 .print-report { display: none; }
+
+@media (max-width: 560px) {
+  .example-actions { grid-template-columns: 1fr; }
+}
 
 @media (min-width: 640px) {
   .app-shell { padding: 22px 24px 36px; }
