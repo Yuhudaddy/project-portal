@@ -743,7 +743,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   }
   .print-document-header p { margin: 2.5mm 0 0; color: #555; font-size: 6.5pt; letter-spacing: 0.12em; }
   .print-document-header h1 { margin: 1mm 0 0; font-family: "Noto Serif TC", "PMingLiU", serif; font-size: 16pt; }
-  .print-document-header strong { font-size: 8.5pt; text-align: right; }
+  .print-header-meta { display: flex; align-items: center; justify-content: flex-end; gap: 4mm; min-width: 0; }
+  .print-logo { width: 18mm; height: 18mm; object-fit: contain; filter: grayscale(1); }
+  .print-header-meta strong { font-size: 8.5pt; text-align: right; }
   .print-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); margin-top: 4mm; border-top: 0.5pt solid #888; border-left: 0.5pt solid #888; }
   .print-meta-grid.three { grid-template-columns: repeat(3, 1fr); }
   .print-meta-grid > div { min-height: 12mm; padding: 1.5mm 2mm; border-right: 0.5pt solid #888; border-bottom: 0.5pt solid #888; }

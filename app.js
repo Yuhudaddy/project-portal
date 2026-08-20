@@ -517,7 +517,7 @@ function removeRebar(index) {
 
 function printHeader(title, sequence, project = state.overview.project, recordIdentity = null) {
   const identity = recordIdentity || [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
-  return `<header class="print-document-header"><div><p>CONTINUOUS WALL FIELD RECORD / ${sequence}</p><h1>${esc(title)}</h1></div><strong>${esc(display(project))}<br />${esc(identity)}</strong></header>`;
+  return `<header class="print-document-header"><div><p>CONTINUOUS WALL FIELD RECORD / ${sequence}</p><h1>${esc(title)}</h1></div><div class="print-header-meta"><img class="print-logo" src="./taisei.png" alt="" /><strong>${esc(display(project))}<br />${esc(identity)}</strong></div></header>`;
 }
 
 function printFooter() {
