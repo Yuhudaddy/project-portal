@@ -738,7 +738,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 @page { size: A4 portrait; margin: 10mm; }
-@page pouring-page { size: A4 landscape; margin: 9mm; }
 
 @media print {
   :root { background: #fdfdfd; color: #222; }
@@ -749,7 +748,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-page:last-child { break-after: auto; }
   body[data-print-scope="all"] .print-page { display: block; }
   body[data-print-scope="current"] .print-page.print-selected { display: block; }
-  .print-landscape { page: pouring-page; }
   .print-document-header {
     display: flex;
     align-items: end;
