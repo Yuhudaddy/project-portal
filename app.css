@@ -641,6 +641,18 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .quality-card > p { margin: 5px 0 10px 24px; color: var(--soft); font-size: 0.75rem; line-height: 1.5; }
 .quality-card-fields { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 9px; margin-left: 24px; }
 .quality-context-note { margin: 0 0 12px; padding: 9px 11px; border-left: 3px solid var(--line-dark); background: var(--surface); color: var(--soft); font-size: 0.75rem; line-height: 1.6; }
+.quality-standard-panel { margin: 0 0 16px; padding: 14px; border: 1px solid var(--line); background: var(--surface); }
+.quality-standard-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.quality-standard-heading > div { display: flex; align-items: baseline; gap: 9px; }
+.quality-standard-heading span { color: var(--muted); font-size: 0.6875rem; letter-spacing: 0.08em; }
+.quality-standard-heading h3 { margin: 0; font-size: 0.95rem; }
+.quality-standard-heading p, .quality-standard-note { margin: 0; color: var(--soft); font-size: 0.72rem; line-height: 1.5; }
+.quality-standard-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.quality-standard-field { display: grid; gap: 5px; min-width: 0; }
+.quality-standard-field > span { color: var(--soft); font-size: 0.69rem; line-height: 1.3; }
+.quality-standard-field select { width: 100%; min-height: 38px; }
+.quality-standard-field.is-disabled { opacity: 0.45; }
+.quality-standard-note { margin-top: 10px; }
 .example-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
 .example-button {
   display: grid;
@@ -658,6 +670,15 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .clear-confirmation p { margin: 0; color: var(--soft); font-size: 0.8125rem; line-height: 1.7; }
 .danger-button { border-color: var(--danger); background: var(--danger); }
 .export-options { display: grid; gap: 8px; }
+.export-option-group { display: grid; gap: 7px; }
+.export-option-group h3 {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 .export-options button {
   display: grid;
   gap: 2px;
@@ -704,6 +725,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .example-actions { grid-template-columns: 1fr; }
   .quality-card-fields { grid-template-columns: 1fr; margin-left: 0; }
   .quality-card > p { margin-left: 0; }
+  .quality-standard-heading { display: block; }
+  .quality-standard-heading > div { margin-bottom: 4px; }
+  .quality-standard-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (min-width: 640px) {

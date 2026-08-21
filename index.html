@@ -100,6 +100,11 @@
             <p>只填寫其他分頁未涵蓋的品質確認項目</p>
           </div>
           <p class="quality-context-note">工程名稱、單元編號、設計資料、開挖／前置／澆置紀錄均沿用其他分頁內容，輸出時會自動帶入。</p>
+          <section class="quality-standard-panel" aria-labelledby="quality-standard-heading">
+            <div class="quality-standard-heading"><div><span>STANDARD</span><h3 id="quality-standard-heading">本公司標準值</h3></div><p>預設值可直接使用；如核定施工計畫不同，請由下拉選單調整。</p></div>
+            <div class="quality-standard-list" id="quality-standard-list"></div>
+            <p class="quality-standard-note" id="quality-standard-note"></p>
+          </section>
           <dl class="check-progress" aria-live="polite">
             <div><dt>已完成自檢</dt><dd id="quality-progress">0 / 18</dd></div>
             <div><dt>尚待確認</dt><dd id="quality-pending">18</dd></div>
@@ -222,7 +227,7 @@
       <div><span>目前頁面</span><strong id="active-tab-label">工程概要</strong></div>
       <div class="dock-actions">
         <button class="clear-button" id="clear-button" type="button">清空</button>
-        <button id="export-button" type="button">輸出 PDF</button>
+        <button id="export-button" type="button">輸出</button>
       </div>
     </aside>
 
@@ -232,8 +237,8 @@
         <section><h3>選擇紀錄工具</h3><p>使用頁面上方的「導溝／鋼筋籠／連續壁」切換表單；所有內容都在同一個 App 內填寫。</p></section>
         <section><h3>填寫方式</h3><p>連續壁依六個分頁填寫。品質自檢逐項填寫現場紀錄與結果；開挖與澆置紀錄請按「＋新增」，確認後才會加入主控顯示板。</p></section>
         <section><h3>高度比對</h3><p>預估高度＝設計澆置高度 × 累積方量 ÷ 設計數量；高度差異＝實測累積高度－預估高度。</p></section>
-        <section><h3>資料與輸出</h3><p>本工具沒有儲存或同步功能，重新整理或關閉頁面後資料會清空。完成後請立即輸出 PDF；需要重填時，可使用底部的「清空」。</p></section>
-        <section class="help-examples"><h3>已填妥範例輸出</h3><p>先查看實際輸出外觀，再開始填寫現場紀錄。</p><div class="example-actions">
+        <section><h3>資料與輸出</h3><p>本工具沒有儲存或同步功能，重新整理或關閉頁面後資料會清空。完成後請由底部「輸出」選擇 PDF、JSON 或 Markdown；其中 JSON 適合匯入資料庫，需要重填時可使用「清空」。</p></section>
+        <section class="help-examples"><h3>已填妥範例輸出</h3><p>先查看實際輸出外觀，再開始填寫現場紀錄；連續壁範例已包含本公司標準值與品質自檢摘要。</p><div class="example-actions">
           <a class="example-button" href="./examples/continuous-wall-example.pdf" target="_blank" rel="noopener"><span>連續壁</span><small>開啟 PDF 範例</small></a>
           <a class="example-button" href="./examples/trench-example.pdf" target="_blank" rel="noopener"><span>導溝</span><small>開啟 PDF 範例</small></a>
           <a class="example-button" href="./examples/rebar-cage-example.pdf" target="_blank" rel="noopener"><span>鋼筋籠</span><small>開啟 PDF 範例</small></a>
@@ -300,10 +305,18 @@
     </dialog>
 
     <dialog class="sheet-dialog export-dialog" id="export-dialog">
-      <div class="dialog-header"><div><span>PDF</span><h2>選擇輸出範圍</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+      <div class="dialog-header"><div><span>EXPORT</span><h2>選擇輸出格式</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
       <div class="dialog-body export-options">
-        <button type="button" data-export-scope="current"><span>輸出目前表單</span><strong id="export-current-label">工程概要</strong></button>
-        <button type="button" data-export-scope="all"><span>輸出完整紀錄</span><strong>施工紀錄及複核表</strong><small>共 6 頁</small></button>
+        <section class="export-option-group">
+          <h3>PDF</h3>
+          <button type="button" data-export-format="pdf-current"><span>輸出目前表單</span><strong id="export-current-label">工程概要</strong></button>
+          <button type="button" data-export-format="pdf-all"><span>輸出完整紀錄</span><strong>施工紀錄及複核表</strong><small>共 6 頁</small></button>
+        </section>
+        <section class="export-option-group">
+          <h3>資料格式</h3>
+          <button type="button" data-export-format="json"><span>匯出結構化資料</span><strong>JSON</strong><small>建議用於資料庫匯入</small></button>
+          <button type="button" data-export-format="markdown"><span>匯出文字紀錄</span><strong>Markdown</strong><small>供人工閱讀及後續整理</small></button>
+        </section>
       </div>
     </dialog>
 

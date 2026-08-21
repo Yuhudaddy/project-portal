@@ -53,7 +53,7 @@ const QUALITY_CHECKS = [
   ["連續壁單元位置、刀法順序確認", "單元位置、順序與核定圖說相符", "例如：位置及順序符合"],
   ["底部沉渣及泥屑清除確認", "底部沉泥小於 20 cm", "例如：沉泥 12 cm"],
   ["端板接頭清洗（公及公母單元時）", "以大小鋼刷確實清洗", "填寫清洗狀況"],
-  ["穩定液新鮮液之貯存量是否充裕", "大於單元用量", "填寫液量或確認說明"],
+  ["穩定液新鮮液之貯存量是否充裕", "依照施工計畫", "填寫液量或確認說明"],
   ["槽溝穩定液面高度控制", "鋪面下 50 cm～100 cm 以內", "例如：鋪面下 70 cm"],
   ["廢土清運是否正常", "不致影響挖掘進度", "填寫異常說明"],
   ["施工動線及運土車輛之安排", "不致延遲澆置時間", "填寫異常說明"],
@@ -64,11 +64,76 @@ const QUALITY_CHECKS = [
   ["特密管插入位置、深度、組合記錄", "位置符合圖面；長度配合挖掘深度", "填寫左／中／右位置與管長"],
   ["放置橡皮碗", "澆置前放置於漏斗內", "填寫是／否"],
   ["穩定液回收池容積是否足夠", "同時間無挖掘，容積大於回收量", "填寫是／否或容積"],
-  ["混凝土坍度之確認", "設計坍度 18 cm ±4 cm", "例如：實測 19 cm"],
+  ["混凝土坍度之確認", "依本公司標準值確認坍度及允許誤差", "例如：實測 18 cm"],
   ["混凝土是否合乎設計強度", "記錄空打段、實打段 GL 與強度", "填寫 GL／psi"],
-  ["特密管埋入混凝土內之確認", "母及公母單元 ≥1 m；公單元 ≥1.5 m", "填寫埋入深度"],
+  ["特密管埋入混凝土內之確認", "依單元類型套用本公司標準值", "填寫埋入深度"],
   ["超音波記錄結果說明", "依單元型式及圖說完成檢測記錄", "填寫位置與垂直精度"]
 ];
+
+// 這些是營造廠在現場要快速確認的「本公司標準值」。
+// 介面不顯示外部規範名稱；預設值可直接作為公司內部起始值，
+// 並保留下拉選單，讓公司日後能依核定施工計畫調整。
+const QUALITY_STANDARD_CONFIG = [
+  { key: "slump", label: "混凝土坍度", unit: "cm", options: Array.from({ length: 10 }, (_, i) => String(15 + i)), default: "18" },
+  { key: "slumpTolerance", label: "坍度允許誤差", unit: "cm", options: ["0", "1", "2", "3", "4", "5"], default: "2" },
+  { key: "sediment", label: "沉泥厚度上限", unit: "cm", options: ["5", "10", "15", "20", "25"], default: "10" },
+  { key: "sandContent", label: "含砂量上限", unit: "%", options: ["0.5", "1", "1.5", "2"], default: "1" },
+  { key: "settlingTime", label: "靜置時間下限", unit: "hr", options: ["0.5", "1", "1.5", "2"], default: "0.5" },
+  { key: "verticalDenominator", label: "垂直壁體高度分母", unit: "－", options: ["100", "200", "300", "400", "500", "600"], default: "300" },
+  { key: "tremieClearance", label: "特密管端距上限", unit: "cm", options: ["20", "30", "40", "50"], default: "20" },
+  { key: "embedmentMale", label: "公單元埋入深度下限", unit: "m", options: ["0.5", "1.0", "1.5", "2.0"], default: "1.5" },
+  { key: "embedmentFemale", label: "母單元埋入深度下限", unit: "m", options: ["0.5", "1.0", "1.5", "2.0"], default: "1.5" },
+  { key: "embedmentBoth", label: "公母單元埋入深度下限", unit: "m", options: ["0.5", "1.0", "1.5", "2.0"], default: "1.5" },
+  { key: "pourInterruption", label: "澆置中斷時間上限", unit: "min", options: ["30", "45", "60"], default: "30" },
+  { key: "pourCompletion", label: "澆置完成時間上限", unit: "min", options: ["60", "90", "120"], default: "90" },
+  { key: "chloride", label: "氯離子含量上限", unit: "kg/m³", options: ["0.15", "0.30"], default: "0.15" },
+  { key: "centerlineTolerance", label: "導溝中心線偏差上限", unit: "cm", options: ["1", "2", "3", "5"], default: "2" },
+  { key: "wallThicknessTolerance", label: "壁厚偏差上限", unit: "cm", options: ["3", "5", "7.5", "10"], default: "5" },
+  { key: "cageLongitudinalTolerance", label: "鋼筋籠縱向偏差上限", unit: "cm", options: ["±5", "±7.5", "±10"], default: "±7.5" },
+  { key: "cageTopTolerance", label: "鋼筋籠頂高程偏差上限", unit: "cm", options: ["±3", "±5", "±7.5", "±10"], default: "±5" },
+  { key: "cover", label: "保護層厚度下限", unit: "cm", options: ["5", "7.5", "10", "12.5"], default: "7.5" },
+  { key: "volumeDifference", label: "實際／設計數量差異上限", unit: "%", options: ["5", "10", "15", "20"], default: "10" }
+];
+
+const QUALITY_STANDARD_DEFAULTS = Object.fromEntries(QUALITY_STANDARD_CONFIG.map(item => [item.key, item.default]));
+
+function qualityStandardOptions(selected, options) {
+  return options.map(value => `<option value="${esc(value)}" ${value === selected ? "selected" : ""}>${esc(value)}</option>`).join("");
+}
+
+function qualityStandardText(key) {
+  const value = state.quality.standards[key] || "—";
+  const format = {
+    slump: `坍度 ${value} cm`,
+    slumpTolerance: `允許誤差 ${value} cm`,
+    sediment: `沉泥厚度 ≤ ${value} cm`,
+    sandContent: `含砂量 ≤ ${value}%`,
+    settlingTime: `靜置時間 ≥ ${value} hr`,
+    verticalDenominator: `垂直壁體偏差 ≤ 1/${value}`,
+    tremieClearance: `特密管端距 ≤ ${value} cm`,
+    pourInterruption: `澆置中斷 ≤ ${value} min`,
+    pourCompletion: `澆置完成 ≤ ${value} min`,
+    chloride: `氯離子含量 ≤ ${value} kg/m³`,
+    centerlineTolerance: `中心線偏差 ≤ ${value} cm`,
+    wallThicknessTolerance: `壁厚偏差 ≤ ${value} cm`,
+    cageLongitudinalTolerance: `縱向偏差 ${value} cm`,
+    cageTopTolerance: `頂高程偏差 ${value} cm`,
+    cover: `保護層厚度 ≥ ${value} cm`,
+    volumeDifference: `實際／設計數量差異 ≤ ${value}%`
+  };
+  return format[key] || `${value}`;
+}
+
+function qualityCheckStandard(index, fallback) {
+  const dynamic = {
+    0: qualityStandardText("centerlineTolerance"),
+    1: qualityStandardText("sediment"),
+    9: qualityStandardText("tremieClearance"),
+    14: `${qualityStandardText("slump")}；${qualityStandardText("slumpTolerance")}`,
+    16: state.wall.unitType ? `${state.wall.unitType}：${qualityStandardText(state.wall.unitType === "公單元" ? "embedmentMale" : state.wall.unitType === "母單元" ? "embedmentFemale" : "embedmentBoth")}` : "請先選擇單元類型，再填寫埋入深度"
+  };
+  return dynamic[index] || fallback;
+}
 
 const PHASES = [
   { id: "slurry", label: "清沉泥", start: "開始時間", end: "完成時間" },
@@ -110,6 +175,7 @@ const state = {
   },
   quality: {
     note: "",
+    standards: { ...QUALITY_STANDARD_DEFAULTS },
     checks: QUALITY_CHECKS.map(([item, standard, placeholder]) => ({ item, standard, placeholder, actual: "", result: "待確認" }))
   }
 };
@@ -374,7 +440,7 @@ function renderCheckCards(type) {
   target.innerHTML = state[type].checks.map((check, index) => `
     <article class="check-card ${check.result === "不符合" ? "is-failed" : ""}">
       <div class="check-card-head"><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(check.item)}</strong></div>
-      <p>${esc(check.standard)}</p>
+      <p>${esc(qualityCheckStandard(index, check.standard))}</p>
       <div class="check-card-fields">
         <label class="field"><span>現場紀錄／實測</span><input type="text" value="${esc(check.actual)}" data-check-item="${type}" data-check-index="${index}" data-check-field="actual" /></label>
         <label class="field result-field"><span>複核結果</span><select data-check-item="${type}" data-check-index="${index}" data-check-field="result">${resultOptions(check.result)}</select></label>
@@ -419,8 +485,25 @@ function setQualityInputs() {
   });
 }
 
+function renderQualityStandards() {
+  const unitType = state.wall.unitType;
+  const selectedEmbedmentKey = unitType === "公單元" ? "embedmentMale" : unitType === "母單元" ? "embedmentFemale" : unitType === "公母單元" ? "embedmentBoth" : null;
+  const rows = QUALITY_STANDARD_CONFIG.map(config => {
+    const disabled = config.key.startsWith("embedment") && selectedEmbedmentKey && config.key !== selectedEmbedmentKey;
+    return `<label class="quality-standard-field ${disabled ? "is-disabled" : ""}">
+      <span>${esc(config.label)}（${esc(config.unit)}）</span>
+      <select data-quality-standard="${esc(config.key)}" ${disabled ? "disabled" : ""}>${qualityStandardOptions(state.quality.standards[config.key], config.options)}</select>
+    </label>`;
+  });
+  $("#quality-standard-list").innerHTML = rows.join("");
+  $("#quality-standard-note").textContent = selectedEmbedmentKey
+    ? `目前單元類型：${unitType}；僅輸出此單元類型的特密管埋入深度。`
+    : "請先在「壁體資訊」選擇單元類型；未選擇前三種埋入深度均可調整。";
+}
+
 function renderQuality() {
   setQualityInputs();
+  renderQualityStandards();
   $("#quality-check-list").innerHTML = state.quality.checks.map((check, index) => `
     <article class="quality-card ${check.result === "不符合" ? "is-failed" : ""}">
       <div class="quality-card-head"><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(check.item)}</strong></div>
@@ -471,6 +554,7 @@ function clearAllData() {
   };
   state.quality = {
     note: "",
+    standards: { ...QUALITY_STANDARD_DEFAULTS },
     checks: QUALITY_CHECKS.map(([item, standard, placeholder]) => ({ item, standard, placeholder, actual: "", result: "待確認" }))
   };
   Object.keys(editIndex).forEach(key => { editIndex[key] = null; });
@@ -608,7 +692,13 @@ function renderPrint() {
       <div><span>實際數量</span><strong>${esc(display(state.wall.actualVolume))} m³</strong></div>
     </div></section>${printFooter()}`;
 
-  const qualityRows = state.quality.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
+  const qualityRows = state.quality.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(qualityCheckStandard(index, check.standard))}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
+  const qualityStandardRows = QUALITY_STANDARD_CONFIG.map(config => {
+    const unitType = state.wall.unitType;
+    const selectedKey = unitType === "公單元" ? "embedmentMale" : unitType === "母單元" ? "embedmentFemale" : unitType === "公母單元" ? "embedmentBoth" : null;
+    if (config.key.startsWith("embedment") && selectedKey && config.key !== selectedKey) return "";
+    return `<tr><td class="text-left">${esc(config.label)}</td><td>${esc(state.quality.standards[config.key])}</td><td>${esc(config.unit)}</td><td class="text-left">${esc(qualityStandardText(config.key))}</td></tr>`;
+  }).filter(Boolean).join("");
   const qualityProject = state.overview.project;
   const qualityIdentity = [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
   $("#print-quality").innerHTML = `${printHeader("連續壁施工品質自檢總表", "03", qualityProject, qualityIdentity)}
@@ -623,6 +713,7 @@ function renderPrint() {
       <div><span>澆置頂端高程</span><strong>GL ${esc(display(state.wall.topElevation))} m</strong></div>
       <div><span>設計澆置高度／設計數量</span><strong>${fixed(height)} m ／ ${esc(display(state.wall.designVolume))} m³</strong></div>
     </div></section>
+    <section class="print-section compact-print-section"><h2>本公司標準值</h2><table class="print-table quality-print-table"><thead><tr><th>設定項目</th><th>數值</th><th>單位</th><th>判定基準</th></tr></thead><tbody>${qualityStandardRows}</tbody></table></section>
     <section class="print-section compact-print-section"><h2>品質自檢項目</h2><table class="print-table quality-print-table"><thead><tr><th>項次</th><th>檢查項目</th><th>檢查標準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${qualityRows}</tbody></table></section>
     <section class="print-section quality-note-section"><h2>缺失及改善結果</h2><div class="print-note">${esc(display(state.quality.note))}</div></section>${printFooter()}`;
 
@@ -695,6 +786,287 @@ function exportPdf(scope) {
   window.print();
 }
 
+function exportData() {
+  const toNumberOrNull = value => {
+    const parsed = number(value);
+    return parsed === null ? null : parsed;
+  };
+  const toNumberOrText = value => {
+    const text = String(value ?? "").trim();
+    if (!text) return null;
+    const parsed = number(text);
+    return parsed === null ? text : parsed;
+  };
+  const height = designHeight();
+  const designVolume = calculatedDesignVolume();
+  const depthDesign = toNumberOrNull(state.wall.designDepth);
+  const depthChecks = state.depth.map((record, index) => {
+    const depth = toNumberOrNull(record.value);
+    return {
+      sequence: index + 1,
+      confirmation_time: record.time || null,
+      depth_m: depth,
+      design_difference_m: depth !== null && depthDesign !== null ? depth - depthDesign : null
+    };
+  });
+  const trucks = calculatedTrucks().map(row => ({
+    sequence: row.index + 1,
+    truck_no: row.truckNo || null,
+    unload_time: row.unload || null,
+    finish_time: row.finish || null,
+    volume_m3: toNumberOrNull(row.volume),
+    cumulative_volume_m3: row.cumulative,
+    design_height_m: row.expected,
+    measured_height_m: row.measured,
+    height_difference_m: row.difference
+  }));
+  const embedmentKeys = { "公單元": "embedmentMale", "母單元": "embedmentFemale", "公母單元": "embedmentBoth" };
+  const selectedEmbedmentKey = embedmentKeys[state.wall.unitType] || null;
+  const qualityStandards = Object.fromEntries(Object.entries(state.quality.standards)
+    .filter(([key]) => !key.startsWith("embedment") || key === selectedEmbedmentKey)
+    .map(([key, value]) => [key, { value, display: qualityStandardText(key) }]));
+
+  return {
+    schema_version: "1.0",
+    record_type: "continuous_wall_field_record",
+    exported_at: new Date().toISOString(),
+    export_context: {
+      active_tool: activeTool,
+      active_tab: activeTool === "unit" ? activeTab : activeTool,
+      current_form_label: currentExportLabel(activeTool, activeTab)
+    },
+    project: {
+      name: state.overview.project || null,
+      contractor: state.overview.contractor || null,
+      construction_date: state.overview.date || null,
+      form_filler: state.overview.reviewer || null
+    },
+    wall_unit: {
+      unit_type: state.wall.unitType || null,
+      unit_no: state.wall.unitNo || null,
+      design_depth_m: depthDesign,
+      top_elevation_m: toNumberOrNull(state.wall.topElevation),
+      thickness_m: toNumberOrNull(state.wall.thickness),
+      length_m: toNumberOrNull(state.wall.length),
+      concrete_strength_kgf_cm2: toNumberOrText(state.wall.strength),
+      design_pour_height_m: height,
+      design_volume_m3: designVolume,
+      actual_volume_m3: toNumberOrNull(state.wall.actualVolume)
+    },
+    excavation: {
+      soil_records: state.soil.map((record, index) => ({ sequence: index + 1, time: record.time || null })),
+      depth_confirmations: depthChecks
+    },
+    prework: PHASES.map(phase => ({
+      phase_id: phase.id,
+      phase_name: phase.label,
+      start_time: state.prework[phase.id].start || null,
+      finish_time: state.prework[phase.id].end || null
+    })),
+    pouring: {
+      trucks,
+      total_trucks: trucks.length,
+      cumulative_volume_m3: trucks.at(-1)?.cumulative_volume_m3 ?? 0,
+      last_design_height_m: trucks.at(-1)?.design_height_m ?? null,
+      last_measured_height_m: trucks.at(-1)?.measured_height_m ?? null,
+      last_height_difference_m: trucks.at(-1)?.height_difference_m ?? null
+    },
+    quality_self_check: {
+      note: state.quality.note || null,
+      standards: qualityStandards,
+      items: state.quality.checks.map((check, index) => ({
+        item_no: index + 1,
+        item: check.item,
+        standard: qualityCheckStandard(index, check.standard),
+        actual: check.actual || null,
+        result: check.result
+      }))
+    },
+    trench_review: {
+      project: state.trench.project || null,
+      contractor: state.trench.contractor || null,
+      review_date: state.trench.date || null,
+      unit_no: state.trench.unitNo || null,
+      reviewer: state.trench.reviewer || null,
+      note: state.trench.note || null,
+      items: state.trench.checks.map((check, index) => ({
+        item_no: index + 1,
+        item: check.item,
+        standard: check.standard,
+        actual: check.actual || null,
+        result: check.result
+      }))
+    },
+    cage_review: {
+      project: state.cage.project || null,
+      review_date: state.cage.date || null,
+      unit_no: state.cage.unitNo || null,
+      cage_no: state.cage.cageNo || null,
+      reviewer: state.cage.reviewer || null,
+      note: state.cage.note || null,
+      rebar_items: state.cage.rebars.map((rebar, index) => ({
+        item_no: index + 1,
+        part: rebar.part || null,
+        design_bar_size: rebar.designNo || null,
+        design_quantity_spacing: rebar.designQty || null,
+        actual_bar_size: rebar.actualNo || null,
+        actual_quantity_spacing: rebar.actualQty || null,
+        result: rebar.result
+      })),
+      inspection_items: state.cage.checks.map((check, index) => ({
+        item_no: index + 1,
+        item: check.item,
+        standard: check.standard,
+        actual: check.actual || null,
+        result: check.result
+      }))
+    }
+  };
+}
+
+function safeFilePart(value, fallback) {
+  const cleaned = String(value ?? "").trim().replace(/[\\/:*?"<>|\s]+/g, "-").replace(/-+/g, "-");
+  return cleaned || fallback;
+}
+
+function exportFileName(extension) {
+  const unit = safeFilePart(state.wall.unitNo || state.trench.unitNo || state.cage.unitNo, "record");
+  const date = safeFilePart(state.overview.date || today, today);
+  return `continuous-wall-${unit}-${date}.${extension}`;
+}
+
+function downloadText(content, mimeType, filename) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function markdownCell(value) {
+  return String(value ?? "—").replaceAll("|", "\\|").replaceAll("\n", " ").trim() || "—";
+}
+
+function exportMarkdown() {
+  const data = exportData();
+  const wall = data.wall_unit;
+  const lines = [
+    `# 連續壁施工紀錄`,
+    ``,
+    `- 匯出時間：${data.exported_at}`,
+    `- 資料版本：${data.schema_version}`,
+    ``,
+    `## 工程概要`,
+    ``,
+    `| 欄位 | 內容 |`,
+    `| --- | --- |`,
+    `| 工程名稱 | ${markdownCell(data.project.name)} |`,
+    `| 施工廠商 | ${markdownCell(data.project.contractor)} |`,
+    `| 施工日期 | ${markdownCell(data.project.construction_date)} |`,
+    `| 填表人 | ${markdownCell(data.project.form_filler)} |`,
+    ``,
+    `## 壁體資訊`,
+    ``,
+    `| 欄位 | 內容 |`,
+    `| --- | --- |`,
+    `| 單元類型 | ${markdownCell(wall.unit_type)} |`,
+    `| 單元編號 | ${markdownCell(wall.unit_no)} |`,
+    `| 設計深度（m） | ${markdownCell(wall.design_depth_m)} |`,
+    `| 頂端高程（m） | ${markdownCell(wall.top_elevation_m)} |`,
+    `| 壁厚（m） | ${markdownCell(wall.thickness_m)} |`,
+    `| 單元長度（m） | ${markdownCell(wall.length_m)} |`,
+    `| 混凝土強度（kgf/cm²） | ${markdownCell(wall.concrete_strength_kgf_cm2)} |`,
+    `| 設計澆置高度（m） | ${markdownCell(wall.design_pour_height_m)} |`,
+    `| 設計數量（m³） | ${markdownCell(wall.design_volume_m3)} |`,
+    `| 實際數量（m³） | ${markdownCell(wall.actual_volume_m3)} |`,
+    ``,
+    `## 開挖紀錄`,
+    ``,
+    `### 出土紀錄`,
+    ``,
+    `| 次數 | 時間 |`,
+    `| --- | --- |`,
+    ...(data.excavation.soil_records.length ? data.excavation.soil_records.map(record => `| ${record.sequence} | ${markdownCell(record.time)} |`) : [`| — | 尚無紀錄 |`]),
+    ``,
+    `### 深度確認`,
+    ``,
+    `| 次數 | 確認時間 | 深度（m） | 與設計差異（m） |`,
+    `| --- | --- | ---: | ---: |`,
+    ...(data.excavation.depth_confirmations.length ? data.excavation.depth_confirmations.map(record => `| ${record.sequence} | ${markdownCell(record.confirmation_time)} | ${markdownCell(record.depth_m)} | ${markdownCell(record.design_difference_m)} |`) : [`| — | 尚無紀錄 | — | — |`]),
+    ``,
+    `## 前置紀錄`,
+    ``,
+    `| 作業項目 | 開始時間 | 完成時間 |`,
+    `| --- | --- | --- |`,
+    ...data.prework.map(record => `| ${markdownCell(record.phase_name)} | ${markdownCell(record.start_time)} | ${markdownCell(record.finish_time)} |`),
+    ``,
+    `## 澆置紀錄`,
+    ``,
+    `| 車次 | 車號 | 卸料 | 結束 | 方量（m³） | 累積（m³） | 設計高度（m） | 實測高度（m） | 高度差異（m） |`,
+    `| ---: | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |`,
+    ...(data.pouring.trucks.length ? data.pouring.trucks.map(record => `| ${record.sequence} | ${markdownCell(record.truck_no)} | ${markdownCell(record.unload_time)} | ${markdownCell(record.finish_time)} | ${markdownCell(record.volume_m3)} | ${markdownCell(record.cumulative_volume_m3)} | ${markdownCell(record.design_height_m)} | ${markdownCell(record.measured_height_m)} | ${markdownCell(record.height_difference_m)} |`) : [`| — | 尚無紀錄 | — | — | — | — | — | — | — |`]),
+    ``,
+    `## 品質自檢`,
+    ``,
+    `### 本公司標準值`,
+    ``,
+    `| 設定項目 | 數值 | 單位 | 判定基準 |`,
+    `| --- | ---: | --- | --- |`,
+    ...QUALITY_STANDARD_CONFIG
+      .filter(config => Object.prototype.hasOwnProperty.call(data.quality_self_check.standards, config.key))
+      .map(config => `| ${markdownCell(config.label)} | ${markdownCell(data.quality_self_check.standards[config.key]?.value)} | ${markdownCell(config.unit)} | ${markdownCell(data.quality_self_check.standards[config.key]?.display)} |`),
+    ``,
+    `### 檢查項目`,
+    ``,
+    `| 項次 | 檢查項目 | 檢查標準 | 現場紀錄／實測 | 結果 |`,
+    `| ---: | --- | --- | --- | --- |`,
+    ...data.quality_self_check.items.map(item => `| ${item.item_no} | ${markdownCell(item.item)} | ${markdownCell(item.standard)} | ${markdownCell(item.actual)} | ${markdownCell(item.result)} |`),
+    ``,
+    `**缺失及改善結果：** ${markdownCell(data.quality_self_check.note)}`,
+    ``,
+    `## 導溝複核`,
+    ``,
+    ...data.trench_review.items.map(item => `- ${item.item_no}. ${item.item}：${item.result}；現場紀錄：${markdownCell(item.actual)}`),
+    ``,
+    `## 鋼筋籠複核`,
+    ``,
+    `### 配筋明細`,
+    ``,
+    `| 項次 | 位置／用途 | 設計號數 | 設計數量／間距 | 實際號數 | 實際數量／間距 | 結果 |`,
+    `| ---: | --- | --- | --- | --- | --- | --- |`,
+    ...data.cage_review.rebar_items.map(item => `| ${item.item_no} | ${markdownCell(item.part)} | ${markdownCell(item.design_bar_size)} | ${markdownCell(item.design_quantity_spacing)} | ${markdownCell(item.actual_bar_size)} | ${markdownCell(item.actual_quantity_spacing)} | ${markdownCell(item.result)} |`),
+    ``,
+    `### 組裝與吊放條件`,
+    ``,
+    ...data.cage_review.inspection_items.map(item => `- ${item.item_no}. ${item.item}：${item.result}；現場紀錄：${markdownCell(item.actual)}`),
+    ``,
+    `> 本 Markdown 由施工紀錄工具依同一份結構化資料產生；資料庫匯入請優先使用同次輸出的 JSON。`
+  ];
+  downloadText(lines.join("\n"), "text/markdown;charset=utf-8", exportFileName("md"));
+}
+
+function exportJson() {
+  downloadText(`${JSON.stringify(exportData(), null, 2)}\n`, "application/json;charset=utf-8", exportFileName("json"));
+}
+
+function handleExport(format) {
+  if (format === "pdf-current") return exportPdf("current");
+  if (format === "pdf-all") return exportPdf("all");
+  if (format === "json") {
+    exportJson();
+    $("#export-dialog").close();
+    return;
+  }
+  if (format === "markdown") {
+    exportMarkdown();
+    $("#export-dialog").close();
+  }
+}
+
 function initialize() {
   setInitialInputs();
   $("#phase-select").innerHTML = PHASES.map(phase => `<option value="${phase.id}">${esc(phase.label)}</option>`).join("");
@@ -737,6 +1109,7 @@ function initialize() {
       const [group, key] = input.dataset.bind.split(".");
       state[group][key] = input.value;
       updateIdentity();
+      if (group === "wall" && key === "unitType") renderQualityStandards();
       return;
     }
     const check = event.target.closest("[data-check-item]");
@@ -749,6 +1122,11 @@ function initialize() {
     if (qualityCheck) {
       state.quality.checks[Number(qualityCheck.dataset.qualityItem)][qualityCheck.dataset.qualityField] = qualityCheck.value;
       if (qualityCheck.dataset.qualityField === "result") renderQuality();
+    }
+    const qualityStandard = event.target.closest("[data-quality-standard]");
+    if (qualityStandard) {
+      state.quality.standards[qualityStandard.dataset.qualityStandard] = qualityStandard.value;
+      renderQualityStandards();
     }
   });
 
@@ -775,7 +1153,7 @@ function initialize() {
     $("#export-dialog").showModal();
   });
   $$('[data-close-dialog]').forEach(button => button.addEventListener("click", () => button.closest("dialog").close()));
-  $$('[data-export-scope]').forEach(button => button.addEventListener("click", () => exportPdf(button.dataset.exportScope)));
+  $$('[data-export-format]').forEach(button => button.addEventListener("click", () => handleExport(button.dataset.exportFormat)));
   $$('[data-select-tool]').forEach(button => button.addEventListener("click", () => showTool(button.dataset.selectTool)));
 
   $("#add-soil").addEventListener("click", () => openSoilDialog());
