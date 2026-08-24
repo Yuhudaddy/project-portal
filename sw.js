@@ -1,5 +1,5 @@
-const CACHE_NAME = "project-portal-v20";
-const APP_SHELL = ["./index.html", "./app.css", "./app.js", "./record.html", "./checklists.html", "./manifest.webmanifest", "./icon.svg", "./taisei.png", "./examples/continuous-wall-example.pdf", "./examples/trench-example.pdf", "./examples/rebar-cage-example.pdf"];
+const CACHE_NAME = "project-portal-v21";
+const APP_SHELL = ["./index.html", "./404.html", "./portal.css", "./continuous-wall.html", "./app.css", "./app.js", "./record.html", "./checklists.html", "./manifest.webmanifest", "./icon.svg", "./taisei.png", "./examples/continuous-wall-example.pdf", "./examples/trench-example.pdf", "./examples/rebar-cage-example.pdf"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
@@ -23,11 +23,12 @@ self.addEventListener("fetch", event => {
   if (event.request.mode === "navigate") {
     event.respondWith(
       fetch(event.request)
-        .then(response => {
-          if (response.ok) caches.open(CACHE_NAME).then(cache => cache.put("./index.html", response.clone()));
+        .then(response => caches.open(CACHE_NAME).then(cache => {
+          if (response.ok) cache.put(event.request, response.clone());
           return response;
-        })
-        .catch(() => caches.match("./index.html", { ignoreSearch: true }))
+        }))
+        .catch(() => caches.match(event.request, { ignoreSearch: true })
+          .then(cached => cached || caches.match("./index.html", { ignoreSearch: true })))
     );
     return;
   }

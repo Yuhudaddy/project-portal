@@ -1,3 +1,5 @@
+const APP_VERSION = "1.0";
+
 const TAB_LABELS = {
   overview: "工程概要",
   wall: "壁體資訊",
@@ -662,7 +664,7 @@ function printHeader(title, sequence, project = state.overview.project, recordId
 }
 
 function printFooter() {
-  return `<footer class="print-footer">輸出時間：${esc(new Date().toLocaleString("zh-TW", { hour12: false }))}</footer>`;
+  return `<footer class="print-footer">資料版本：${APP_VERSION}｜輸出時間：${esc(new Date().toLocaleString("zh-TW", { hour12: false }))}<br />本文件經現場相關人員簽核後始為正式紀錄。</footer>`;
 }
 
 function renderPrint() {
@@ -827,6 +829,7 @@ function exportData() {
     .map(([key, value]) => [key, { value, display: qualityStandardText(key) }]));
 
   return {
+    app_version: APP_VERSION,
     schema_version: "1.0",
     record_type: "continuous_wall_field_record",
     exported_at: new Date().toISOString(),
@@ -958,6 +961,7 @@ function exportMarkdown() {
     `# 連續壁施工紀錄`,
     ``,
     `- 匯出時間：${data.exported_at}`,
+    `- APP 版本：${data.app_version}`,
     `- 資料版本：${data.schema_version}`,
     ``,
     `## 工程概要`,
