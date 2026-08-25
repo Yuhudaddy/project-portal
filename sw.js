@@ -1,5 +1,5 @@
-const CACHE_NAME = "project-portal-v23";
-const APP_SHELL = ["./index.html", "./404.html", "./portal.css", "./continuous-wall.html", "./app.css", "./app.js", "./template.html", "./template.css", "./template.js", "./record.html", "./checklists.html", "./manifest.webmanifest", "./icon.svg", "./taisei.png", "./examples/continuous-wall-example.pdf", "./examples/trench-example.pdf", "./examples/rebar-cage-example.pdf"];
+const CACHE_NAME = "project-portal-v24";
+const APP_SHELL = ["./index.html", "./404.html", "./portal.css", "./diaphragm-wall.html", "./app.css", "./app.js", "./template.html", "./template.css", "./template.js", "./record.html", "./checklists.html", "./manifest.webmanifest", "./icon.svg", "./taisei.png", "./examples/diaphragm-wall-example.pdf", "./examples/guide-wall-example.pdf", "./examples/rebar-cage-example.pdf"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
