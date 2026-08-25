@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="RC 模板工程施工複核與 PDF 輸出工具" />
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'" />
+    <meta name="theme-color" content="#eceff1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="模板工程複核" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./template.css" />
+    <title>模板工程施工複核｜Project Portal</title>
+  </head>
+  <body data-print-scope="none">
+    <a class="skip-link" href="#template-tool">跳至模板工程工具</a>
+
+    <header class="app-header">
+      <nav class="header-nav" aria-label="主要功能">
+        <a class="header-action header-link" href="./index.html">工程工具</a>
+        <button class="header-action help-action" id="help-button" type="button">使用說明 <span aria-hidden="true">?</span></button>
+      </nav>
+    </header>
+
+    <main class="app-shell" id="template-tool">
+      <div class="tool-title">
+        <div>
+          <p>RC FORMWORK / FIELD REVIEW</p>
+          <h1>模板施工複核表</h1>
+        </div>
+        <span id="record-identity">尚未指定構件</span>
+      </div>
+
+      <nav class="record-switcher" aria-label="工程記錄類型">
+        <a href="./continuous-wall.html"><strong>連續壁</strong><small>Diaphragm Wall</small></a>
+        <a href="./index.html#tool-index"><strong>導溝</strong><small>Guide Wall</small></a>
+        <a href="./index.html#tool-index"><strong>鋼筋籠</strong><small>Rebar Cage</small></a>
+        <button type="button" aria-current="page"><strong>模板</strong><small>Formwork</small></button>
+      </nav>
+
+      <nav class="tab-navigation" aria-label="模板工程分頁">
+        <div class="tab-row" role="tablist" aria-label="基本資料">
+          <button id="tab-overview" role="tab" type="button" data-tab="overview" aria-controls="panel-overview" aria-selected="true">工程概要</button>
+          <button id="tab-members" role="tab" type="button" data-tab="members" aria-controls="panel-members" aria-selected="false">構件資訊</button>
+        </div>
+        <div class="tab-row" role="tablist" aria-label="模板檢查">
+          <button id="tab-install" role="tab" type="button" data-tab="install" aria-controls="panel-install" aria-selected="false">模板安裝</button>
+          <button id="tab-measure" role="tab" type="button" data-tab="measure" aria-controls="panel-measure" aria-selected="false">尺寸複核</button>
+          <button id="tab-release" role="tab" type="button" data-tab="release" aria-controls="panel-release" aria-selected="false">放行／拆模</button>
+        </div>
+      </nav>
+
+      <section class="panel-frame">
+        <section class="tab-panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+          <div class="panel-heading"><div><span>01</span><h2>工程概要</h2></div><p>本次模板複核的基本資料</p></div>
+          <div class="form-grid overview-grid">
+            <label class="field span-two"><span>工程名稱</span><input type="text" data-bind="overview.project" autocomplete="organization" /></label>
+            <label class="field span-two"><span>施工廠商</span><input type="text" data-bind="overview.contractor" autocomplete="organization" /></label>
+            <label class="field"><span>施工日期</span><span class="native-field-wrap"><input type="date" data-bind="overview.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field"><span>檢查日期</span><span class="native-field-wrap"><input type="date" data-bind="overview.inspectionDate" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field"><span>填表人</span><input type="text" data-bind="overview.reviewer" autocomplete="name" /></label>
+            <label class="field"><span>檢查樓層</span><input type="text" data-bind="overview.floor" placeholder="例如：B2、3F" /></label>
+            <label class="field"><span>施工區域／軸線</span><input type="text" data-bind="overview.area" placeholder="例如：A～C／1～3 軸" /></label>
+            <label class="field"><span>施工圖／版次</span><input type="text" data-bind="overview.drawing" placeholder="例如：S-203 Rev.2" /></label>
+            <label class="field span-two"><span>檢查階段</span><select data-bind="overview.stage"><option value="模板組立前">模板組立前</option><option value="模板組立完成">模板組立完成</option><option value="混凝土澆置前">混凝土澆置前</option><option value="拆模後">拆模後</option><option value="澆置後確認">澆置後確認</option></select></label>
+          </div>
+          <div class="info-strip"><strong>填寫原則</strong><span>只記錄營造廠需要複核的關鍵結果；詳細材料與施工細節由專業廠商保留自主檢查。</span></div>
+        </section>
+
+        <section class="tab-panel" id="panel-members" role="tabpanel" aria-labelledby="tab-members" hidden>
+          <div class="panel-heading"><div><span>02</span><h2>構件資訊</h2></div><p>可在同一張表新增多個構件</p></div>
+          <div class="member-toolbar"><div><strong id="member-count">0 個構件</strong><span>選擇構件後填寫模板與量測結果</span></div><button class="add-button" id="add-member" type="button"><span aria-hidden="true">＋</span> 新增構件</button></div>
+          <div class="member-list" id="member-list"></div>
+        </section>
+
+        <section class="tab-panel" id="panel-install" role="tabpanel" aria-labelledby="tab-install" hidden>
+          <div class="panel-heading"><div><span>03</span><h2>模板安裝</h2></div><p>共通項目與構件專用項目</p></div>
+          <div class="member-selector-row"><label class="field"><span>目前檢查構件</span><select id="active-member"></select></label><span id="active-member-summary" class="selection-summary">尚未新增構件</span></div>
+          <dl class="check-progress"><div><dt>已完成複核</dt><dd id="install-progress">0 / 0</dd></div><div><dt>尚待確認</dt><dd id="install-pending">0</dd></div></dl>
+          <section class="record-section"><div class="record-heading"><div><span>A</span><h3>共通複核項目</h3></div></div><div class="check-card-list" id="common-check-list"></div></section>
+          <section class="record-section"><div class="record-heading"><div><span>B</span><h3 id="type-check-heading">構件專用項目</h3></div></div><div class="check-card-list" id="type-check-list"></div></section>
+        </section>
+
+        <section class="tab-panel" id="panel-measure" role="tabpanel" aria-labelledby="tab-measure" hidden>
+          <div class="panel-heading"><div><span>04</span><h2>尺寸複核</h2></div><p>輸入設計值與實測值，自動計算差值</p></div>
+          <div class="member-selector-row"><label class="field"><span>目前量測構件</span><select id="measure-member"></select></label><span class="selection-summary">數值以 mm 記錄；容許差可依核定圖說調整</span></div>
+          <div class="measurement-note"><strong>量測方式</strong><span>設計值或基準值填寫 0，實測欄填入偏差量；系統會依公司預設容許差判定。</span></div>
+          <div class="measurement-list" id="measurement-list"></div>
+        </section>
+
+        <section class="tab-panel" id="panel-release" role="tabpanel" aria-labelledby="tab-release" hidden>
+          <div class="panel-heading"><div><span>05</span><h2>放行／拆模</h2></div><p>混凝土澆置前停留點與澆置後確認</p></div>
+          <section class="record-section"><div class="record-heading"><div><span>A</span><h3>澆置前放行</h3></div></div><dl class="check-progress"><div><dt>已完成確認</dt><dd id="release-progress">0 / 8</dd></div><div><dt>尚待確認</dt><dd id="release-pending">8</dd></div></dl><div class="check-card-list" id="release-check-list"></div></section>
+          <div class="decision-panel"><label class="field"><span>澆置判定</span><select data-release-bind="decision"><option value="待放行">待放行</option><option value="可澆置">可澆置</option><option value="條件放行">條件放行</option><option value="不得澆置">不得澆置</option></select></label><label class="field"><span>放行備註</span><textarea data-release-bind="decisionNote" rows="3" placeholder="條件放行或不得澆置時請填寫原因"></textarea></label></div>
+          <section class="record-section demolition-section"><div class="record-heading"><div><span>B</span><h3>拆模／澆置後確認</h3></div></div><div class="form-grid"><label class="field"><span>混凝土澆置日期</span><span class="native-field-wrap"><input type="date" data-release-bind="pourDate" /><span class="native-field-display" aria-hidden="true"></span></span></label><label class="field"><span>拆模日期</span><span class="native-field-wrap"><input type="date" data-release-bind="stripDate" /><span class="native-field-display" aria-hidden="true"></span></span></label><label class="field"><span>拆模時間條件</span><select data-release-bind="stripCondition"><option value="尚未確認">尚未確認</option><option value="符合最少時間">符合最少時間</option><option value="依實際強度核准提前拆模">依實際強度核准提前拆模</option><option value="不適用">不適用</option></select></label><label class="field"><span>再撐／回撐</span><select data-release-bind="reshoring"><option value="尚未確認">尚未確認</option><option value="已保留">已保留</option><option value="依計畫拆除">依計畫拆除</option><option value="不適用">不適用</option></select></label><label class="field span-two"><span>拆模後外觀及缺失</span><textarea data-release-bind="postNote" rows="3" placeholder="記錄爆模、蜂窩、漏漿、孔洞、變形或無異常"></textarea></label></div></section>
+        </section>
+      </section>
+    </main>
+
+    <aside class="action-dock" aria-label="輸出工具"><div><span>目前頁面</span><strong id="active-tab-label">工程概要</strong></div><div class="dock-actions"><button class="clear-button" id="clear-button" type="button">清空</button><button id="export-button" type="button">輸出</button></div></aside>
+
+    <section class="print-report" aria-hidden="true"><article class="print-page" data-print-page="overview"><div id="print-template-overview"></div></article><article class="print-page" data-print-page="checks"><div id="print-template-checks"></div></article><article class="print-page" data-print-page="release"><div id="print-template-release"></div></article></section>
+
+    <dialog class="sheet-dialog" id="help-dialog"><div class="dialog-header"><div><span>HELP</span><h2>模板工程使用說明</h2></div><button type="button" data-close-dialog aria-label="關閉使用說明">×</button></div><div class="dialog-body help-content"><section><h3>填寫順序</h3><p>依序填寫「工程概要 → 構件資訊 → 模板安裝 → 尺寸複核 → 放行／拆模」。同一張表可新增多個柱、牆、梁或板。</p></section><section><h3>判定方式</h3><p>一般項目選擇合格、不合格或不適用；重要尺寸填入設計值與實測值，系統依公司預設容許差計算差值與判定。</p></section><section><h3>責任範圍</h3><p>本表是營造廠的關鍵複核紀錄，不取代專業模板廠商的完整自主檢查表。澆置前若有未確認或不合格項目，請先完成改善或填寫核准處置。</p></section><section><h3>資料與輸出</h3><p>本工具不儲存或同步資料。完成後使用底部「輸出」，可列印 PDF 或匯出 JSON／Markdown；關閉或重新整理頁面後資料會清空。</p></section></div></dialog>
+
+    <dialog class="sheet-dialog" id="export-dialog"><div class="dialog-header"><div><span>EXPORT</span><h2>選擇輸出內容</h2></div><button type="button" data-close-dialog aria-label="關閉輸出選單">×</button></div><div class="dialog-body export-options"><button class="export-option" type="button" data-export="current-pdf"><strong>目前頁面 PDF</strong><small>只輸出目前正在查看的分頁</small></button><button class="export-option" type="button" data-export="all-pdf"><strong>完整紀錄 PDF</strong><small>工程概要、複核、放行／拆模全部輸出</small></button><button class="export-option" type="button" data-export="json"><strong>JSON 資料</strong><small>適合匯入資料庫或後續系統</small></button><button class="export-option" type="button" data-export="markdown"><strong>Markdown 摘要</strong><small>適合人工閱讀與文件留存</small></button></div></dialog>
+
+    <dialog class="sheet-dialog" id="clear-dialog"><div class="dialog-header"><div><span>CLEAR RECORD</span><h2>清空全部資料</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div><div class="dialog-body clear-confirmation"><p>將清除模板工程表單的所有輸入內容，且無法復原。</p></div><div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>取消</button><button class="confirm-button danger-button" id="confirm-clear" type="button">確認清空</button></div></dialog>
+
+    <script src="./template.js" defer></script>
+  </body>
+</html>
