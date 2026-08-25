@@ -19,7 +19,8 @@
 
     <header class="app-header">
       <nav class="header-nav" aria-label="主要功能">
-        <a class="header-action header-link" href="./index.html">工程工具</a>
+        <a class="header-action home-action" href="./index.html" aria-label="返回工具首頁">←</a>
+        <a class="header-action header-link" href="#template-tool" aria-current="page">檢查紀錄</a>
         <button class="header-action help-action" id="help-button" type="button">使用說明 <span aria-hidden="true">?</span></button>
       </nav>
     </header>
@@ -32,13 +33,6 @@
         </div>
         <span id="record-identity">尚未指定構件</span>
       </div>
-
-      <nav class="record-switcher" aria-label="工程記錄類型">
-        <a href="./diaphragm-wall.html"><strong>連續壁</strong><small>Diaphragm Wall</small></a>
-        <a href="./index.html#tool-index"><strong>導溝</strong><small>Guide Wall</small></a>
-        <a href="./index.html#tool-index"><strong>鋼筋籠</strong><small>Rebar Cage</small></a>
-        <button type="button" aria-current="page"><strong>模板</strong><small>Formwork</small></button>
-      </nav>
 
       <nav class="tab-navigation" aria-label="模板工程分頁">
         <div class="tab-row" role="tablist" aria-label="基本資料">

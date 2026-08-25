@@ -28,9 +28,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .skip-link:focus { top: 8px; }
 
 .app-header { position: sticky; top: 0; z-index: 200; height: calc(var(--header-height) + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); background: color-mix(in oklch, var(--paper) 96%, transparent); border-bottom: 1px solid var(--line-dark); backdrop-filter: blur(8px); }
-.header-nav { display: grid; grid-template-columns: 1fr 1fr; width: min(100%, 880px); height: var(--header-height); margin: 0 auto; }
+.header-nav { display: grid; grid-template-columns: 56px 1fr 1fr; width: min(100%, 880px); height: var(--header-height); margin: 0 auto; }
 .header-action { display: inline-grid; place-items: center; min-height: 44px; border: 0; border-right: 1px solid var(--line); background: transparent; font-size: .8125rem; font-weight: 700; letter-spacing: .02em; text-decoration: none; }
 .header-action:last-child { border-right: 0; }
+.home-action { font-size: 1.35rem; font-weight: 400; }
 .header-link:active, .header-action[aria-current="page"] { background: var(--surface); }
 .help-action span { display: inline-grid; width: 19px; height: 19px; margin-left: 5px; place-items: center; border: 1px solid var(--line-dark); border-radius: 50%; font-size: .7rem; }
 
@@ -40,12 +41,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .tool-title h1 { margin: 0; font-family: "Noto Serif TC", "PMingLiU", serif; font-size: 1.375rem; line-height: 1.2; letter-spacing: .02em; }
 .tool-title > span { max-width: 45%; color: var(--soft); font-size: .75rem; text-align: right; }
 
-.record-switcher { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; padding: 10px 12px; background: var(--surface); border-top: 1px solid var(--line-dark); border-bottom: 1px solid var(--line-dark); }
-.record-switcher a, .record-switcher button { display: grid; place-items: center; min-width: 0; min-height: 44px; padding: 6px 5px; border: 1px solid var(--line); border-radius: 2px; background: var(--paper); color: var(--soft); font-size: .75rem; font-weight: 700; text-align: center; text-decoration: none; white-space: nowrap; }
-.record-switcher a strong, .record-switcher button strong { font-size: .75rem; }
-.record-switcher a small, .record-switcher button small { margin-top: 1px; color: var(--muted); font-size: .56rem; font-weight: 700; letter-spacing: .01em; }
-.record-switcher button[aria-current="page"] { border-color: var(--line-dark); color: var(--ink); box-shadow: inset 0 -2px var(--accent); }
-.record-switcher a:active, .record-switcher button:active { background: var(--surface-strong); }
 
 .tab-navigation { display: grid; gap: 5px; padding: 8px; background: var(--surface); border-bottom: 1px solid var(--line-dark); }
 .tab-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
@@ -169,8 +164,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .print-report { display: none; }
 
 @media (max-width: 560px) {
-  .record-switcher { gap: 5px; padding-inline: 8px; }
-  .record-switcher a, .record-switcher button { font-size: .6875rem; }
   .panel-heading p { max-width: 42%; }
   .check-card { grid-template-columns: minmax(0, 1fr); }
   .check-card .field { grid-template-columns: 88px minmax(0, 1fr); align-items: center; }

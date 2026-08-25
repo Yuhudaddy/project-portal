@@ -62,7 +62,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 .header-nav {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 56px 1fr 1fr;
   width: min(100%, 880px);
   height: var(--header-height);
   margin: 0 auto;
@@ -81,6 +81,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   letter-spacing: 0.02em;
   text-decoration: none;
 }
+.home-action { font-size: 1.35rem; font-weight: 400; }
 .header-action:last-child { border-right: 0; }
 .header-action[aria-current="page"] { background: var(--surface); }
 .header-action:active { background: var(--surface-strong); }
