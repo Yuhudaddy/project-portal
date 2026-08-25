@@ -85,6 +85,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   text-decoration: none;
 }
 .home-action { font-size: 1.35rem; font-weight: 400; }
+.help-action { display: inline-flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap; }
 .header-action:last-child { border-right: 0; }
 .header-action[aria-current="page"] { background: var(--surface); }
 .header-action:active { background: var(--surface-strong); }
@@ -92,7 +93,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   display: inline-grid;
   width: 19px;
   height: 19px;
-  margin-left: 5px;
   place-items: center;
   border: 1px solid var(--line-dark);
   border-radius: 50%;
