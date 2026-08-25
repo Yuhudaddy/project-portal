@@ -443,7 +443,7 @@ function renderCheckCards(type) {
   target.innerHTML = state[type].checks.map((check, index) => `
     <article class="check-card ${check.result === "不符合" ? "is-failed" : ""}">
       <div class="check-card-head"><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(check.item)}</strong></div>
-      <p>${esc(qualityCheckStandard(index, check.standard))}</p>
+      <p>${esc(type === "quality" ? qualityCheckStandard(index, check.standard) : check.standard)}</p>
       <div class="check-card-fields">
         <label class="field"><span>現場紀錄／實測</span><input type="text" value="${esc(check.actual)}" data-check-item="${type}" data-check-index="${index}" data-check-field="actual" /></label>
         <label class="field result-field"><span>複核結果</span><select data-check-item="${type}" data-check-index="${index}" data-check-field="result">${resultOptions(check.result)}</select></label>
@@ -700,7 +700,7 @@ function renderPrint() {
     const unitType = state.wall.unitType;
     const selectedKey = unitType === "公單元" ? "embedmentMale" : unitType === "母單元" ? "embedmentFemale" : unitType === "公母單元" ? "embedmentBoth" : null;
     if (config.key.startsWith("embedment") && selectedKey && config.key !== selectedKey) return "";
-    return `<tr><td class="text-left">${esc(config.label)}</td><td>${esc(state.quality.standards[config.key])}</td><td>${esc(config.unit)}</td><td class="text-left">${esc(qualityStandardText(config.key))}</td></tr>`;
+    return `<tr><td class="text-left">${esc(config.label)}</td><td class="text-left">${esc(qualityStandardText(config.key))}</td><td>${esc(state.quality.standards[config.key])}</td><td>${esc(config.unit)}</td></tr>`;
   }).filter(Boolean).join("");
   const qualityProject = state.overview.project;
   const qualityIdentity = [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
@@ -716,7 +716,7 @@ function renderPrint() {
       <div><span>澆置頂端高程</span><strong>GL ${esc(display(state.wall.topElevation))} m</strong></div>
       <div><span>設計澆置高度／設計數量</span><strong>${fixed(height)} m ／ ${esc(display(state.wall.designVolume))} m³</strong></div>
     </div></section>
-    <section class="print-section compact-print-section"><h2>本公司標準值</h2><table class="print-table quality-print-table"><thead><tr><th>設定項目</th><th>數值</th><th>單位</th><th>判定基準</th></tr></thead><tbody>${qualityStandardRows}</tbody></table></section>
+    <section class="print-section compact-print-section"><h2>檢查項目</h2><table class="print-table quality-standard-print-table"><thead><tr><th>項目</th><th>判定標準</th><th>數值</th><th>單位</th></tr></thead><tbody>${qualityStandardRows}</tbody></table></section>
     <section class="print-section compact-print-section"><h2>品質自檢項目</h2><table class="print-table quality-print-table"><thead><tr><th>項次</th><th>檢查項目</th><th>檢查標準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${qualityRows}</tbody></table></section>
     <section class="print-section quality-note-section"><h2>缺失及改善結果</h2><div class="print-note">${esc(display(state.quality.note))}</div></section>${printFooter()}`;
 
@@ -1017,13 +1017,13 @@ function exportMarkdown() {
     ``,
     `## 品質自檢`,
     ``,
-    `### 本公司標準值`,
+    `### 檢查項目`,
     ``,
-    `| 設定項目 | 數值 | 單位 | 判定基準 |`,
-    `| --- | ---: | --- | --- |`,
+    `| 項目 | 判定標準 | 數值 | 單位 |`,
+    `| --- | --- | ---: | --- |`,
     ...QUALITY_STANDARD_CONFIG
       .filter(config => Object.prototype.hasOwnProperty.call(data.quality_self_check.standards, config.key))
-      .map(config => `| ${markdownCell(config.label)} | ${markdownCell(data.quality_self_check.standards[config.key]?.value)} | ${markdownCell(config.unit)} | ${markdownCell(data.quality_self_check.standards[config.key]?.display)} |`),
+      .map(config => `| ${markdownCell(config.label)} | ${markdownCell(data.quality_self_check.standards[config.key]?.display)} | ${markdownCell(data.quality_self_check.standards[config.key]?.value)} | ${markdownCell(config.unit)} |`),
     ``,
     `### 檢查項目`,
     ``,
@@ -1056,6 +1056,142 @@ function exportMarkdown() {
 
 function exportJson() {
   downloadText(`${JSON.stringify(exportData(), null, 2)}\n`, "application/json;charset=utf-8", exportFileName("json"));
+}
+
+function importText(value) {
+  return value === null || value === undefined ? "" : String(value);
+}
+
+function importResult(value) {
+  return ["待確認", "符合", "不符合", "不適用"].includes(value) ? value : "待確認";
+}
+
+function importChecklistItems(definitions, items) {
+  const source = Array.isArray(items) ? items : [];
+  return definitions.map(([item, standard, placeholder], index) => {
+    const record = source[index] || {};
+    return {
+      item: importText(record.item) || item,
+      standard: importText(record.standard) || standard,
+      placeholder: placeholder || "",
+      actual: importText(record.actual),
+      result: importResult(record.result)
+    };
+  });
+}
+
+function importJsonPayload(payload) {
+  const supportedTypes = ["diaphragm_wall_field_record", "continuous_wall_field_record"];
+  if (!payload || !supportedTypes.includes(payload.record_type)) {
+    throw new Error("這不是連續壁施工紀錄工具所產生的 JSON。");
+  }
+
+  const project = payload.project || {};
+  const wall = payload.wall_unit || {};
+  const excavation = payload.excavation || {};
+  const prework = Array.isArray(payload.prework) ? payload.prework : [];
+  const pouring = payload.pouring || {};
+  const quality = payload.quality_self_check || {};
+  const guideWall = payload.guide_wall_review || payload.trench_review || {};
+  const rebarCage = payload.rebar_cage_review || payload.cage_review || {};
+
+  state.overview = {
+    project: importText(project.name),
+    contractor: importText(project.contractor),
+    date: importText(project.construction_date),
+    reviewer: importText(project.form_filler)
+  };
+  state.wall = {
+    unitType: importText(wall.unit_type),
+    unitNo: importText(wall.unit_no),
+    designDepth: importText(wall.design_depth_m),
+    strength: importText(wall.concrete_strength_kgf_cm2),
+    thickness: importText(wall.thickness_m),
+    length: importText(wall.length_m),
+    topElevation: importText(wall.top_elevation_m),
+    designVolume: importText(wall.design_volume_m3),
+    actualVolume: importText(wall.actual_volume_m3)
+  };
+  state.soil = (Array.isArray(excavation.soil_records) ? excavation.soil_records : [])
+    .map(record => ({ time: importText(record.time) }))
+    .filter(record => record.time);
+  state.depth = (Array.isArray(excavation.depth_confirmations) ? excavation.depth_confirmations : [])
+    .map(record => ({ time: importText(record.confirmation_time), value: importText(record.depth_m) }))
+    .filter(record => record.time || record.value);
+  state.prework = Object.fromEntries(PHASES.map(phase => {
+    const record = prework.find(item => item.phase_id === phase.id) || {};
+    return [phase.id, { start: importText(record.start_time), end: importText(record.finish_time) }];
+  }));
+  state.trucks = (Array.isArray(pouring.trucks) ? pouring.trucks : []).map(record => ({
+    truckNo: importText(record.truck_no),
+    unload: importText(record.unload_time),
+    finish: importText(record.finish_time),
+    volume: importText(record.volume_m3),
+    measured: importText(record.measured_height_m)
+  }));
+
+  const standardValues = { ...QUALITY_STANDARD_DEFAULTS };
+  Object.entries(quality.standards || {}).forEach(([key, value]) => {
+    if (!Object.prototype.hasOwnProperty.call(standardValues, key)) return;
+    standardValues[key] = importText(value && typeof value === "object" ? value.value : value);
+  });
+  state.quality = {
+    note: importText(quality.note),
+    standards: standardValues,
+    checks: importChecklistItems(QUALITY_CHECKS, quality.items)
+  };
+  state.guideWall = {
+    project: importText(guideWall.project),
+    contractor: importText(guideWall.contractor),
+    date: importText(guideWall.review_date),
+    unitNo: importText(guideWall.unit_no),
+    reviewer: importText(guideWall.reviewer),
+    note: importText(guideWall.note),
+    checks: importChecklistItems(GUIDE_WALL_CHECKS, guideWall.items)
+  };
+
+  const importedRebars = Array.isArray(rebarCage.rebar_items) ? rebarCage.rebar_items : [];
+  state.rebarCage = {
+    project: importText(rebarCage.project),
+    date: importText(rebarCage.review_date),
+    unitNo: importText(rebarCage.unit_no),
+    cageNo: importText(rebarCage.cage_no),
+    reviewer: importText(rebarCage.reviewer),
+    note: importText(rebarCage.note),
+    rebars: importedRebars.length ? importedRebars.map(record => ({
+      part: importText(record.part),
+      designNo: importText(record.design_bar_size),
+      designQty: importText(record.design_quantity_spacing),
+      actualNo: importText(record.actual_bar_size),
+      actualQty: importText(record.actual_quantity_spacing),
+      result: importResult(record.result)
+    })) : REBAR_CAGE_PARTS.map(part => ({ part, designNo: "", designQty: "", actualNo: "", actualQty: "", result: "待確認" })),
+    checks: importChecklistItems(REBAR_CAGE_CHECKS, rebarCage.inspection_items)
+  };
+
+  const context = payload.export_context || {};
+  const importedTool = ["diaphragmWall", "guideWall", "rebarCage"].includes(context.active_tool) ? context.active_tool : "diaphragmWall";
+  const importedTab = TAB_LABELS[context.active_tab] ? context.active_tab : "overview";
+  setInitialInputs();
+  setChecklistInputs();
+  setQualityInputs();
+  $("#phase-select").value = PHASES[0].id;
+  renderPhaseEditor();
+  renderAll();
+  showTool(importedTool);
+  if (importedTool === "diaphragmWall") showTab(importedTab);
+  syncAllDateTimeDisplays();
+}
+
+async function importJsonFile(file) {
+  const status = $("#import-status");
+  try {
+    const payload = JSON.parse(await file.text());
+    importJsonPayload(payload);
+    status.textContent = "匯入完成：已回填連續壁、導溝與鋼筋籠全部分頁。";
+  } catch (error) {
+    status.textContent = `匯入失敗：${error.message || "JSON 格式無法讀取"}`;
+  }
 }
 
 function handleExport(format) {
@@ -1155,10 +1291,17 @@ function initialize() {
   $("#confirm-clear").addEventListener("click", clearAllData);
   $("#export-button").addEventListener("click", () => {
     $("#export-current-label").textContent = currentExportLabel();
+    $("#import-status").textContent = "";
     $("#export-dialog").showModal();
   });
   $$('[data-close-dialog]').forEach(button => button.addEventListener("click", () => button.closest("dialog").close()));
   $$('[data-export-format]').forEach(button => button.addEventListener("click", () => handleExport(button.dataset.exportFormat)));
+  $("#import-json-button").addEventListener("click", () => $("#json-file-input").click());
+  $("#json-file-input").addEventListener("change", async event => {
+    const file = event.target.files?.[0];
+    if (file) await importJsonFile(file);
+    event.target.value = "";
+  });
   $$('[data-select-tool]').forEach(button => button.addEventListener("click", () => showTool(button.dataset.selectTool)));
 
   $("#add-soil").addEventListener("click", () => openSoilDialog());

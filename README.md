@@ -14,7 +14,7 @@ The site opens at `index.html`, which is the tool index. The Diaphragm Wall entr
 2. Select the Diaphragm Wall or Formwork tool from the visible record index. For the Diaphragm Wall tool, select the Diaphragm Wall, Guide Wall, or Rebar Cage record from the visible record switcher.
 3. Enter the project and wall baseline, then add excavation, pre-work, and concrete records.
 4. Review calculated counts, cumulative volume, estimated rise, measured rise, and differences.
-5. Choose **輸出**, select the current form or the complete record PDF, and share the result to LINE or Files. The template tool also offers JSON and Markdown data export.
+5. Choose **輸出**, select the current form or the complete record PDF, and share the result to LINE or Files. The Diaphragm Wall tool can also export JSON/Markdown; JSON is the canonical structured file and can be imported back through **輸出 → 匯入施工紀錄** on the same Diaphragm Wall page. Markdown is for reading and archiving only and is not used for form restoration. The template tool has its own separate JSON/Markdown export and is not compatible with the Diaphragm Wall import.
 
 The tool intentionally has no draft storage or server-side sync. Refreshing or closing the page clears the in-memory record; the PDF is the handoff artifact.
 

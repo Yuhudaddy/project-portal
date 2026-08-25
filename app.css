@@ -692,6 +692,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .export-options button:active { background: var(--surface-strong); }
 .export-options span { color: var(--muted); font-size: 0.6875rem; }
 .export-options strong { font-size: 0.875rem; }
+.export-status { min-height: 1.2em; margin: 2px 0 0; color: var(--soft); font-size: 0.72rem; line-height: 1.5; }
 
 .undo-toast {
   position: fixed;
@@ -827,11 +828,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .rebar-cage-print-table td, .rebar-cage-check-print-table td { height: 5.5mm; padding: 0.7mm 1mm; font-size: 6.3pt; }
   .quality-print-table th { padding: 0.9mm 0.7mm; font-size: 5.8pt; }
   .quality-print-table td { height: 5.5mm; padding: 0.7mm 0.9mm; font-size: 6.2pt; }
+  .quality-standard-print-table th { padding: 0.9mm 0.7mm; font-size: 5.8pt; }
+  .quality-standard-print-table td { height: 5.5mm; padding: 0.7mm 0.9mm; font-size: 6.2pt; }
   .checklist-print-table th:first-child, .rebar-cage-print-table th:first-child, .rebar-cage-check-print-table th:first-child { width: 7%; }
   .quality-print-table th:first-child { width: 6%; }
   .quality-print-table th:nth-child(2) { width: 23%; }
   .quality-print-table th:nth-child(3) { width: 28%; }
   .quality-print-table th:last-child { width: 11%; }
+  .quality-standard-print-table th:first-child { width: 28%; }
+  .quality-standard-print-table th:nth-child(2) { width: 43%; }
+  .quality-standard-print-table th:nth-child(3) { width: 15%; }
+  .quality-standard-print-table th:last-child { width: 10%; }
   .checklist-print-table th:nth-child(2), .rebar-cage-check-print-table th:nth-child(2) { width: 20%; }
   .checklist-print-table th:nth-child(3), .rebar-cage-check-print-table th:nth-child(3) { width: 30%; }
   .checklist-print-table th:last-child, .rebar-cage-check-print-table th:last-child { width: 12%; }
