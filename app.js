@@ -719,15 +719,15 @@ function renderPrint() {
     <section class="print-section compact-print-section"><h2>品質自檢項目</h2><table class="print-table quality-print-table"><thead><tr><th>項次</th><th>檢查項目</th><th>檢查標準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${qualityRows}</tbody></table></section>
     <section class="print-section quality-note-section"><h2>缺失及改善結果</h2><div class="print-note">${esc(display(state.quality.note))}</div></section>${printFooter()}`;
 
-  const soilRows = state.soil.length ? state.soil.map((record, index) => `<tr><td>${index + 1}</td><td>${esc(record.time)}</td></tr>`).join("") : `<tr><td colspan="2" class="print-empty">尚無出土紀錄</td></tr>`;
+  const soilRows = state.soil.length ? state.soil.map((record, index) => `<tr><td>${index + 1}</td><td class="time-cell">${esc(record.time)}</td></tr>`).join("") : `<tr><td colspan="2" class="print-empty">尚無出土紀錄</td></tr>`;
   const depthRows = state.depth.length ? state.depth.map((record, index) => {
     const value = number(record.value);
     const diff = value !== null && number(state.wall.designDepth) !== null ? value - number(state.wall.designDepth) : null;
-    return `<tr><td>${index + 1}</td><td>${esc(record.time)}</td><td>${fixed(value)}</td><td>${fixed(diff)}</td></tr>`;
+    return `<tr><td>${index + 1}</td><td class="time-cell">${esc(record.time)}</td><td>${fixed(value)}</td><td>${fixed(diff)}</td></tr>`;
   }).join("") : `<tr><td colspan="4" class="print-empty">尚無深度確認</td></tr>`;
   const phaseRows = PHASES.map((phase, index) => {
     const record = state.prework[phase.id];
-    return `<tr><td>${index + 1}</td><td class="text-left">${esc(phase.label)}</td><td>${phase.start ? esc(display(record.start)) : "—"}</td><td>${phase.end ? esc(display(record.end)) : "—"}</td></tr>`;
+    return `<tr><td>${index + 1}</td><td class="text-left">${esc(phase.label)}</td><td class="time-cell">${phase.start ? esc(display(record.start)) : "—"}</td><td class="time-cell">${phase.end ? esc(display(record.end)) : "—"}</td></tr>`;
   }).join("");
   $("#print-excavation-prework").innerHTML = `${printHeader("開挖與前置紀錄", "04–05")}
     <section class="print-section"><h2>04｜開挖紀錄</h2><div class="print-summary">
@@ -741,7 +741,7 @@ function renderPrint() {
     <section class="print-section"><h2>05｜前置紀錄時間紀錄</h2><table class="print-table"><thead><tr><th>項次</th><th>作業項目</th><th>開始時間</th><th>完成時間</th></tr></thead><tbody>${phaseRows}</tbody></table></section>${printFooter()}`;
 
   const pouringRows = truckRows.length ? truckRows.map(row => `<tr>
-    <td>${row.index + 1}</td><td>${esc(row.truckNo)}</td><td>${esc(row.unload)}</td><td>${esc(row.finish)}</td><td>${fixed(row.volume)}</td><td>${fixed(row.cumulative)}</td><td>${fixed(row.expected)}</td><td>${fixed(row.measured)}</td><td>${fixed(row.difference)}</td>
+    <td>${row.index + 1}</td><td>${esc(row.truckNo)}</td><td class="time-cell">${esc(row.unload)}</td><td class="time-cell">${esc(row.finish)}</td><td>${fixed(row.volume)}</td><td>${fixed(row.cumulative)}</td><td>${fixed(row.expected)}</td><td>${fixed(row.measured)}</td><td>${fixed(row.difference)}</td>
   </tr>`).join("") : `<tr><td colspan="9" class="print-empty">尚無澆置紀錄</td></tr>`;
   $("#print-pouring").innerHTML = `${printHeader("澆置紀錄", "06")}
     <section class="print-section"><h2>澆置主控摘要</h2><div class="print-summary">

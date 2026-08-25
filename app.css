@@ -805,6 +805,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-section { margin-top: 4mm; }
   .print-section h2 { margin: 0; padding: 1.3mm 1.8mm; background: #eceeef; border-top: 1pt solid #555; border-bottom: 0.5pt solid #888; font-size: 8.5pt; }
   .print-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-variant-numeric: tabular-nums; }
+  .print-table, .print-table th, .print-table td, .print-summary, .print-summary span, .print-summary strong, .print-meta-grid, .print-meta-grid span, .print-meta-grid strong, .print-footer {
+    font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  }
+  .print-table .time-cell { font-variant-numeric: tabular-nums; letter-spacing: 0; }
   .print-table th { padding: 1.4mm 1mm; background: #f2f3f4; border: 0.5pt solid #999; font-size: 6.5pt; line-height: 1.25; }
   .print-table td { height: 7mm; padding: 1.2mm 1.4mm; border: 0.5pt solid #aaa; font-size: 7.5pt; text-align: center; vertical-align: middle; }
   .print-table td.text-left { text-align: left; }
