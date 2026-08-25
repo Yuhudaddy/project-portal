@@ -6,37 +6,43 @@ const today = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).pad
 const STATUS_OPTIONS = ["待確認", "合格", "不合格", "不適用"];
 
 const COMMON_CHECKS = [
-  ["setout", "放樣線與標示", "軸線、邊線、中心線及完成面標示符合施工圖", "例如：軸線已複核"],
-  ["condition", "模板使用狀態", "模板無過度破損、變形或不堪使用情形", "例如：模板狀況良好"],
-  ["releaseAgent", "脫模劑", "使用經確認可用的水性或油性脫模劑，且未污染鋼筋與預埋件", "填寫水性／油性或不適用"],
+  ["setout", "放樣線與標示", "軸線、邊線、中心線及完成面標示完成；一般放樣誤差控制於 ±2 mm 內", "填寫實測偏差（mm）"],
+  ["condition", "模板外觀與使用狀態", "模板無過度破損、翹曲、變形或影響混凝土外觀與尺寸之情形", "填寫模板狀況"],
+  ["releaseAgent", "脫模劑", "使用經核准之水性或油性脫模劑，塗布均勻且未污染鋼筋、預埋件及施工縫", "水性／油性／不適用"],
+  ["bottomStop", "柱牆底擋板／壓條", "位置、高程及固定方式符合施工圖，無漏漿疑慮", "填寫位置／高程確認"],
   ["tightness", "模板接縫密合", "模板連結緊密，無明顯縫隙、透光或漏漿風險", "例如：接縫無透光"],
-  ["support", "側向支撐與固定", "支撐確實，無滑動、傾倒、沉陷或爆模風險", "填寫支撐狀況"],
-  ["corner", "轉角與防爆模加強", "轉角、接縫及易爆模處已依施工計畫加強", "填寫加強位置"],
-  ["embedded", "預埋件與套管", "位置、數量及固定方式符合施工圖，不因澆置而移位", "填寫預埋確認結果"],
-  ["joint", "施工縫／伸縮縫／吊模", "位置及固定方式符合施工圖與施工詳圖", "填寫位置或不適用"],
-  ["clean", "模板內部清潔", "柱、牆、梁底及板底無木屑、泥砂、積水等雜物", "例如：清潔完成"],
+  ["support", "側向支撐與固定", "支撐及固定確實，無滑動、傾倒、沉陷或爆模風險", "填寫支撐狀況"],
+  ["corner", "轉角與防爆模加強", "轉角、接縫及易爆模處已依施工計畫完成加強", "填寫加強位置"],
+  ["embedded", "預埋件與套管", "位置、尺寸、數量及固定方式符合施工圖，不因澆置而移位", "填寫預埋確認結果"],
+  ["joint", "施工縫／伸縮縫／吊模", "位置、高程及固定方式符合施工圖與施工詳圖", "填寫位置或不適用"],
+  ["clean", "模板內部與清潔口", "柱、牆、梁底及板底無木屑、泥砂、積水等雜物，清潔口已完成清理", "例如：清潔完成"],
   ["loading", "材料堆置與施工動線", "模板及支撐未承受計畫外載重，澆置巡檢動線暢通", "填寫材料堆置狀況"]
 ];
 
 const TYPE_CHECKS = {
   柱: [
     ["cleaningOpening", "柱模清潔口", "澆置前清潔口已預留並完成清理", "填寫清潔口狀況"],
-    ["columnSupport", "柱模側向支撐", "側向支撐及槽鋼固定方式符合支撐計畫", "填寫支撐間距或說明"]
+    ["columnSupport", "柱模側向支撐與槽鋼", "側向支撐、槽鋼固定及間距符合支撐計畫", "填寫實測間距（mm）"],
+    ["columnSection", "柱模斷面尺寸", "柱寬、柱深及位置符合施工圖", "填寫設計／實測尺寸（mm）"]
   ],
   牆: [
     ["vIron", "牆模 V 型鐵擋", "V 型鐵擋方向正確，澆置時不致造成填充不全", "填寫方向確認"],
     ["wallOpening", "牆面預留開孔", "開孔位置、尺寸及防脹隆措施符合圖說", "填寫開孔確認結果"],
-    ["wallSupport", "牆／電梯模板支撐", "側向及電梯模板支撐符合安全計畫", "填寫支撐確認結果"]
+    ["wallSupport", "牆／電梯模板支撐", "側向及電梯模板支撐符合安全計畫", "填寫支撐確認結果"],
+    ["wallDimension", "牆厚與垂直度", "牆厚、牆面垂直度及完成面位置符合圖說與許可差", "填寫設計／實測尺寸（mm）"]
   ],
   梁: [
     ["camber", "梁模預拱", "依圖說或施工計畫確認是否需要預拱", "填寫預拱值或不適用"],
     ["beamTie", "梁側螺桿與槽鋼", "間距及固定方式符合支撐計畫", "填寫實測間距／設計間距"],
-    ["beamBottom", "梁底模清潔", "梁底模清潔完成，無積水及雜物", "例如：清潔完成"]
+    ["beamOpening", "穿梁開口與發泡劑", "穿梁開口位置符合圖說；發泡劑使用已經核准", "填寫位置／材料確認"],
+    ["beamBottom", "梁底模與支撐", "梁底模清潔完成，梁底支撐及大、小梁間距符合計畫", "填寫清潔／間距確認"]
   ],
   板: [
     ["hangingForm", "吊模", "吊模位置、標高及固定方式符合圖說", "填寫吊模確認結果"],
-    ["slabOpening", "板上開口", "開口位置、尺寸及補強需求符合圖說", "填寫開口確認結果"],
+    ["slabJoint", "施工縫／伸縮縫", "位置、標高及固定方式符合圖說；斷熱材已依詳圖設置", "填寫位置或不適用"],
+    ["slabOpening", "板上開口與預留", "開口位置、尺寸及補強需求符合圖說", "填寫開口確認結果"],
     ["slabLoad", "板上材料堆置", "材料堆置符合載重限制與施工計畫", "填寫材料堆置狀況"],
+    ["slabSupport", "板底支撐", "可調鋼管支柱、插銷、水平繫桿及支撐間距符合安全計畫", "填寫支撐確認結果"],
     ["elevationMarker", "板面標高器", "完成面高程、降板及斜率標示清楚", "填寫標高確認結果"]
   ],
   樓梯: [
@@ -318,13 +324,13 @@ function renderPrint() {
   const installRows = state.members.flatMap((member, memberIndex) => {
     ensureMember(member);
     const checks = [...COMMON_CHECKS, ...(TYPE_CHECKS[member.type] || TYPE_CHECKS.其他)];
-    return checks.map((check, index) => { const record = member.checks[check[0]]; return `<tr><td>${memberIndex + 1}.${index + 1}</td><td class="text-left">${printValue(member.type)}｜${printValue(member.id)}</td><td class="text-left">${printValue(check[1])}</td><td class="text-left">${printValue(record?.actual)}</td><td>${printValue(record?.result)}</td></tr>`; });
+    return checks.map((check, index) => { const record = member.checks[check[0]]; return `<tr><td>${memberIndex + 1}.${index + 1}</td><td class="text-left">${printValue(member.type)}｜${printValue(member.id)}</td><td class="text-left">${printValue(check[1])}</td><td class="text-left">${printValue(check[2])}</td><td class="text-left">${printValue(record?.actual)}</td><td>${printValue(record?.result)}</td></tr>`; });
   }).join("");
   const measureRows = state.members.flatMap((member, memberIndex) => (TYPE_MEASURES[member.type] || TYPE_MEASURES.其他).map(id => {
     const rec = member.measures[id] || { design: "", actual: "" }; const tolerance = toleranceFor(member, id, rec.design); const diff = num(rec.design) !== null && num(rec.actual) !== null ? num(rec.actual) - num(rec.design) : null; const result = diff === null ? "待量測" : diff >= tolerance.lower && diff <= tolerance.upper ? "合格" : "不合格"; return `<tr><td>${memberIndex + 1}</td><td class="text-left">${printValue(member.type)}｜${printValue(member.id)}</td><td class="text-left">${MEASURE_LABELS[id][0]}</td><td>${printValue(rec.design)}</td><td>${printValue(rec.actual)}</td><td>${diff === null ? "—" : fixed(diff)}</td><td>${tolerance.label}</td><td>${result}</td></tr>`;
   })).join("");
   $("#print-template-checks").innerHTML = `${printHeader("模板安裝與尺寸複核", "03–04")}
-    <section class="print-section"><h2>03｜模板安裝複核</h2><table class="print-table"><thead><tr><th>構件</th><th>類型／編號</th><th>複核項目</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${installRows || `<tr><td colspan="5">尚無構件資料</td></tr>`}</tbody></table></section>
+    <section class="print-section"><h2>03｜模板安裝複核</h2><table class="print-table"><thead><tr><th>構件</th><th>類型／編號</th><th>複核項目</th><th>判定標準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${installRows || `<tr><td colspan="6">尚無構件資料</td></tr>`}</tbody></table></section>
     <section class="print-section"><h2>04｜尺寸複核</h2><table class="print-table"><thead><tr><th>構件</th><th>類型／編號</th><th>量測項目</th><th>設計／基準<br />mm</th><th>實測<br />mm</th><th>差值<br />mm</th><th>容許差</th><th>結果</th></tr></thead><tbody>${measureRows || `<tr><td colspan="8">尚無量測資料</td></tr>`}</tbody></table></section>${printFooter()}`;
 
   const releaseRows = RELEASE_CHECKS.map(([id, label, standard], index) => { const record = state.release.checks[id] || { actual: "", result: "待確認" }; return `<tr><td>${index + 1}</td><td class="text-left">${label}</td><td class="text-left">${standard}</td><td class="text-left">${printValue(record.actual)}</td><td>${printValue(record.result)}</td></tr>`; }).join("");
