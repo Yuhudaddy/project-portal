@@ -225,11 +225,11 @@
       </section>
     </main>
 
-    <aside class="action-dock" aria-label="輸出工具">
+    <aside class="action-dock" aria-label="檔案處理工具">
       <div><span>目前頁面</span><strong id="active-tab-label">工程概要</strong></div>
       <div class="dock-actions">
         <button class="clear-button" id="clear-button" type="button">清空</button>
-        <button id="export-button" type="button">輸出</button>
+        <button id="export-button" type="button">檔案</button>
       </div>
     </aside>
 
@@ -307,7 +307,7 @@
     </dialog>
 
     <dialog class="sheet-dialog export-dialog" id="export-dialog">
-      <div class="dialog-header"><div><span>EXPORT</span><h2>選擇輸出格式</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+      <div class="dialog-header"><div><span>FILE</span><h2>檔案處理</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
       <div class="dialog-body export-options">
         <section class="export-option-group">
           <h3>PDF</h3>
@@ -315,7 +315,7 @@
           <button type="button" data-export-format="pdf-all"><span>輸出完整紀錄</span><strong>施工紀錄及複核表</strong><small>共 6 頁</small></button>
         </section>
         <section class="export-option-group">
-          <h3>資料格式</h3>
+          <h3>資料檔</h3>
           <button type="button" data-export-format="json"><span>匯出結構化資料</span><strong>JSON</strong><small>建議用於資料庫匯入</small></button>
           <button type="button" id="import-json-button"><span>匯入施工紀錄</span><strong>JSON</strong><small>回填本頁全部分頁</small></button>
           <button type="button" data-export-format="markdown"><span>匯出文字紀錄</span><strong>Markdown</strong><small>供人工閱讀及歸檔，不提供回填</small></button>
