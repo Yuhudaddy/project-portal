@@ -62,20 +62,24 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 .header-nav {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   width: min(100%, 880px);
   height: var(--header-height);
   margin: 0 auto;
 }
 
 .header-action {
+  display: grid;
+  place-items: center;
   min-height: 44px;
   border: 0;
   border-right: 1px solid var(--line);
   background: transparent;
+  color: inherit;
   font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+  text-decoration: none;
 }
 .header-action:last-child { border-right: 0; }
 .header-action[aria-current="page"] { background: var(--surface); }
