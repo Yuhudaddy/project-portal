@@ -200,8 +200,10 @@ function renderCheckCard(check, index, collection, member) {
   const record = member.checks[check[0]] || { actual: "", result: "待確認" };
   return `<article class="check-card ${record.result === "不合格" ? "is-failed" : record.result === "合格" || record.result === "不適用" ? "is-passed" : "is-pending"}" data-check-card="${collection}" data-check-id="${esc(check[0])}">
     <div><h4>${index + 1}. ${esc(check[1])}</h4><p>${esc(check[2])}</p></div>
-    <label class="field"><span>紀錄／實測</span><input type="text" data-check-actual="${collection}" data-check-collection="${collection}" data-check-id="${esc(check[0])}" value="${esc(record.actual)}" placeholder="${esc(check[3] || "填寫現場結果")}" /></label>
-    <label class="field"><span>結果</span><select data-check-result="${collection}" data-check-id="${esc(check[0])}">${statusOptions(record.result)}</select></label>
+    <div class="check-card-fields">
+      <label class="field"><span>紀錄／實測</span><input type="text" data-check-actual="${collection}" data-check-collection="${collection}" data-check-id="${esc(check[0])}" value="${esc(record.actual)}" placeholder="${esc(check[3] || "填寫現場結果")}" /></label>
+      <label class="field result-field"><span>結果</span><select data-check-result="${collection}" data-check-id="${esc(check[0])}">${statusOptions(record.result)}</select></label>
+    </div>
   </article>`;
 }
 

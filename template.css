@@ -104,9 +104,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .record-heading span { color: var(--muted); font-size: .6875rem; font-weight: 800; letter-spacing: .08em; }
 .record-heading h3 { margin: 0; font-size: .9375rem; }
 .check-card-list { display: grid; gap: 8px; }
-.check-card { display: grid; grid-template-columns: minmax(0, 1fr) 116px; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); background: color-mix(in oklch, var(--paper) 75%, var(--surface)); }
+.check-card { display: block; padding: 11px 12px; border: 1px solid var(--line); background: color-mix(in oklch, var(--paper) 75%, var(--surface)); }
 .check-card h4 { margin: 0; font-size: .8125rem; }
 .check-card p { margin: 3px 0 8px; color: var(--muted); font-size: .6875rem; }
+.check-card-fields { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(100px, .8fr); gap: 10px; }
 .check-card .field input, .check-card .field select { min-height: 40px; font-size: .875rem; }
 .check-card .field > span { font-size: .65625rem; }
 .check-card.is-failed { border-color: var(--danger); }
@@ -166,9 +167,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 @media (max-width: 560px) {
   .panel-heading p { max-width: 42%; }
-  .check-card { grid-template-columns: minmax(0, 1fr); }
-  .check-card .field { grid-template-columns: 88px minmax(0, 1fr); align-items: center; }
-  .check-card .field > span { margin-right: 4px; }
+  .check-card-fields { grid-template-columns: minmax(0, 1.55fr) minmax(92px, .75fr); gap: 8px; }
   .measurement-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .measurement-grid .field > span { font-size: .625rem; }
   .decision-panel { grid-template-columns: 1fr; }
