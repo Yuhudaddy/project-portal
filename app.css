@@ -814,7 +814,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   body[data-print-scope="current"] .print-page.print-selected { display: block; }
   .print-document-header {
     display: flex;
-    align-items: end;
+    align-items: center;
     justify-content: space-between;
     gap: 12mm;
     padding: 0 0 3mm;
@@ -823,7 +823,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   }
   .print-document-header p { margin: 2.5mm 0 0; color: #555; font-size: 6.5pt; letter-spacing: 0.12em; }
   .print-document-header h1 { margin: 1mm 0 0; font-family: "Noto Serif TC", "PMingLiU", serif; font-size: 16pt; }
-  .print-header-meta { display: flex; align-items: center; justify-content: flex-end; gap: 3mm; min-width: 0; }
+  .print-header-meta { display: flex; flex: 0 0 100mm; align-items: center; justify-content: center; gap: 3mm; min-width: 0; }
   .print-header-meta-body { min-width: 0; flex: 0 1 auto; }
   .print-header-project-lines { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 5mm; row-gap: .8mm; max-width: 82mm; }
   .print-header-project-lines > div { display: flex; min-width: 0; gap: 1mm; align-items: baseline; white-space: nowrap; }
