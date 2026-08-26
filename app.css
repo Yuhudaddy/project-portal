@@ -824,13 +824,13 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-document-header p { margin: 2.5mm 0 0; color: #555; font-size: 6.5pt; letter-spacing: 0.12em; }
   .print-document-header h1 { margin: 1mm 0 0; font-family: "Noto Serif TC", "PMingLiU", serif; font-size: 16pt; }
   .print-header-meta { display: flex; align-items: center; justify-content: flex-end; gap: 3mm; min-width: 0; }
-  .print-header-meta-body { min-width: 0; }
-  .print-header-project-grid { display: grid; grid-template-columns: repeat(2, minmax(24mm, 1fr)); border-top: 0.5pt solid #888; border-left: 0.5pt solid #888; }
-  .print-header-project-grid > div { min-width: 0; padding: 1mm 1.5mm; border-right: 0.5pt solid #888; border-bottom: 0.5pt solid #888; }
-  .print-header-project-grid span { display: block; color: #555; font-size: 5.5pt; }
-  .print-header-project-grid strong { display: block; margin-top: .5mm; max-width: 38mm; overflow: hidden; font-size: 6.5pt; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+  .print-header-meta-body { min-width: 0; flex: 0 1 auto; }
+  .print-header-project-lines { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 5mm; row-gap: .8mm; max-width: 82mm; }
+  .print-header-project-lines > div { display: flex; min-width: 0; gap: 1mm; align-items: baseline; white-space: nowrap; }
+  .print-header-project-lines span { flex: 0 0 auto; color: #555; font-size: 5.7pt; }
+  .print-header-project-lines strong { min-width: 0; overflow: hidden; font-size: 6.5pt; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
   .print-header-identity { display: block; margin-top: 1mm; color: #555; font-size: 6.5pt; text-align: right; }
-  .print-logo { width: 12mm; height: 12mm; object-fit: contain; filter: grayscale(1); }
+  .print-logo { flex: 0 0 12mm; width: 12mm; height: 12mm; object-fit: contain; filter: grayscale(1); }
   .print-header-meta strong { font-size: 8.5pt; text-align: right; }
   .print-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); margin-top: 4mm; border-top: 0.5pt solid #888; border-left: 0.5pt solid #888; }
   .print-meta-grid.three { grid-template-columns: repeat(3, 1fr); }

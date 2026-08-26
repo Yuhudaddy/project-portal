@@ -662,12 +662,12 @@ function removeRebar(index) {
 function printHeader(title, sequence, project = state.overview.project, recordIdentity = null, overviewData = state.overview) {
   const identity = recordIdentity || [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
   const headerData = overviewData || {};
-  return `<header class="print-document-header"><div><p>DIAPHRAGM WALL FIELD RECORD / ${sequence}</p><h1>${esc(title)}</h1></div><div class="print-header-meta"><div class="print-header-meta-body"><div class="print-header-project-grid">
-    <div><span>工程名稱</span><strong>${esc(display(headerData.project || project))}</strong></div>
-    <div><span>施工日期</span><strong>${esc(display(headerData.date))}</strong></div>
-    <div><span>施工廠商</span><strong>${esc(display(headerData.contractor))}</strong></div>
-    <div><span>填表人</span><strong>${esc(display(headerData.reviewer))}</strong></div>
-  </div><strong class="print-header-identity">${esc(identity)}</strong></div><img class="print-logo" src="./taisei.png" alt="" /></div></header>`;
+  return `<header class="print-document-header"><div><p>DIAPHRAGM WALL FIELD RECORD / ${sequence}</p><h1>${esc(title)}</h1></div><div class="print-header-meta"><div class="print-header-meta-body"><div class="print-header-project-lines">
+    <div><span>工程名稱：</span><strong>${esc(display(headerData.project || project))}</strong></div>
+    <div><span>施工日期：</span><strong>${esc(display(headerData.date))}</strong></div>
+    <div><span>施工廠商：</span><strong>${esc(display(headerData.contractor))}</strong></div>
+    <div><span>填表人：</span><strong>${esc(display(headerData.reviewer))}</strong></div>
+  </div><strong class="print-header-identity">${esc(identity)}</strong></div><img class="print-logo" src="./taisei.png" alt="大成建設標誌" /></div></header>`;
 }
 
 function printFooter() {
@@ -837,13 +837,22 @@ function renderPrint() {
     <section class="print-section compact-print-section"><h2>組裝與吊放條件</h2><table class="print-table rebar-cage-check-print-table"><thead><tr><th>項次</th><th>複核項目</th><th>確認基準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${rebarCageRows}</tbody></table></section>${printFooter()}`;
 }
 
-function exportPdf(scope) {
+function waitForPrintAssets() {
+  const images = $$(".print-report img");
+  return Promise.all(images.map(image => image.complete ? Promise.resolve() : new Promise(resolve => {
+    image.addEventListener("load", resolve, { once: true });
+    image.addEventListener("error", resolve, { once: true });
+  })));
+}
+
+async function exportPdf(scope) {
   renderPrint();
   document.body.dataset.printScope = scope;
   const requested = activeTool === "diaphragmWall" ? PRINT_TAB_GROUPS[activeTab] : PRINT_TAB_GROUPS[activeTool];
   const current = requested === "overview-wall" ? "quality" : requested;
   $$('.print-page').forEach(page => page.classList.toggle("print-selected", page.dataset.printTab === current));
   $("#export-dialog").close();
+  await waitForPrintAssets();
   window.print();
 }
 
