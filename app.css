@@ -744,6 +744,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .pouring-chart .chart-legend text { fill: #42474d; font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif; font-size: 11px; }
 .pouring-chart .chart-empty { fill: #656b72; font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif; font-size: 13px; }
 .pouring-chart-note { margin: 2mm 0 0; color: #656b72; font-size: 6.5pt; }
+.pouring-layout { display: block; }
 
 @media (max-width: 560px) {
   .example-actions { grid-template-columns: 1fr; }
@@ -797,6 +798,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 
 @page { size: A4 portrait; margin: 10mm; }
+@page pouring-landscape { size: A4 landscape; margin: 10mm; }
 
 @media print {
   :root { background: #fdfdfd; color: #222; }
@@ -804,6 +806,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .app-header, .app-shell, .action-dock, .sheet-dialog, .undo-toast, .skip-link { display: none !important; }
   .print-report { display: block; }
   .print-page { display: none; break-after: page; }
+  .print-page[data-print-tab="pouring"] { page: pouring-landscape; }
   .print-page:last-child { break-after: auto; }
   body[data-print-scope="all"] .print-page { display: block; }
   body[data-print-scope="current"] .print-page.print-selected { display: block; }
@@ -843,10 +846,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-summary strong { display: block; margin-top: 1mm; font-size: 8.5pt; }
   .print-note { min-height: 18mm; padding: 2mm; border: 0.5pt solid #888; font-size: 7.5pt; white-space: pre-wrap; }
   .print-footer { margin-top: 3mm; color: #666; font-size: 6pt; text-align: right; }
-  .print-page, .print-section, .print-table tr { break-inside: avoid; }
+  .print-page { break-inside: auto; }
+  .print-section, .print-table tr { break-inside: avoid; }
+  .pouring-layout { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 6mm; align-items: start; }
+  .pouring-layout .print-section { margin-top: 3mm; }
+  .pouring-layout .print-common-overview, .pouring-layout .print-wall-info { margin-top: 0; }
+  .pouring-left { min-width: 0; }
   .pouring-chart-section { break-inside: avoid; }
-  .pouring-chart { margin-top: 2.5mm; padding: 2mm 2.5mm 1.5mm; }
+  .pouring-chart-section h2 { margin-bottom: 2mm; }
+  .pouring-chart { margin-top: 0; padding: 2mm 2.5mm 1.5mm; }
   .pouring-chart-note { margin-top: 1.5mm; font-size: 6pt; }
+  .print-page[data-print-tab="pouring"] .print-footer { display: none; }
   .compact-meta > div { min-height: 9mm; }
   .compact-print-section { margin-top: 2.5mm; }
   .rebar-cage-print-table th, .rebar-cage-check-print-table th { padding: 1mm 0.8mm; font-size: 5.8pt; }

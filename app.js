@@ -668,6 +668,34 @@ function printFooter() {
   return `<footer class="print-footer">資料版本：${APP_VERSION}｜輸出時間：${esc(new Date().toLocaleString("zh-TW", { hour12: false }))}<br />本文件經現場相關人員簽核後始為正式紀錄。</footer>`;
 }
 
+function printProjectOverview(data, options = {}) {
+  const dateLabel = options.dateLabel || "施工日期";
+  const reviewerLabel = options.reviewerLabel || "填表人";
+  const fields = [
+    ["工程名稱", data.project],
+    ["施工廠商", data.contractor],
+    [dateLabel, data.date],
+    [reviewerLabel, data.reviewer]
+  ];
+  return `<section class="print-section print-common-overview"><h2>工程概要</h2><div class="print-meta-grid three">${fields.map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(display(value))}</strong></div>`).join("")}</div></section>`;
+}
+
+function printWallInfo() {
+  const height = designHeight();
+  const designVolume = number(state.wall.designVolume) ?? calculatedDesignVolume();
+  return `<section class="print-section print-wall-info"><h2>壁體資訊</h2><div class="print-meta-grid three">
+    <div><span>單元類型</span><strong>${esc(display(state.wall.unitType))}</strong></div>
+    <div><span>樁／壁編號</span><strong>${esc(display(state.wall.unitNo))}</strong></div>
+    <div><span>混凝土強度（kgf/cm2）</span><strong>${esc(display(state.wall.strength))}</strong></div>
+    <div><span>設計深度（GL, m）</span><strong>GL ${esc(display(state.wall.designDepth))} m</strong></div>
+    <div><span>壁厚／單元長度</span><strong>${esc(display(state.wall.thickness))} m ／ ${esc(display(state.wall.length))} m</strong></div>
+    <div><span>澆置頂端高程</span><strong>GL ${number(state.wall.topElevation) !== null && number(state.wall.topElevation) >= 0 ? "+" : ""}${esc(display(state.wall.topElevation))} m</strong></div>
+    <div><span>設計澆置高度</span><strong>${fixed(height)} m</strong></div>
+    <div><span>設計數量</span><strong>${designVolume === null ? "—" : fixed(designVolume)} m³</strong></div>
+    <div><span>實際數量</span><strong>${esc(display(state.wall.actualVolume))} m³</strong></div>
+  </div></section>`;
+}
+
 function pouringChartSvg(rows) {
   const designVolume = number(state.wall.designVolume) ?? calculatedDesignVolume();
   const designHeightValue = designHeight();
@@ -742,17 +770,7 @@ function renderPrint() {
   const qualityProject = state.overview.project;
   const qualityIdentity = [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
   $("#print-quality").innerHTML = `${printHeader("連續壁施工品質自檢總表", "03", qualityProject, qualityIdentity)}
-    <section class="print-section"><h2>基本資料</h2><div class="print-meta-grid three compact-meta">
-      <div><span>工程名稱</span><strong>${esc(display(state.overview.project))}</strong></div>
-      <div><span>施工廠商</span><strong>${esc(display(state.overview.contractor))}</strong></div>
-      <div><span>施工日期</span><strong>${esc(display(state.overview.date))}</strong></div>
-      <div><span>單元類型</span><strong>${esc(display(state.wall.unitType))}</strong></div>
-      <div><span>單元編號</span><strong>${esc(display(state.wall.unitNo))}</strong></div>
-      <div><span>混凝土強度</span><strong>${esc(display(state.wall.strength))}</strong></div>
-      <div><span>設計深度</span><strong>GL ${esc(display(state.wall.designDepth))} m</strong></div>
-      <div><span>澆置頂端高程</span><strong>GL ${esc(display(state.wall.topElevation))} m</strong></div>
-      <div><span>設計澆置高度／設計數量</span><strong>${fixed(height)} m ／ ${esc(display(state.wall.designVolume))} m³</strong></div>
-    </div></section>
+    ${printProjectOverview(state.overview)}${printWallInfo()}
     <section class="print-section compact-print-section"><h2>檢查項目</h2><table class="print-table quality-standard-print-table"><thead><tr><th>項目</th><th>判定標準</th><th>數值</th><th>單位</th></tr></thead><tbody>${qualityStandardRows}</tbody></table></section>
     <section class="print-section compact-print-section"><h2>品質自檢項目</h2><table class="print-table quality-print-table"><thead><tr><th>項次</th><th>檢查項目</th><th>檢查標準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${qualityRows}</tbody></table></section>
     <section class="print-section quality-note-section"><h2>缺失及改善結果</h2><div class="print-note">${esc(display(state.quality.note))}</div></section>${printFooter()}`;
@@ -768,6 +786,7 @@ function renderPrint() {
     return `<tr><td>${index + 1}</td><td class="text-left">${esc(phase.label)}</td><td class="time-cell">${phase.start ? esc(display(record.start)) : "—"}</td><td class="time-cell">${phase.end ? esc(display(record.end)) : "—"}</td></tr>`;
   }).join("");
   $("#print-excavation-prework").innerHTML = `${printHeader("開挖與前置紀錄", "04–05")}
+    ${printProjectOverview(state.overview)}${printWallInfo()}
     <section class="print-section"><h2>04｜開挖紀錄</h2><div class="print-summary">
       <div><span>出土次數</span><strong>${state.soil.length} 次</strong></div>
       <div><span>深度確認</span><strong>${state.depth.length} 次</strong></div>
@@ -782,23 +801,22 @@ function renderPrint() {
     <td>${row.index + 1}</td><td>${esc(row.truckNo)}</td><td class="time-cell">${esc(row.unload)}</td><td class="time-cell">${esc(row.finish)}</td><td>${fixed(row.volume)}</td><td>${fixed(row.cumulative)}</td><td>${fixed(row.expected)}</td><td>${fixed(row.measured)}</td><td>${fixed(row.difference)}</td>
   </tr>`).join("") : `<tr><td colspan="9" class="print-empty">尚無澆置紀錄</td></tr>`;
   $("#print-pouring").innerHTML = `${printHeader("澆置紀錄", "06")}
-    <section class="print-section"><h2>澆置主控摘要</h2><div class="print-summary">
-      <div><span>車次</span><strong>${truckRows.length} 車</strong></div>
-      <div><span>逐車累積量</span><strong>${fixed(lastTruck?.cumulative ?? 0)} m³</strong></div>
-      <div><span>設計／實際數量</span><strong>${esc(display(state.wall.designVolume))} ／ ${esc(display(state.wall.actualVolume))} m³</strong></div>
-      <div><span>預估／實測／差異</span><strong>${fixed(lastTruck?.expected ?? null)} ／ ${fixed(lastTruck?.measured ?? null)} ／ ${fixed(lastTruck?.difference ?? null)} m</strong></div>
-    </div></section>
-    <section class="print-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量<br />m³</th><th>累積<br />m³</th><th>預估高度<br />m</th><th>實測高度<br />m</th><th>差異<br />m</th></tr></thead><tbody>${pouringRows}</tbody></table></section>
-    <section class="print-section pouring-chart-section"><h2>澆置高度曲線</h2>${pouringChartSvg(truckRows)}</section>${printFooter()}`;
+    <div class="pouring-layout"><div class="pouring-left">
+      ${printProjectOverview(state.overview)}${printWallInfo()}
+      <section class="print-section"><h2>澆置主控摘要</h2><div class="print-summary">
+        <div><span>車次</span><strong>${truckRows.length} 車</strong></div>
+        <div><span>逐車累積量</span><strong>${fixed(lastTruck?.cumulative ?? 0)} m³</strong></div>
+        <div><span>設計／實際數量</span><strong>${esc(display(state.wall.designVolume))} ／ ${esc(display(state.wall.actualVolume))} m³</strong></div>
+        <div><span>預估／實測／差異</span><strong>${fixed(lastTruck?.expected ?? null)} ／ ${fixed(lastTruck?.measured ?? null)} ／ ${fixed(lastTruck?.difference ?? null)} m</strong></div>
+      </div></section>
+      <section class="print-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量<br />m³</th><th>累積<br />m³</th><th>預估高度<br />m</th><th>實測高度<br />m</th><th>差異<br />m</th></tr></thead><tbody>${pouringRows}</tbody></table></section>
+    </div><section class="print-section pouring-chart-section"><h2>澆置高度曲線</h2>${pouringChartSvg(truckRows)}</section></div>${printFooter()}`;
 
   const guideWallRows = state.guideWall.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
   $("#print-guide-wall").innerHTML = `${printHeader("導溝施工複核表", "07", state.guideWall.project, state.guideWall.unitNo || "未指定單元")}
-    <section class="print-section"><h2>基本資料</h2><div class="print-meta-grid three">
-      <div><span>工程名稱</span><strong>${esc(display(state.guideWall.project))}</strong></div>
-      <div><span>施工廠商</span><strong>${esc(display(state.guideWall.contractor))}</strong></div>
-      <div><span>複核日期</span><strong>${esc(display(state.guideWall.date))}</strong></div>
+    ${printProjectOverview({ project: state.guideWall.project, contractor: state.guideWall.contractor, date: state.guideWall.date, reviewer: state.guideWall.reviewer }, { dateLabel: "複核日期", reviewerLabel: "營造廠複核人" })}
+    <section class="print-section"><h2>導溝資料</h2><div class="print-meta-grid three">
       <div><span>單元編號</span><strong>${esc(display(state.guideWall.unitNo))}</strong></div>
-      <div><span>營造廠複核人</span><strong>${esc(display(state.guideWall.reviewer))}</strong></div>
       <div><span>複核意見</span><strong>${esc(display(state.guideWall.note))}</strong></div>
     </div></section>
     <section class="print-section"><h2>導溝複核項目</h2><table class="print-table checklist-print-table"><thead><tr><th>項次</th><th>複核項目</th><th>確認基準</th><th>現場紀錄／實測</th><th>結果</th></tr></thead><tbody>${guideWallRows}</tbody></table></section>${printFooter()}`;
@@ -806,10 +824,8 @@ function renderPrint() {
   const rebarRows = state.rebarCage.rebars.length ? state.rebarCage.rebars.map((rebar, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(rebar.part)}</td><td>${esc(display(rebar.designNo))}</td><td>${esc(display(rebar.designQty))}</td><td>${esc(display(rebar.actualNo))}</td><td>${esc(display(rebar.actualQty))}</td><td>${esc(rebar.result)}</td></tr>`).join("") : `<tr><td colspan="7" class="print-empty">尚無配筋項目</td></tr>`;
   const rebarCageRows = state.rebarCage.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
   $("#print-rebar-cage").innerHTML = `${printHeader("鋼筋籠吊放前複核表", "08", state.rebarCage.project, [state.rebarCage.unitNo, state.rebarCage.cageNo].filter(Boolean).join("｜") || "未指定鋼筋籠")}
-    <section class="print-section"><h2>基本資料</h2><div class="print-meta-grid three compact-meta">
-      <div><span>工程名稱</span><strong>${esc(display(state.rebarCage.project))}</strong></div>
-      <div><span>複核日期</span><strong>${esc(display(state.rebarCage.date))}</strong></div>
-      <div><span>營造廠複核人</span><strong>${esc(display(state.rebarCage.reviewer))}</strong></div>
+    ${printProjectOverview({ project: state.rebarCage.project, date: state.rebarCage.date, reviewer: state.rebarCage.reviewer }, { dateLabel: "複核日期", reviewerLabel: "營造廠複核人" })}
+    <section class="print-section"><h2>鋼筋籠資料</h2><div class="print-meta-grid three compact-meta">
       <div><span>單元編號</span><strong>${esc(display(state.rebarCage.unitNo))}</strong></div>
       <div><span>鋼筋籠編號</span><strong>${esc(display(state.rebarCage.cageNo))}</strong></div>
       <div><span>複核意見</span><strong>${esc(display(state.rebarCage.note))}</strong></div>
