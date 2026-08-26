@@ -674,10 +674,11 @@ function printProjectOverview(data, options = {}) {
   const fields = [
     ["工程名稱", data.project],
     ["施工廠商", data.contractor],
-    [dateLabel, data.date],
-    [reviewerLabel, data.reviewer]
+    [dateLabel, data.date]
   ];
-  return `<section class="print-section print-common-overview"><h2>工程概要</h2><div class="print-meta-grid three">${fields.map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(display(value))}</strong></div>`).join("")}</div></section>`;
+  if (!options.inlineReviewer) fields.push([reviewerLabel, data.reviewer]);
+  const reviewerMeta = options.inlineReviewer ? `<span class="print-heading-meta">${esc(reviewerLabel)}：${esc(display(data.reviewer))}</span>` : "";
+  return `<section class="print-section print-common-overview"><h2>工程概要${reviewerMeta}</h2><div class="print-meta-grid three">${fields.map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(display(value))}</strong></div>`).join("")}</div></section>`;
 }
 
 function printWallInfo() {
@@ -801,16 +802,15 @@ function renderPrint() {
     <td>${row.index + 1}</td><td>${esc(row.truckNo)}</td><td class="time-cell">${esc(row.unload)}</td><td class="time-cell">${esc(row.finish)}</td><td>${fixed(row.volume)}</td><td>${fixed(row.cumulative)}</td><td>${fixed(row.expected)}</td><td>${fixed(row.measured)}</td><td>${fixed(row.difference)}</td>
   </tr>`).join("") : `<tr><td colspan="9" class="print-empty">尚無澆置紀錄</td></tr>`;
   $("#print-pouring").innerHTML = `${printHeader("澆置紀錄", "06")}
-    <div class="pouring-layout"><div class="pouring-left">
-      ${printProjectOverview(state.overview)}${printWallInfo()}
-      <section class="print-section"><h2>澆置主控摘要</h2><div class="print-summary">
+    <div class="pouring-layout">
+      <div class="pouring-top-layout">${printProjectOverview(state.overview, { inlineReviewer: true })}${printWallInfo()}</div>
+      <div class="pouring-middle-layout"><section class="print-section"><h2>澆置主控摘要</h2><div class="print-summary">
         <div><span>車次</span><strong>${truckRows.length} 車</strong></div>
         <div><span>逐車累積量</span><strong>${fixed(lastTruck?.cumulative ?? 0)} m³</strong></div>
         <div><span>設計／實際數量</span><strong>${esc(display(state.wall.designVolume))} ／ ${esc(display(state.wall.actualVolume))} m³</strong></div>
         <div><span>預估／實測／差異</span><strong>${fixed(lastTruck?.expected ?? null)} ／ ${fixed(lastTruck?.measured ?? null)} ／ ${fixed(lastTruck?.difference ?? null)} m</strong></div>
-      </div></section>
-      <section class="print-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量<br />m³</th><th>累積<br />m³</th><th>預估高度<br />m</th><th>實測高度<br />m</th><th>差異<br />m</th></tr></thead><tbody>${pouringRows}</tbody></table></section>
-    </div><section class="print-section pouring-chart-section"><h2>澆置高度曲線</h2>${pouringChartSvg(truckRows)}</section></div>${printFooter()}`;
+      </div></section><section class="print-section pouring-chart-section"><h2>澆置高度曲線</h2>${pouringChartSvg(truckRows)}</section></div>
+      <section class="print-section pouring-table-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量<br />m³</th><th>累積<br />m³</th><th>預估高度<br />m</th><th>實測高度<br />m</th><th>差異<br />m</th></tr></thead><tbody>${pouringRows}</tbody></table></section>${printFooter()}`;
 
   const guideWallRows = state.guideWall.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
   $("#print-guide-wall").innerHTML = `${printHeader("導溝施工複核表", "07", state.guideWall.project, state.guideWall.unitNo || "未指定單元")}

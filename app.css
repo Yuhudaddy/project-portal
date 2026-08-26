@@ -745,6 +745,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .pouring-chart .chart-empty { fill: #656b72; font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif; font-size: 13px; }
 .pouring-chart-note { margin: 2mm 0 0; color: #656b72; font-size: 6.5pt; }
 .pouring-layout { display: block; }
+.print-heading-meta { float: right; color: #555; font-size: 7pt; font-weight: 600; }
 
 @media (max-width: 560px) {
   .example-actions { grid-template-columns: 1fr; }
@@ -830,7 +831,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-meta-grid span { display: block; color: #555; font-size: 6.5pt; }
   .print-meta-grid strong { display: block; margin-top: 1mm; font-size: 9pt; }
   .print-section { margin-top: 4mm; }
-  .print-section h2 { margin: 0; padding: 1.3mm 1.8mm; background: #eceeef; border-top: 1pt solid #555; border-bottom: 0.5pt solid #888; font-size: 8.5pt; }
+  .print-section h2 { display: flex; align-items: center; justify-content: space-between; gap: 4mm; margin: 0; padding: 1.3mm 1.8mm; background: #eceeef; border-top: 1pt solid #555; border-bottom: 0.5pt solid #888; font-size: 8.5pt; }
   .print-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-variant-numeric: tabular-nums; }
   .print-table, .print-table th, .print-table td, .print-summary, .print-summary span, .print-summary strong, .print-meta-grid, .print-meta-grid span, .print-meta-grid strong, .print-footer {
     font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
@@ -848,10 +849,19 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-footer { margin-top: 3mm; color: #666; font-size: 6pt; text-align: right; }
   .print-page { break-inside: auto; }
   .print-section, .print-table tr { break-inside: avoid; }
-  .pouring-layout { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 6mm; align-items: start; }
-  .pouring-layout .print-section { margin-top: 3mm; }
-  .pouring-layout .print-common-overview, .pouring-layout .print-wall-info { margin-top: 0; }
-  .pouring-left { min-width: 0; }
+  .pouring-top-layout, .pouring-middle-layout { display: grid; gap: 6mm; align-items: start; }
+  .pouring-top-layout { grid-template-columns: minmax(0, 1.38fr) minmax(0, .82fr); }
+  .pouring-middle-layout { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); margin-top: 3mm; }
+  .pouring-layout .print-section { margin-top: 0; }
+  .pouring-layout .print-meta-grid > div { min-height: 9mm; padding: 1.2mm 1.6mm; }
+  .pouring-layout .print-meta-grid span { font-size: 6pt; }
+  .pouring-layout .print-meta-grid strong { margin-top: .7mm; font-size: 8pt; }
+  .pouring-layout .print-summary { margin-top: 2mm; }
+  .pouring-layout .print-summary > div { padding: 1.2mm 1.5mm; }
+  .pouring-layout .print-summary span { font-size: 6pt; }
+  .pouring-layout .print-summary strong { margin-top: .7mm; font-size: 8pt; }
+  .pouring-table-section { margin-top: 3mm !important; }
+  .print-heading-meta { float: none; margin-left: auto; font-size: 7pt; }
   .pouring-chart-section { break-inside: avoid; }
   .pouring-chart-section h2 { margin-bottom: 2mm; }
   .pouring-chart { margin-top: 0; padding: 2mm 2.5mm 1.5mm; }
