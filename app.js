@@ -1,4 +1,4 @@
-const APP_VERSION = "1.0";
+const APP_VERSION = "1.1";
 
 const TAB_LABELS = {
   overview: "工程概要",
@@ -668,6 +668,43 @@ function printFooter() {
   return `<footer class="print-footer">資料版本：${APP_VERSION}｜輸出時間：${esc(new Date().toLocaleString("zh-TW", { hour12: false }))}<br />本文件經現場相關人員簽核後始為正式紀錄。</footer>`;
 }
 
+function pouringChartSvg(rows) {
+  const designVolume = number(state.wall.designVolume) ?? calculatedDesignVolume();
+  const designHeightValue = designHeight();
+  const actualRows = rows.filter(row => row.cumulative > 0 && row.measured !== null);
+  const lastVolume = rows.at(-1)?.cumulative ?? 0;
+  const maxVolume = Math.max(designVolume ?? 0, lastVolume, 1);
+  const maxMeasured = actualRows.reduce((max, row) => Math.max(max, row.measured), 0);
+  const maxHeight = Math.max(designHeightValue ?? 0, maxMeasured, 1);
+  const niceMax = (value, step) => Math.max(step, Math.ceil(value / step) * step);
+  const xMax = niceMax(maxVolume, maxVolume <= 40 ? 5 : 10);
+  const yMax = niceMax(maxHeight, maxHeight <= 40 ? 5 : 10);
+  const width = 760, height = 330;
+  const margin = { top: 22, right: 22, bottom: 52, left: 58 };
+  const plotWidth = width - margin.left - margin.right;
+  const plotHeight = height - margin.top - margin.bottom;
+  const x = value => margin.left + (value / xMax) * plotWidth;
+  const y = value => margin.top + plotHeight - (value / yMax) * plotHeight;
+  const ticks = (max, step) => { const result = []; for (let value = 0; value <= max + 0.0001; value += step) result.push(Number(value.toFixed(2))); return result; };
+  const xStep = xMax <= 40 ? 5 : 10;
+  const yStep = yMax <= 40 ? 5 : 10;
+  const grid = [...ticks(xMax, xStep).map(value => `<line x1="${x(value)}" y1="${margin.top}" x2="${x(value)}" y2="${margin.top + plotHeight}" />`), ...ticks(yMax, yStep).map(value => `<line x1="${margin.left}" y1="${y(value)}" x2="${margin.left + plotWidth}" y2="${y(value)}" />`)].join("");
+  const xLabels = ticks(xMax, xStep).map(value => `<text x="${x(value)}" y="${height - 30}" text-anchor="middle">${value}</text>`).join("");
+  const yLabels = ticks(yMax, yStep).map(value => `<text x="${margin.left - 8}" y="${y(value) + 3}" text-anchor="end">${value}</text>`).join("");
+  const designPath = designVolume !== null && designHeightValue !== null ? `M ${x(0)} ${y(0)} L ${x(Math.min(designVolume, xMax))} ${y(Math.min(designHeightValue, yMax))}` : "";
+  const actualPoints = [[0, 0], ...actualRows.map(row => [Math.min(row.cumulative, xMax), Math.min(row.measured, yMax)])];
+  const actualPath = actualRows.length > 0 ? actualPoints.map(([volume, height], index) => `${index === 0 ? "M" : "L"} ${x(volume)} ${y(height)}`).join(" ") : "";
+  const pointDots = actualRows.map(row => `<circle cx="${x(Math.min(row.cumulative, xMax))}" cy="${y(Math.min(row.measured, yMax))}" r="3.2" />`).join("");
+  const hasData = designPath || actualPath;
+  return `<div class="pouring-chart" role="img" aria-label="設計與實際混凝土澆置高度曲線"><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
+    <g class="chart-grid">${grid}</g><g class="chart-axis"><line x1="${margin.left}" y1="${margin.top + plotHeight}" x2="${margin.left + plotWidth}" y2="${margin.top + plotHeight}" /><line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${margin.top + plotHeight}" /></g>
+    <g class="chart-labels">${xLabels}${yLabels}<text class="chart-axis-title" x="${margin.left + plotWidth / 2}" y="${height - 8}" text-anchor="middle">實際累積澆置體積（m³）</text><text class="chart-axis-title" transform="translate(14 ${margin.top + plotHeight / 2}) rotate(-90)" text-anchor="middle">累積澆置高度（m）</text></g>
+    ${designPath ? `<path class="chart-design-line" d="${designPath}" />` : ""}${actualPath ? `<path class="chart-actual-line" d="${actualPath}" />` : ""}<g class="chart-actual-points">${pointDots}</g>
+    <g class="chart-legend"><rect x="${width - 178}" y="${margin.top + 10}" width="158" height="50" rx="2" /><line class="chart-design-line" x1="${width - 164}" y1="${margin.top + 27}" x2="${width - 143}" y2="${margin.top + 27}" /><text x="${width - 136}" y="${margin.top + 30}">設計澆置曲線</text><line class="chart-actual-line" x1="${width - 164}" y1="${margin.top + 47}" x2="${width - 143}" y2="${margin.top + 47}" /><circle class="chart-actual-points" cx="${width - 153.5}" cy="${margin.top + 47}" r="2.6" /><text x="${width - 136}" y="${margin.top + 50}">實際澆置曲線</text></g>
+    ${hasData ? "" : `<text class="chart-empty" x="${margin.left + plotWidth / 2}" y="${margin.top + plotHeight / 2}" text-anchor="middle">尚無足夠資料產生曲線</text>`}
+  </svg><p class="pouring-chart-note">設計線依設計澆置高度與設計數量換算；實際線從原點開始，依每車累積方量與實測累積高度繪製。</p></div>`;
+}
+
 function renderPrint() {
   const height = designHeight();
   const latestDepth = state.depth.at(-1);
@@ -751,7 +788,8 @@ function renderPrint() {
       <div><span>設計／實際數量</span><strong>${esc(display(state.wall.designVolume))} ／ ${esc(display(state.wall.actualVolume))} m³</strong></div>
       <div><span>預估／實測／差異</span><strong>${fixed(lastTruck?.expected ?? null)} ／ ${fixed(lastTruck?.measured ?? null)} ／ ${fixed(lastTruck?.difference ?? null)} m</strong></div>
     </div></section>
-    <section class="print-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量<br />m³</th><th>累積<br />m³</th><th>預估高度<br />m</th><th>實測高度<br />m</th><th>差異<br />m</th></tr></thead><tbody>${pouringRows}</tbody></table></section>${printFooter()}`;
+    <section class="print-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量<br />m³</th><th>累積<br />m³</th><th>預估高度<br />m</th><th>實測高度<br />m</th><th>差異<br />m</th></tr></thead><tbody>${pouringRows}</tbody></table></section>
+    <section class="print-section pouring-chart-section"><h2>澆置高度曲線</h2>${pouringChartSvg(truckRows)}</section>${printFooter()}`;
 
   const guideWallRows = state.guideWall.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
   $("#print-guide-wall").innerHTML = `${printHeader("導溝施工複核表", "07", state.guideWall.project, state.guideWall.unitNo || "未指定單元")}
