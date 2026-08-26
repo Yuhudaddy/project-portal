@@ -807,6 +807,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .app-header, .app-shell, .action-dock, .sheet-dialog, .undo-toast, .skip-link { display: none !important; }
   .print-report { display: block; }
   .print-page { display: none; break-after: page; }
+  .print-page[data-print-tab="overview-wall"] { display: none !important; }
   .print-page[data-print-tab="pouring"] { page: pouring-landscape; }
   .print-page:last-child { break-after: auto; }
   body[data-print-scope="all"] .print-page { display: block; }
@@ -822,7 +823,13 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   }
   .print-document-header p { margin: 2.5mm 0 0; color: #555; font-size: 6.5pt; letter-spacing: 0.12em; }
   .print-document-header h1 { margin: 1mm 0 0; font-family: "Noto Serif TC", "PMingLiU", serif; font-size: 16pt; }
-  .print-header-meta { display: flex; align-items: center; justify-content: flex-end; gap: 4mm; min-width: 0; }
+  .print-header-meta { display: flex; align-items: center; justify-content: flex-end; gap: 3mm; min-width: 0; }
+  .print-header-meta-body { min-width: 0; }
+  .print-header-project-grid { display: grid; grid-template-columns: repeat(2, minmax(24mm, 1fr)); border-top: 0.5pt solid #888; border-left: 0.5pt solid #888; }
+  .print-header-project-grid > div { min-width: 0; padding: 1mm 1.5mm; border-right: 0.5pt solid #888; border-bottom: 0.5pt solid #888; }
+  .print-header-project-grid span { display: block; color: #555; font-size: 5.5pt; }
+  .print-header-project-grid strong { display: block; margin-top: .5mm; max-width: 38mm; overflow: hidden; font-size: 6.5pt; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+  .print-header-identity { display: block; margin-top: 1mm; color: #555; font-size: 6.5pt; text-align: right; }
   .print-logo { width: 12mm; height: 12mm; object-fit: contain; filter: grayscale(1); }
   .print-header-meta strong { font-size: 8.5pt; text-align: right; }
   .print-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); margin-top: 4mm; border-top: 0.5pt solid #888; border-left: 0.5pt solid #888; }
@@ -849,9 +856,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-footer { margin-top: 3mm; color: #666; font-size: 6pt; text-align: right; }
   .print-page { break-inside: auto; }
   .print-section, .print-table tr { break-inside: avoid; }
-  .pouring-top-layout, .pouring-main-layout { display: grid; gap: 6mm; align-items: start; }
-  .pouring-top-layout { grid-template-columns: minmax(0, 1.38fr) minmax(0, .82fr); }
-  .pouring-main-layout { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); margin-top: 3mm; }
+  .pouring-wall-full { width: 100%; }
+  .pouring-wall-full .print-meta-grid.three { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .pouring-main-layout { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 6mm; align-items: start; margin-top: 3mm; }
   .pouring-layout .print-section { margin-top: 0; }
   .pouring-layout .print-meta-grid > div { min-height: 9mm; padding: 1.2mm 1.6mm; }
   .pouring-layout .print-meta-grid span { font-size: 6pt; }
