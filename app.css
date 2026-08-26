@@ -849,9 +849,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-footer { margin-top: 3mm; color: #666; font-size: 6pt; text-align: right; }
   .print-page { break-inside: auto; }
   .print-section, .print-table tr { break-inside: avoid; }
-  .pouring-top-layout, .pouring-middle-layout { display: grid; gap: 6mm; align-items: start; }
+  .pouring-top-layout, .pouring-main-layout { display: grid; gap: 6mm; align-items: start; }
   .pouring-top-layout { grid-template-columns: minmax(0, 1.38fr) minmax(0, .82fr); }
-  .pouring-middle-layout { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); margin-top: 3mm; }
+  .pouring-main-layout { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); margin-top: 3mm; }
   .pouring-layout .print-section { margin-top: 0; }
   .pouring-layout .print-meta-grid > div { min-height: 9mm; padding: 1.2mm 1.6mm; }
   .pouring-layout .print-meta-grid span { font-size: 6pt; }
@@ -861,6 +861,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .pouring-layout .print-summary span { font-size: 6pt; }
   .pouring-layout .print-summary strong { margin-top: .7mm; font-size: 8pt; }
   .pouring-table-section { margin-top: 3mm !important; }
+  .pouring-chart-section { min-width: 0; }
   .print-heading-meta { float: none; margin-left: auto; font-size: 7pt; }
   .pouring-chart-section { break-inside: avoid; }
   .pouring-chart-section h2 { margin-bottom: 2mm; }

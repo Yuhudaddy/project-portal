@@ -1,4 +1,4 @@
-const CACHE_NAME = "project-portal-v36";
+const CACHE_NAME = "project-portal-v37";
 const APP_SHELL = ["./index.html", "./404.html", "./portal.css?v=30", "./diaphragm-wall.html", "./app.css?v=33", "./app.js", "./template.html", "./template.css?v=31", "./template.js", "./rebar.html", "./rebar.css?v=1", "./rebar.js", "./record.html", "./checklists.html", "./manifest.webmanifest", "./icon.svg", "./taisei.png", "./examples/diaphragm-wall-example.pdf", "./examples/guide-wall-example.pdf", "./examples/rebar-cage-example.pdf"];
 
 self.addEventListener("install", event => {
