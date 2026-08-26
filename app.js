@@ -662,12 +662,12 @@ function removeRebar(index) {
 function printHeader(title, sequence, project = state.overview.project, recordIdentity = null, overviewData = state.overview) {
   const identity = recordIdentity || [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
   const headerData = overviewData || {};
-  return `<header class="print-document-header"><div><p>DIAPHRAGM WALL FIELD RECORD / ${sequence}</p><h1>${esc(title)}</h1></div><div class="print-header-meta"><div class="print-header-meta-body"><div class="print-header-project-lines">
+  return `<header class="print-document-header"><div class="print-header-title"><p>DIAPHRAGM WALL FIELD RECORD / ${sequence}</p><h1>${esc(title)}</h1></div><div class="print-header-meta-body"><div class="print-header-project-lines">
     <div><span>工程名稱：</span><strong>${esc(display(headerData.project || project))}</strong></div>
     <div><span>施工日期：</span><strong>${esc(display(headerData.date))}</strong></div>
     <div><span>施工廠商：</span><strong>${esc(display(headerData.contractor))}</strong></div>
     <div><span>填表人：</span><strong>${esc(display(headerData.reviewer))}</strong></div>
-  </div><strong class="print-header-identity">${esc(identity)}</strong></div><img class="print-logo" src="./taisei.png" alt="大成建設標誌" /></div></header>`;
+  </div><strong class="print-header-identity">${esc(identity)}</strong></div><img class="print-logo" src="./taisei.png" alt="大成建設標誌" /></header>`;
 }
 
 function printFooter() {
