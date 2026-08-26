@@ -667,7 +667,7 @@ function printHeader(title, sequence, project = state.overview.project, recordId
     <div><span>施工日期：</span><strong>${esc(display(headerData.date))}</strong></div>
     <div><span>施工廠商：</span><strong>${esc(display(headerData.contractor))}</strong></div>
     <div><span>填表人：</span><strong>${esc(display(headerData.reviewer))}</strong></div>
-  </div><strong class="print-header-identity">${esc(identity)}</strong></div><img class="print-logo" src="./taisei.png" alt="大成建設標誌" /></header>`;
+  </div></div><div class="print-header-logo-wrap"><img class="print-logo" src="./taisei.png" alt="大成建設標誌" /><strong class="print-header-identity">${esc(identity)}</strong></div></header>`;
 }
 
 function printFooter() {

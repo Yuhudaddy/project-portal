@@ -824,15 +824,22 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-document-header p { margin: 2.5mm 0 0; color: #555; font-size: 6.5pt; letter-spacing: 0.12em; }
   .print-document-header h1 { margin: 1mm 0 0; font-family: "Noto Serif TC", "PMingLiU", serif; font-size: 16pt; }
   .print-header-meta { display: flex; flex: 0 0 100mm; align-items: center; justify-content: center; gap: 3mm; min-width: 0; }
-  .print-document-header { grid-template-columns: minmax(0, 1fr) auto auto; gap: 8mm; }
+  /* Keep the project meta block immediately to the right of the title and
+     reserve the final track for the logo.  The previous auto-sized middle
+     track let the block drift toward the upper-right corner on wide pages. */
+  .print-document-header { grid-template-columns: 72mm minmax(0, 1fr) 18mm; gap: 5mm; }
   .print-header-title { min-width: 0; }
-  .print-header-meta-body { min-width: 0; width: 82mm; justify-self: center; }
-  .print-header-project-lines { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 5mm; row-gap: .8mm; max-width: 82mm; }
+  .print-header-meta-body { min-width: 0; width: calc(90mm + 16px); max-width: none; justify-self: start; align-self: center; transform: translate(-34px, calc(2.5mm + 2px)); }
+  .print-header-project-lines { display: grid; grid-template-columns: minmax(0, 1fr) max-content; column-gap: 7mm; row-gap: .8mm; max-width: calc(90mm + 16px); }
   .print-header-project-lines > div { display: flex; min-width: 0; gap: 1mm; align-items: baseline; white-space: nowrap; }
   .print-header-project-lines span { flex: 0 0 auto; color: #555; font-size: 5.7pt; }
   .print-header-project-lines strong { min-width: 0; overflow: hidden; font-size: 6.5pt; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-  .print-header-identity { display: block; margin-top: 1mm; color: #555; font-size: 6.5pt; text-align: right; }
-  .print-logo { flex: 0 0 12mm; width: 12mm; height: 12mm; object-fit: contain; filter: grayscale(1); }
+  .print-header-logo-wrap { min-width: 0; display: flex; flex-direction: column; align-items: center; justify-self: end; align-self: center; transform: translateY(1.5mm); }
+  .print-header-identity { display: block; margin-top: 1mm; color: #555; font-size: 6.5pt; text-align: center; white-space: nowrap; }
+  .print-logo { flex: 0 0 10mm; width: 10mm; height: 10mm; object-fit: contain; filter: grayscale(1); }
+  @media print and (orientation: landscape) {
+    .print-document-header { grid-template-columns: 95mm 90mm minmax(18mm, 1fr); }
+  }
   .print-header-meta strong { font-size: 8.5pt; text-align: right; }
   .print-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); margin-top: 4mm; border-top: 0.5pt solid #888; border-left: 0.5pt solid #888; }
   .print-meta-grid.three { grid-template-columns: repeat(3, 1fr); }
