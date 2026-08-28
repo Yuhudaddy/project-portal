@@ -1,0 +1,114 @@
+/* Steel structure review: restrained field-record styling layered over app.css. */
+.record-switcher-link {
+  display: grid;
+  min-width: 0;
+  min-height: 46px;
+  place-items: center;
+  padding: 8px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--soft);
+  text-align: center;
+  text-decoration: none;
+}
+.record-switcher-link strong, .record-switcher button strong { font-size: 0.84375rem; white-space: nowrap; }
+.record-switcher-link small, .record-switcher button small { margin-top: 1px; color: var(--muted); font-size: 0.5625rem; font-weight: 700; white-space: nowrap; }
+.record-switcher button[data-current-tool] { border-color: var(--line-dark); color: var(--ink); background: var(--paper); box-shadow: inset 0 -2px var(--accent); }
+.record-switcher-link:active, .record-switcher button:active { background: var(--surface-strong); }
+.steel-shell .record-switcher { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.steel-meta-grid, .steel-measure-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px 10px;
+  margin-bottom: 15px;
+}
+.steel-measure-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.compact-measure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.steel-notice {
+  display: grid;
+  gap: 3px;
+  margin-top: 17px;
+  padding: 11px 12px;
+  border-left: 3px solid var(--line-dark);
+  background: var(--surface);
+  color: var(--soft);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+.steel-notice strong { color: var(--ink); font-size: 0.8rem; }
+.steel-summary-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 3px 0 18px;
+  border-top: 1px solid var(--line-dark);
+  border-bottom: 1px solid var(--line-dark);
+  background: var(--surface);
+}
+.steel-summary-board > div { min-width: 0; padding: 9px 10px; border-right: 1px solid var(--line); }
+.steel-summary-board > div:last-child { border-right: 0; }
+.steel-summary-board dt { color: var(--muted); font-size: 0.6875rem; font-weight: 700; }
+.steel-summary-board dd { margin: 2px 0 0; font-family: "Noto Serif TC", "PMingLiU", serif; font-size: 1.125rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.steel-summary-board small { color: var(--soft); font-family: inherit; font-size: 0.6875rem; font-weight: 500; }
+.steel-record-heading { margin-top: 12px; }
+.steel-record-list { display: grid; gap: 8px; }
+.steel-record-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 9px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  background: color-mix(in oklch, var(--paper) 91%, var(--surface));
+}
+.steel-record-card.is-failed { border-color: var(--line-dark); background: var(--warning); }
+.steel-record-title { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.steel-record-title strong { min-width: 0; overflow: hidden; font-size: 0.8125rem; text-overflow: ellipsis; white-space: nowrap; }
+.steel-record-title span { color: var(--soft); font-size: 0.6875rem; white-space: nowrap; }
+.steel-record-meta { display: flex; flex-wrap: wrap; gap: 3px 12px; margin-top: 4px; color: var(--soft); font-size: 0.6875rem; }
+.steel-record-meta b { color: var(--muted); font-weight: 700; }
+.steel-check-list { display: grid; gap: 9px; margin-top: 16px; }
+.steel-check-card { padding: 11px; border: 1px solid var(--line); background: var(--paper); }
+.steel-check-card.is-failed { border-color: var(--danger); background: var(--warning); }
+.steel-check-head { display: flex; align-items: baseline; gap: 8px; }
+.steel-check-head > span { color: var(--muted); font-size: 0.6875rem; font-weight: 800; }
+.steel-check-head strong { font-size: 0.8125rem; }
+.steel-check-card p { margin: 4px 0 9px 24px; color: var(--soft); font-size: 0.71875rem; line-height: 1.5; }
+.steel-check-fields { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 9px; margin-left: 24px; }
+.optional-module-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.optional-module-grid article { display: grid; align-content: start; gap: 5px; min-width: 0; padding: 13px; border: 1px solid var(--line); background: var(--surface); }
+.optional-module-grid strong { font-size: 0.875rem; }
+.optional-module-grid p { min-height: 4.4em; margin: 0; color: var(--soft); font-size: 0.71875rem; line-height: 1.55; }
+.optional-module-grid button { min-height: 38px; border: 1px solid var(--line-dark); background: var(--paper); font-size: 0.71875rem; font-weight: 700; }
+.optional-module-grid button.is-enabled { background: var(--surface-strong); box-shadow: inset 0 -2px var(--accent); }
+.optional-fields { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--line); }
+.optional-fields[hidden] { display: none; }
+
+@media (max-width: 639px) {
+  .steel-shell .record-switcher { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steel-meta-grid, .steel-measure-grid, .compact-measure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steel-meta-grid .field:last-child { grid-column: span 2; }
+  .steel-summary-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steel-summary-board > div:nth-child(2n) { border-right: 0; }
+  .steel-summary-board > div:last-child { border-top: 1px solid var(--line); grid-column: span 2; }
+  .optional-module-grid { grid-template-columns: 1fr; }
+  .optional-module-grid p { min-height: 0; }
+  .optional-fields { grid-template-columns: 1fr; }
+}
+
+@media print {
+  .steel-shell { display: none !important; }
+  .print-page-empty { display: none !important; }
+  .print-document-header { grid-template-columns: 72mm minmax(0, 1fr) 18mm; }
+  .steel-print-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 3mm; border: 0.5pt solid #888; }
+  .steel-print-meta > div { min-width: 0; padding: 1.2mm 1.6mm; border-right: 0.5pt solid #888; }
+  .steel-print-meta > div:last-child { border-right: 0; }
+  .steel-print-meta span { display: block; color: #555; font-size: 6pt; }
+  .steel-print-meta strong { display: block; margin-top: .6mm; overflow: hidden; font-size: 8pt; text-overflow: ellipsis; white-space: nowrap; }
+  .steel-print-table th:first-child { width: 6%; }
+  .steel-print-table th:last-child { width: 12%; }
+  .steel-print-table td, .steel-print-table th { font-size: 6.6pt; }
+  .steel-print-table td { height: 6.5mm; padding: 1mm 1.2mm; }
+  .steel-print-table th { padding: 1.1mm .9mm; }
+  .steel-print-note { min-height: 14mm; padding: 1.8mm; border: .5pt solid #888; font-size: 7pt; white-space: pre-wrap; }
+  .steel-print-page { min-height: 190mm; }
+}

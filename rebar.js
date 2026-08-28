@@ -150,6 +150,21 @@ function renderPrint() {
 function exportPdf(scope) { renderPrint(); document.body.dataset.printScope = scope; const page = activeTab === "overview" || activeTab === "members" ? "overview" : activeTab; $$(".print-page").forEach(item => item.classList.toggle("print-selected", item.dataset.printPage === page)); $("#export-dialog").close(); window.print(); }
 function clearAll() { state = createState(); activeTab = "overview"; renderAll(); setTab("overview"); $("#clear-dialog").close(); }
 
+function loadExample() {
+  const member = createMember();
+  member.type = "柱"; member.id = "C1-03"; member.grid = "A-1／B-C"; member.strength = "SD420"; member.width = "60"; member.height = "80"; member.cover = "4";
+  member.bars = [{ kind: "主筋", size: "D25", count: "12", spacing: "—", note: "四面配置" }, { kind: "箍筋", size: "D13", count: "—", spacing: "10", note: "135° 彎鉤" }];
+  ensureMember(member);
+  (PLACEMENT_CHECKS.柱 || []).forEach(item => { member.checks[item[0]] = { actual: item[0] === "main" ? "D25 × 12 支" : "已確認", result: "合格" }; });
+  (DETAIL_CHECKS.柱 || []).forEach(item => { member.detailChecks[item[0]] = { actual: item[0] === "cover" ? "4.2 cm" : "已確認", result: "合格" }; });
+  state = createState();
+  state.overview = { project: "Example Construction Project", contractor: "Example Rebar Co.", date: today, inspectionDate: today, reviewer: "Site Engineer", floor: "3F", drawing: "S-203 Rev.2", stage: "綁紮完成" };
+  state.members = [member]; state.activeMember = 0;
+  state.material = Object.fromEntries(MATERIAL_CHECKS.map(item => [item[0], { actual: item[0] === "millCert" ? "MC-2026-0811" : "已確認", result: "合格" }]));
+  state.release.checks = Object.fromEntries(RELEASE_CHECKS.map(item => [item[0], { actual: "已確認", result: "合格" }]));
+  state.release.decision = "可澆置"; state.release.decisionNote = "鋼筋、接頭、保護層及介面已完成複核。";
+}
+
 function handleEvent(event) {
   const target = event.target;
   if (target.matches("[data-bind]")) { const [group, key] = target.dataset.bind.split("."); state[group][key] = target.value; }
@@ -180,5 +195,7 @@ document.addEventListener("click", event => {
   if (target.id === "confirm-clear") clearAll();
 });
 
+const query = new URLSearchParams(location.search);
+if (query.get("example") === "1") loadExample();
 renderAll();
-setTab("overview");
+setTab(TAB_LABELS[query.get("tab")] ? query.get("tab") : "overview");

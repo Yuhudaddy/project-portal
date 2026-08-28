@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="鋼構施工管理複核工具" />
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'" />
+    <meta name="theme-color" content="#eceff1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="鋼構施工複核" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./app.css?v=41" />
+    <link rel="stylesheet" href="./steel.css?v=1" />
+    <title>鋼構施工複核｜Project Portal</title>
+  </head>
+  <body data-print-scope="none" data-active-tab="overview">
+    <a class="skip-link" href="#project-tool">跳至鋼構施工複核</a>
+
+    <header class="app-header">
+      <nav class="header-nav" aria-label="主要功能">
+        <a class="header-action home-action" href="./index.html" aria-label="返回工具首頁">←</a>
+        <button class="header-action" id="project-tool-button" type="button" aria-current="page" aria-controls="record-switcher">檢查紀錄</button>
+        <button class="header-action help-action" id="help-button" type="button">使用說明 <span aria-hidden="true">?</span></button>
+      </nav>
+    </header>
+
+    <main class="app-shell steel-shell" id="project-tool">
+      <div class="tool-title">
+        <div>
+          <p>STEEL STRUCTURE / FIELD REVIEW</p>
+          <h1>鋼構施工複核表</h1>
+        </div>
+        <span id="record-identity">尚未指定構件</span>
+      </div>
+
+      <nav class="record-switcher" id="record-switcher" aria-label="施工紀錄類型">
+        <a class="record-switcher-link" href="./diaphragm-wall.html"><strong>連續壁</strong><small>Diaphragm Wall</small></a>
+        <a class="record-switcher-link" href="./template.html"><strong>模板</strong><small>Formwork</small></a>
+        <a class="record-switcher-link" href="./rebar.html"><strong>鋼筋</strong><small>Rebar</small></a>
+        <button type="button" data-current-tool="steel"><strong>鋼構</strong><small>Steel Structure</small></button>
+      </nav>
+
+      <nav class="tab-navigation steel-tabs" aria-label="鋼構複核分頁">
+        <div class="tab-row tab-row-two" role="tablist" aria-label="基本資料與進場">
+          <button id="tab-overview" role="tab" type="button" data-tab="overview" aria-controls="panel-overview" aria-selected="true" tabindex="0">工程概要</button>
+          <button id="tab-delivery" role="tab" type="button" data-tab="delivery" aria-controls="panel-delivery" aria-selected="false" tabindex="-1">構件進場</button>
+        </div>
+        <div class="tab-row tab-row-two" role="tablist" aria-label="柱腳與吊裝">
+          <button id="tab-anchor" role="tab" type="button" data-tab="anchor" aria-controls="panel-anchor" aria-selected="false" tabindex="-1">基礎螺栓／柱腳</button>
+          <button id="tab-erection" role="tab" type="button" data-tab="erection" aria-controls="panel-erection" aria-selected="false" tabindex="-1">吊裝／臨時固定</button>
+        </div>
+        <div class="tab-row tab-row-two" role="tablist" aria-label="接合與精度">
+          <button id="tab-hsb" role="tab" type="button" data-tab="hsb" aria-controls="panel-hsb" aria-selected="false" tabindex="-1">高強度螺栓</button>
+          <button id="tab-welding" role="tab" type="button" data-tab="welding" aria-controls="panel-welding" aria-selected="false" tabindex="-1">現場銲接</button>
+        </div>
+        <div class="tab-row tab-row-two" role="tablist" aria-label="安裝精度">
+          <button id="tab-accuracy" role="tab" type="button" data-tab="accuracy" aria-controls="panel-accuracy" aria-selected="false" tabindex="-1">安裝精度</button>
+          <button id="tab-optional" role="tab" type="button" data-tab="optional" aria-controls="panel-optional" aria-selected="false" tabindex="-1">選用項目</button>
+        </div>
+      </nav>
+
+      <section class="panel-frame steel-panel-frame">
+        <section class="tab-panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+          <div class="panel-heading"><div><span>01</span><h2>工程概要</h2></div><p>本次鋼構複核的基本識別資料</p></div>
+          <div class="form-grid overview-grid">
+            <label class="field span-two"><span>工程名稱</span><input type="text" data-bind="overview.project" autocomplete="organization" /></label>
+            <label class="field span-two"><span>施工廠商</span><input type="text" data-bind="overview.contractor" autocomplete="organization" /></label>
+            <label class="field span-two"><span>施工日期</span><span class="native-field-wrap"><input type="date" data-bind="overview.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field span-two"><span>填表人</span><input type="text" data-bind="overview.reviewer" autocomplete="name" /></label>
+          </div>
+          <div class="steel-notice"><strong>營造廠複核範圍</strong><span>確認設計、進場、安裝、關鍵檢測證據與放行條件；專業廠商的逐支螺栓及逐道銲接製程紀錄，請以文件編號或抽查結果確認。</span></div>
+        </section>
+
+        <section class="tab-panel" id="panel-delivery" role="tabpanel" aria-labelledby="tab-delivery" hidden>
+          <div class="panel-heading"><div><span>02</span><h2>構件進場</h2></div><p>鋼柱、鋼梁與附件進場確認</p></div>
+          <div class="steel-meta-grid">
+            <label class="field"><span>進場日期</span><span class="native-field-wrap"><input type="date" data-bind="delivery.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field"><span>進場批次／文件編號</span><input type="text" data-bind="delivery.batch" placeholder="例如：ST-2026-08-01" /></label>
+            <label class="field"><span>複核人</span><input type="text" data-bind="delivery.reviewer" /></label>
+          </div>
+          <div class="steel-summary-board" id="delivery-summary"></div>
+          <div class="record-heading steel-record-heading"><div><span>逐件／逐批</span><h3>構件清單</h3></div><button class="add-button" id="add-delivery" type="button"><span aria-hidden="true">＋</span> 新增構件</button></div>
+          <div class="steel-record-list" id="delivery-list"></div>
+          <label class="field note-field"><span>進場文件／異常備註</span><textarea data-bind="delivery.note" rows="3" placeholder="填寫材料證明、缺失或待補文件"></textarea></label>
+        </section>
+
+        <section class="tab-panel" id="panel-anchor" role="tabpanel" aria-labelledby="tab-anchor" hidden>
+          <div class="panel-heading"><div><span>03</span><h2>基礎螺栓／柱腳</h2></div><p>柱腳定位、標高與灌漿前後確認</p></div>
+          <div class="steel-meta-grid">
+            <label class="field"><span>柱腳／軸線</span><input type="text" data-bind="anchor.location" placeholder="例如：C1／X3-Y5" /></label>
+            <label class="field"><span>複核日期</span><span class="native-field-wrap"><input type="date" data-bind="anchor.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field"><span>複核人</span><input type="text" data-bind="anchor.reviewer" /></label>
+          </div>
+          <div class="steel-measure-grid">
+            <label class="field"><span>螺栓規格</span><input type="text" data-bind="anchor.boltSpec" placeholder="例如：M24" /></label>
+            <label class="field"><span>設計數量（支）</span><input type="number" min="0" step="1" inputmode="numeric" data-bind="anchor.designQty" /></label>
+            <label class="field"><span>實際數量（支）</span><input type="number" min="0" step="1" inputmode="numeric" data-bind="anchor.actualQty" /></label>
+            <label class="field"><span>柱腳標高設計（m）</span><input type="number" step="0.001" inputmode="decimal" data-bind="anchor.designElevation" /></label>
+            <label class="field"><span>柱腳標高實測（m）</span><input type="number" step="0.001" inputmode="decimal" data-bind="anchor.actualElevation" /></label>
+            <label class="field"><span>偏心實測（mm）</span><input type="number" min="0" step="1" inputmode="numeric" data-bind="anchor.eccentricity" /></label>
+          </div>
+          <div class="steel-check-list" id="anchor-checks"></div>
+          <label class="field note-field"><span>柱腳／灌漿備註</span><textarea data-bind="anchor.note" rows="3"></textarea></label>
+        </section>
+
+        <section class="tab-panel" id="panel-erection" role="tabpanel" aria-labelledby="tab-erection" hidden>
+          <div class="panel-heading"><div><span>04</span><h2>吊裝／臨時固定</h2></div><p>吊裝計畫、穩定與現場安全放行</p></div>
+          <div class="steel-meta-grid">
+            <label class="field"><span>吊裝區域／樓層</span><input type="text" data-bind="erection.area" placeholder="例如：A區／3F" /></label>
+            <label class="field"><span>施工日期</span><span class="native-field-wrap"><input type="date" data-bind="erection.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field"><span>複核人</span><input type="text" data-bind="erection.reviewer" /></label>
+          </div>
+          <div class="steel-check-list" id="erection-checks"></div>
+          <label class="field note-field"><span>吊裝／臨時固定備註</span><textarea data-bind="erection.note" rows="3"></textarea></label>
+        </section>
+
+        <section class="tab-panel" id="panel-hsb" role="tabpanel" aria-labelledby="tab-hsb" hidden>
+          <div class="panel-heading"><div><span>05</span><h2>高強度螺栓</h2></div><p>接合面、施工程序與抽查證據</p></div>
+          <div class="steel-meta-grid">
+            <label class="field"><span>接頭／構件編號</span><input type="text" data-bind="hsb.location" placeholder="例如：B12-G03" /></label>
+            <label class="field"><span>施工日期</span><span class="native-field-wrap"><input type="date" data-bind="hsb.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field"><span>複核人</span><input type="text" data-bind="hsb.reviewer" /></label>
+          </div>
+          <div class="steel-measure-grid compact-measure-grid">
+            <label class="field"><span>螺栓規格</span><input type="text" data-bind="hsb.spec" placeholder="例如：F10T M20" /></label>
+            <label class="field"><span>設計數量（支）</span><input type="number" min="0" step="1" inputmode="numeric" data-bind="hsb.designQty" /></label>
+            <label class="field"><span>實際數量（支）</span><input type="number" min="0" step="1" inputmode="numeric" data-bind="hsb.actualQty" /></label>
+            <label class="field"><span>施工工具／校驗文件編號</span><input type="text" data-bind="hsb.toolDoc" /></label>
+          </div>
+          <div class="steel-check-list" id="hsb-checks"></div>
+          <label class="field note-field"><span>抽查及補擰備註</span><textarea data-bind="hsb.note" rows="3" placeholder="填寫抽查範圍、缺失與複驗結果"></textarea></label>
+        </section>
+
+        <section class="tab-panel" id="panel-welding" role="tabpanel" aria-labelledby="tab-welding" hidden>
+          <div class="panel-heading"><div><span>06</span><h2>現場銲接</h2></div><p>資格、環境、外觀與非破壞檢測</p></div>
+          <div class="steel-meta-grid">
+            <label class="field"><span>銲道／構件編號</span><input type="text" data-bind="welding.location" placeholder="例如：C2-W05" /></label>
+            <label class="field"><span>施工日期</span><span class="native-field-wrap"><input type="date" data-bind="welding.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field"><span>複核人</span><input type="text" data-bind="welding.reviewer" /></label>
+          </div>
+          <div class="steel-measure-grid compact-measure-grid">
+            <label class="field"><span>銲工資格／證照編號</span><input type="text" data-bind="welding.welderDoc" /></label>
+            <label class="field"><span>WPS／施工計畫文件編號</span><input type="text" data-bind="welding.wpsDoc" /></label>
+            <label class="field"><span>環境風速（m/s）</span><input type="number" min="0" step="0.1" inputmode="decimal" data-bind="welding.wind" /></label>
+            <label class="field"><span>VT／UT 報告編號</span><input type="text" data-bind="welding.testDoc" /></label>
+          </div>
+          <div class="steel-check-list" id="welding-checks"></div>
+          <label class="field note-field"><span>銲接缺失及修補備註</span><textarea data-bind="welding.note" rows="3"></textarea></label>
+        </section>
+
+        <section class="tab-panel" id="panel-accuracy" role="tabpanel" aria-labelledby="tab-accuracy" hidden>
+          <div class="panel-heading"><div><span>07</span><h2>安裝精度</h2></div><p>以設計值、實測值及允許誤差完成複核</p></div>
+          <div class="steel-meta-grid">
+            <label class="field"><span>樓層／區域</span><input type="text" data-bind="accuracy.area" placeholder="例如：3F／A區" /></label>
+            <label class="field"><span>量測日期</span><span class="native-field-wrap"><input type="date" data-bind="accuracy.date" /><span class="native-field-display" aria-hidden="true"></span></span></label>
+            <label class="field"><span>複核人</span><input type="text" data-bind="accuracy.reviewer" /></label>
+          </div>
+          <div class="steel-measure-grid">
+            <label class="field"><span>構件編號</span><input type="text" data-bind="accuracy.memberNo" placeholder="例如：C1／G12" /></label>
+            <label class="field"><span>量測項目</span><select data-bind="accuracy.measureType"><option value="鋼柱垂直度">鋼柱垂直度</option><option value="柱軸線偏移">柱軸線偏移</option><option value="柱頂標高">柱頂標高</option><option value="梁水平度">梁水平度</option><option value="樓層標高">樓層標高</option><option value="整體垂直度">整體垂直度</option></select></label>
+            <label class="field"><span>設計／基準值</span><input type="text" data-bind="accuracy.designValue" placeholder="例如：+12.000 m" /></label>
+            <label class="field"><span>實測值</span><input type="text" data-bind="accuracy.actualValue" placeholder="例如：+12.006 m" /></label>
+            <label class="field"><span>允許誤差（mm）</span><input type="number" min="0" step="0.1" inputmode="decimal" data-bind="accuracy.tolerance" /></label>
+          </div>
+          <div class="steel-check-list" id="accuracy-checks"></div>
+          <label class="field note-field"><span>調整及複測備註</span><textarea data-bind="accuracy.note" rows="3"></textarea></label>
+        </section>
+
+        <section class="tab-panel" id="panel-optional" role="tabpanel" aria-labelledby="tab-optional" hidden>
+          <div class="panel-heading"><div><span>OPTIONAL</span><h2>選用項目</h2></div><p>依工程是否採用選擇性啟用</p></div>
+          <div class="optional-module-grid">
+            <article><strong>柱內灌漿</strong><p>箱型柱或設計要求柱內灌漿時，確認材料、強度、清潔、排氣及紀錄。</p><button type="button" data-optional="grout">啟用欄位</button></article>
+            <article><strong>剪力釘</strong><p>確認尺寸、位置、焊接外觀及抽驗／彎折結果。</p><button type="button" data-optional="stud">啟用欄位</button></article>
+            <article><strong>鋼承板</strong><p>確認規格、搭接、固定、開口補強及澆置前狀況。</p><button type="button" data-optional="deck">啟用欄位</button></article>
+          </div>
+          <div id="optional-fields" class="optional-fields" hidden>
+            <label class="field"><span>選用項目紀錄</span><textarea data-bind="optional.note" rows="5" placeholder="填寫啟用項目、設計文件及營造廠複核結果"></textarea></label>
+            <label class="field"><span>檢查結果</span><select data-bind="optional.result"><option>待確認</option><option>符合</option><option>不符合</option><option>不適用</option></select></label>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <aside class="action-dock" aria-label="檔案處理工具">
+      <div><span>目前頁面</span><strong id="active-tab-label">工程概要</strong></div>
+      <div class="dock-actions"><button class="clear-button" id="clear-button" type="button">清空</button><button id="export-button" type="button">輸出</button></div>
+    </aside>
+
+    <dialog class="sheet-dialog help-dialog" id="help-dialog">
+      <div class="dialog-header"><div><span>HELP</span><h2>使用說明</h2></div><button type="button" data-close-dialog aria-label="關閉使用說明">×</button></div>
+      <div class="dialog-body help-content">
+        <section><h3>營造廠複核方式</h3><p>依工程概要、構件進場、基礎螺栓／柱腳、吊裝／臨時固定、高強度螺栓、現場銲接及安裝精度分頁填寫。每個檢查項目只需記錄現場關鍵值、文件編號或抽查結果，再選擇複核結果。</p></section>
+        <section><h3>哪些資料由廠商保存</h3><p>逐支螺栓扭力、銲接電流／電壓、焊材烘乾及完整量測原始資料，應由專業廠商依其自主檢查表保存；營造廠在本工具確認文件存在、抽查結果及缺失是否閉合。</p></section>
+        <section><h3>輸出</h3><p>本工具不儲存或同步資料。完成後請由底部「輸出」產生目前分頁、完整複核紀錄或 JSON；PDF 可直接列印或分享，JSON 適合後續資料庫匯入。</p></section>
+        <section class="help-examples"><h3>已填妥範例</h3><p>先查看完整 PDF，再用預填頁面查看各分頁內容；範例資料不會保存。</p><div class="example-actions"><a class="example-button" href="./examples/steel-structure-example.pdf" target="_blank" rel="noopener"><span>完整範例 PDF</span><small>含 7 種輸出版型</small></a><a class="example-button" href="./steel-structure.html?example=1&amp;tab=overview" target="_blank" rel="noopener"><span>工程概要</span><small>開啟互動範例</small></a><a class="example-button" href="./steel-structure.html?example=1&amp;tab=delivery" target="_blank" rel="noopener"><span>構件進場</span><small>開啟互動範例</small></a><a class="example-button" href="./steel-structure.html?example=1&amp;tab=anchor" target="_blank" rel="noopener"><span>基礎螺栓／柱腳</span><small>開啟互動範例</small></a><a class="example-button" href="./steel-structure.html?example=1&amp;tab=erection" target="_blank" rel="noopener"><span>吊裝／臨時固定</span><small>開啟互動範例</small></a><a class="example-button" href="./steel-structure.html?example=1&amp;tab=hsb" target="_blank" rel="noopener"><span>高強度螺栓</span><small>開啟互動範例</small></a><a class="example-button" href="./steel-structure.html?example=1&amp;tab=welding" target="_blank" rel="noopener"><span>現場銲接</span><small>開啟互動範例</small></a><a class="example-button" href="./steel-structure.html?example=1&amp;tab=accuracy" target="_blank" rel="noopener"><span>安裝精度</span><small>開啟互動範例</small></a></div></section>
+      </div>
+    </dialog>
+
+    <dialog class="sheet-dialog" id="clear-dialog">
+      <div class="dialog-header"><div><span>CLEAR RECORD</span><h2>清空全部資料</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+      <div class="dialog-body clear-confirmation"><p>將清除本頁鋼構複核資料，且無法復原。</p></div>
+      <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>取消</button><button class="confirm-button danger-button" id="confirm-clear" type="button">確認清空</button></div>
+    </dialog>
+
+    <dialog class="sheet-dialog" id="delivery-dialog">
+      <form id="delivery-form">
+        <div class="dialog-header"><div><span>DELIVERY</span><h2 id="delivery-dialog-title">新增進場構件</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+        <div class="dialog-body compact-form two-fields">
+          <label class="field"><span>構件類型</span><select id="delivery-type"><option>鋼柱</option><option>鋼梁</option><option>其他附件</option></select></label>
+          <label class="field"><span>構件編號</span><input id="delivery-member" type="text" required /></label>
+          <label class="field span-two"><span>規格／材質</span><input id="delivery-spec" type="text" placeholder="例如：BOX-600×600×25／SN490" /></label>
+          <label class="field"><span>數量（件）</span><input id="delivery-qty" type="number" min="1" step="1" inputmode="numeric" value="1" required /></label>
+          <label class="field"><span>材料證明／文件編號</span><input id="delivery-doc" type="text" /></label>
+          <label class="field"><span>外觀／塗裝</span><select id="delivery-appearance"><option>待確認</option><option>符合</option><option>不符合</option><option>不適用</option></select></label>
+          <label class="field"><span>堆置／防護</span><select id="delivery-storage"><option>待確認</option><option>符合</option><option>不符合</option><option>不適用</option></select></label>
+          <label class="field span-two"><span>複核結果</span><select id="delivery-result"><option>待確認</option><option>符合</option><option>不符合</option><option>不適用</option></select></label>
+        </div>
+        <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>取消</button><button class="confirm-button" type="submit">確認加入</button></div>
+      </form>
+    </dialog>
+
+    <dialog class="sheet-dialog export-dialog" id="export-dialog">
+      <div class="dialog-header"><div><span>FILE</span><h2>輸出</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
+      <div class="dialog-body export-options">
+        <section class="export-option-group"><h3>PDF</h3><button type="button" data-export-format="pdf-current"><span>輸出目前表單</span><strong id="export-current-label">工程概要</strong></button><button type="button" data-export-format="pdf-all"><span>輸出完整複核紀錄</span><strong>鋼構施工複核表</strong><small>含工程概要及所有核心分頁</small></button></section>
+        <section class="export-option-group"><h3>資料檔</h3><button type="button" data-export-format="json"><span>匯出結構化資料</span><strong>JSON</strong><small>適合後續資料庫匯入</small></button></section>
+      </div>
+    </dialog>
+
+    <section class="print-report" id="print-report" aria-label="鋼構施工複核列印版">
+      <article class="print-page" data-print-tab="overview" id="print-overview"></article>
+      <article class="print-page" data-print-tab="delivery" id="print-delivery"></article>
+      <article class="print-page" data-print-tab="anchor" id="print-anchor"></article>
+      <article class="print-page" data-print-tab="erection" id="print-erection"></article>
+      <article class="print-page" data-print-tab="hsb" id="print-hsb"></article>
+      <article class="print-page" data-print-tab="welding" id="print-welding"></article>
+      <article class="print-page" data-print-tab="accuracy" id="print-accuracy"></article>
+      <article class="print-page" data-print-tab="optional" id="print-optional"></article>
+    </section>
+
+    <script src="./steel.js" defer></script>
+  </body>
+</html>

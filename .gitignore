@@ -2,3 +2,5 @@
 .playwright-cli/
 tmp/
 output/playwright/
+scripts/__pycache__/
+*.pyc
