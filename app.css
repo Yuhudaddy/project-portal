@@ -662,9 +662,11 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .quality-standard-field select { width: 100%; min-height: 38px; }
 .quality-standard-field.is-disabled { opacity: 0.45; }
 .quality-standard-note { margin-top: 10px; }
-.example-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.example-actions { display: grid; width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
 .example-button {
   display: grid;
+  width: 100%;
+  min-width: 0;
   gap: 2px;
   min-height: 62px;
   padding: 10px 11px;
