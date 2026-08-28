@@ -671,7 +671,7 @@ function printHeader(title, sequence, project = state.overview.project, recordId
 }
 
 function printFooter() {
-  return `<footer class="print-footer">資料版本：${APP_VERSION}｜輸出時間：${esc(new Date().toLocaleString("zh-TW", { hour12: false }))}<br />本文件經現場相關人員簽核後始為正式紀錄。</footer>`;
+  return `<footer class="print-footer"><div class="print-footer-note">資料版本：${APP_VERSION}｜輸出時間：${esc(new Date().toLocaleString("zh-TW", { hour12: false }))}<br />本文件經現場相關人員簽核後始為正式紀錄。</div><div class="print-signature-grid" aria-label="簽名欄"><div><span>所長</span><span aria-hidden="true"></span></div><div><span>副所長</span><span aria-hidden="true"></span></div><div><span>擔當者</span><span aria-hidden="true"></span></div></div></footer>`;
 }
 
 function printProjectOverview(data, options = {}) {
@@ -694,13 +694,13 @@ function printWallInfo() {
   return `<section class="print-section print-wall-info"><h2>壁體資訊</h2><div class="print-meta-grid three">
     <div><span>單元類型</span><strong>${esc(display(state.wall.unitType))}</strong></div>
     <div><span>樁／壁編號</span><strong>${esc(display(state.wall.unitNo))}</strong></div>
-    <div><span>混凝土強度（kgf/cm2）</span><strong>${esc(display(state.wall.strength))}</strong></div>
-    <div><span>設計深度（GL, m）</span><strong>GL ${esc(display(state.wall.designDepth))} m</strong></div>
-    <div><span>壁厚／單元長度</span><strong>${esc(display(state.wall.thickness))} m ／ ${esc(display(state.wall.length))} m</strong></div>
-    <div><span>澆置頂端高程</span><strong>GL ${number(state.wall.topElevation) !== null && number(state.wall.topElevation) >= 0 ? "+" : ""}${esc(display(state.wall.topElevation))} m</strong></div>
-    <div><span>設計澆置高度</span><strong>${fixed(height)} m</strong></div>
-    <div><span>設計數量</span><strong>${designVolume === null ? "—" : fixed(designVolume)} m³</strong></div>
-    <div><span>實際數量</span><strong>${esc(display(state.wall.actualVolume))} m³</strong></div>
+    <div><span>混凝土強度(kgf/cm²)</span><strong>${esc(display(state.wall.strength))}</strong></div>
+    <div><span>設計深度(GL,m)</span><strong>GL ${esc(display(state.wall.designDepth))} m</strong></div>
+    <div><span>壁厚／單元長度(m)</span><strong>${esc(display(state.wall.thickness))} ／ ${esc(display(state.wall.length))}</strong></div>
+    <div><span>澆置頂端高程(GL,m)</span><strong>GL ${number(state.wall.topElevation) !== null && number(state.wall.topElevation) >= 0 ? "+" : ""}${esc(display(state.wall.topElevation))}</strong></div>
+    <div><span>設計澆置高度(m)</span><strong>${fixed(height)}</strong></div>
+    <div><span>設計數量(m³)</span><strong>${designVolume === null ? "—" : fixed(designVolume)}</strong></div>
+    <div><span>實際數量(m³)</span><strong>${esc(display(state.wall.actualVolume))}</strong></div>
   </div></section>`;
 }
 
@@ -715,7 +715,10 @@ function pouringChartSvg(rows) {
   const niceMax = (value, step) => Math.max(step, Math.ceil(value / step) * step);
   const xMax = niceMax(maxVolume, maxVolume <= 40 ? 5 : 10);
   const yMax = niceMax(maxHeight, maxHeight <= 40 ? 5 : 10);
-  const width = 760, height = 330;
+  // Keep the horizontal scale unchanged while giving the Y axis more visual
+  // room.  This makes the height curve easier to read without stretching the
+  // surrounding page/container to the bottom of the sheet.
+  const width = 760, height = 470;
   const margin = { top: 22, right: 22, bottom: 52, left: 58 };
   const plotWidth = width - margin.left - margin.right;
   const plotHeight = height - margin.top - margin.bottom;
@@ -732,7 +735,7 @@ function pouringChartSvg(rows) {
   const actualPath = actualRows.length > 0 ? actualPoints.map(([volume, height], index) => `${index === 0 ? "M" : "L"} ${x(volume)} ${y(height)}`).join(" ") : "";
   const pointDots = actualRows.map(row => `<circle cx="${x(Math.min(row.cumulative, xMax))}" cy="${y(Math.min(row.measured, yMax))}" r="3.2" />`).join("");
   const hasData = designPath || actualPath;
-  return `<div class="pouring-chart" role="img" aria-label="設計與實際混凝土澆置高度曲線"><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
+  return `<div class="pouring-chart" role="img" aria-label="設計與實際混凝土澆置高度曲線"><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
     <g class="chart-grid">${grid}</g><g class="chart-axis"><line x1="${margin.left}" y1="${margin.top + plotHeight}" x2="${margin.left + plotWidth}" y2="${margin.top + plotHeight}" /><line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${margin.top + plotHeight}" /></g>
     <g class="chart-labels">${xLabels}${yLabels}<text class="chart-axis-title" x="${margin.left + plotWidth / 2}" y="${height - 8}" text-anchor="middle">實際累積澆置體積（m³）</text><text class="chart-axis-title" transform="translate(14 ${margin.top + plotHeight / 2}) rotate(-90)" text-anchor="middle">累積澆置高度（m）</text></g>
     ${designPath ? `<path class="chart-design-line" d="${designPath}" />` : ""}${actualPath ? `<path class="chart-actual-line" d="${actualPath}" />` : ""}<g class="chart-actual-points">${pointDots}</g>
@@ -811,11 +814,11 @@ function renderPrint() {
     <div class="pouring-layout">
       <div class="pouring-wall-full">${printWallInfo()}</div>
       <div class="pouring-main-layout"><div class="pouring-table-column"><section class="print-section"><h2>澆置主控摘要</h2><div class="print-summary">
-        <div><span>車次</span><strong>${truckRows.length} 車</strong></div>
-        <div><span>逐車累積量</span><strong>${fixed(lastTruck?.cumulative ?? 0)} m³</strong></div>
-        <div><span>設計／實際數量</span><strong>${esc(display(state.wall.designVolume))} ／ ${esc(display(state.wall.actualVolume))} m³</strong></div>
-        <div><span>預估／實測／差異</span><strong>${fixed(lastTruck?.expected ?? null)} ／ ${fixed(lastTruck?.measured ?? null)} ／ ${fixed(lastTruck?.difference ?? null)} m</strong></div>
-      </div></section><section class="print-section pouring-table-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量<br />m³</th><th>累積<br />m³</th><th>預估高度<br />m</th><th>實測高度<br />m</th><th>差異<br />m</th></tr></thead><tbody>${pouringRows}</tbody></table></section></div><section class="print-section pouring-chart-section"><h2>澆置高度曲線</h2>${pouringChartSvg(truckRows)}</section></div>${printFooter()}`;
+        <div><span>車次(車)</span><strong>${truckRows.length}</strong></div>
+        <div><span>逐車累積量(m³)</span><strong>${fixed(lastTruck?.cumulative ?? 0)}</strong></div>
+        <div><span>設計／實際數量(m³)</span><strong>${esc(display(state.wall.designVolume))} ／ ${esc(display(state.wall.actualVolume))}</strong></div>
+        <div><span>預估／實測／差異(m)</span><strong>${fixed(lastTruck?.expected ?? null)} ／ ${fixed(lastTruck?.measured ?? null)} ／ ${fixed(lastTruck?.difference ?? null)}</strong></div>
+      </div></section><section class="print-section pouring-table-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量(m³)</th><th>累積(m³)</th><th>預估高度(m)</th><th>實測高度(m)</th><th>差異(m)</th></tr></thead><tbody>${pouringRows}</tbody></table></section></div><section class="print-section pouring-chart-section"><h2>澆置高度曲線</h2>${pouringChartSvg(truckRows)}</section></div>${printFooter()}`;
 
   const guideWallRows = state.guideWall.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
   $("#print-guide-wall").innerHTML = `${printHeader("導溝施工複核表", "07", state.guideWall.project, state.guideWall.unitNo || "未指定單元", { project: state.guideWall.project, contractor: state.guideWall.contractor, date: state.guideWall.date, reviewer: state.guideWall.reviewer })}
