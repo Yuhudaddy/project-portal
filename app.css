@@ -316,7 +316,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 .unit-type {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 5px;
   min-width: 0;
   margin: 0;
@@ -340,6 +340,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   color: var(--soft);
   font-size: 0.8125rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 .unit-type input:checked + span {
   border-color: var(--line-dark);
