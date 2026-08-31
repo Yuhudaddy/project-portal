@@ -154,6 +154,7 @@ const state = {
   wall: {
     unitType: "",
     unitNo: "",
+    sequenceNo: "",
     designDepth: "",
     strength: "",
     thickness: "",
@@ -539,7 +540,7 @@ function renderAll() {
 function clearAllData() {
   state.overview = { project: "", contractor: "", date: "", reviewer: "" };
   state.wall = {
-    unitType: "", unitNo: "", designDepth: "", strength: "", thickness: "", length: "",
+    unitType: "", unitNo: "", sequenceNo: "", designDepth: "", strength: "", thickness: "", length: "",
     topElevation: "", designVolume: "", actualVolume: ""
   };
   state.soil = [];
@@ -694,13 +695,13 @@ function printWallInfo() {
   return `<section class="print-section print-wall-info"><h2>壁體資訊</h2><div class="print-meta-grid three">
     <div><span>單元類型</span><strong>${esc(display(state.wall.unitType))}</strong></div>
     <div><span>樁／壁編號</span><strong>${esc(display(state.wall.unitNo))}</strong></div>
+    <div><span>順序編號</span><strong>${esc(display(state.wall.sequenceNo))}</strong></div>
     <div><span>混凝土強度(kgf/cm²)</span><strong>${esc(display(state.wall.strength))}</strong></div>
     <div><span>設計深度(GL,m)</span><strong>GL ${esc(display(state.wall.designDepth))} m</strong></div>
     <div><span>壁厚／單元長度(m)</span><strong>${esc(display(state.wall.thickness))} ／ ${esc(display(state.wall.length))}</strong></div>
     <div><span>澆置頂端高程(GL,m)</span><strong>GL ${number(state.wall.topElevation) !== null && number(state.wall.topElevation) >= 0 ? "+" : ""}${esc(display(state.wall.topElevation))}</strong></div>
     <div><span>設計澆置高度(m)</span><strong>${fixed(height)}</strong></div>
-    <div><span>設計數量(m³)</span><strong>${designVolume === null ? "—" : fixed(designVolume)}</strong></div>
-    <div><span>實際數量(m³)</span><strong>${esc(display(state.wall.actualVolume))}</strong></div>
+    <div><span>設計／實際數量(m³)</span><strong>${designVolume === null ? "—" : fixed(designVolume)} ／ ${esc(display(state.wall.actualVolume))}</strong></div>
   </div></section>`;
 }
 
@@ -761,13 +762,13 @@ function renderPrint() {
     <section class="print-section"><h2>02｜壁體資訊</h2><div class="print-meta-grid three">
       <div><span>單元類型</span><strong>${esc(display(state.wall.unitType))}</strong></div>
       <div><span>樁／壁編號</span><strong>${esc(display(state.wall.unitNo))}</strong></div>
+      <div><span>順序編號</span><strong>${esc(display(state.wall.sequenceNo))}</strong></div>
       <div><span>混凝土強度（kgf/cm2）</span><strong>${esc(display(state.wall.strength))}</strong></div>
       <div><span>設計深度（GL, m）</span><strong>GL ${esc(display(state.wall.designDepth))} m</strong></div>
       <div><span>壁厚／單元長度</span><strong>${esc(display(state.wall.thickness))} m ／ ${esc(display(state.wall.length))} m</strong></div>
       <div><span>澆置頂端高程</span><strong>GL ${number(state.wall.topElevation) !== null && number(state.wall.topElevation) >= 0 ? "+" : ""}${esc(display(state.wall.topElevation))} m</strong></div>
       <div><span>設計澆置高度</span><strong>${fixed(height)} m</strong></div>
-      <div><span>設計數量</span><strong>${esc(display(state.wall.designVolume))} m³</strong></div>
-      <div><span>實際數量</span><strong>${esc(display(state.wall.actualVolume))} m³</strong></div>
+      <div><span>設計／實際數量(m³)</span><strong>${esc(display(state.wall.designVolume))} ／ ${esc(display(state.wall.actualVolume))}</strong></div>
     </div></section>${printFooter()}`;
 
   const qualityRows = state.quality.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(qualityCheckStandard(index, check.standard))}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
@@ -918,6 +919,7 @@ function exportData() {
     wall_unit: {
       unit_type: state.wall.unitType || null,
       unit_no: state.wall.unitNo || null,
+      sequence_no: state.wall.sequenceNo || null,
       design_depth_m: depthDesign,
       top_elevation_m: toNumberOrNull(state.wall.topElevation),
       thickness_m: toNumberOrNull(state.wall.thickness),
@@ -1050,6 +1052,7 @@ function exportMarkdown() {
     `| --- | --- |`,
     `| 單元類型 | ${markdownCell(wall.unit_type)} |`,
     `| 單元編號 | ${markdownCell(wall.unit_no)} |`,
+    `| 順序編號 | ${markdownCell(wall.sequence_no)} |`,
     `| 設計深度（m） | ${markdownCell(wall.design_depth_m)} |`,
     `| 頂端高程（m） | ${markdownCell(wall.top_elevation_m)} |`,
     `| 壁厚（m） | ${markdownCell(wall.thickness_m)} |`,
@@ -1174,6 +1177,7 @@ function importJsonPayload(payload) {
   state.wall = {
     unitType: importText(wall.unit_type),
     unitNo: importText(wall.unit_no),
+    sequenceNo: importText(wall.sequence_no),
     designDepth: importText(wall.design_depth_m),
     strength: importText(wall.concrete_strength_kgf_cm2),
     thickness: importText(wall.thickness_m),
