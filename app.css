@@ -260,7 +260,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   border-radius: 2px;
   background: color-mix(in oklch, var(--paper) 94%, var(--surface));
   color: var(--ink);
-  font-size: 1rem;
+  /* 略大於欄位標題（0.71875rem）即可；欄位高度由 min-height 固定，縮字不會位移。 */
+  font-size: 0.8125rem;
 }
 .field input[type="date"],
 .field input[type="time"] {
@@ -304,7 +305,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   padding: 0 9px;
   overflow: hidden;
   color: var(--ink);
-  font-size: 1rem;
+  font-size: 0.8125rem;
   white-space: nowrap;
   text-overflow: ellipsis;
   pointer-events: none;
@@ -798,6 +799,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 @media (pointer: coarse) {
   .header-action, .tab-row button, .add-button, .confirm-button, .secondary-button { min-height: 44px; }
+  /* iOS Safari 會在聚焦小於 16px 的輸入欄時自動放大整頁。觸控裝置維持 1rem，
+     日期／時間欄的實際文字是透明的，改由 .native-field-display 以小字繪製，不受影響。 */
+  .field input, .field select, .field textarea, .phase-editor select { font-size: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -816,10 +820,12 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .print-report { display: block; }
   .print-page { display: none; break-after: page; }
   .print-page[data-print-tab="overview-wall"] { display: none !important; }
-  .print-page[data-print-tab="pouring"] { page: pouring-landscape; }
+  .print-page[data-print-tab="pouring"] { page: pouring-landscape; min-height: 190mm; }
   .print-page:last-child { break-after: auto; }
   body[data-print-scope="all"] .print-page,
-  body[data-print-scope="current"] .print-page.print-selected { position: relative; display: flex; flex-direction: column; min-height: 190mm; padding-bottom: 20mm; }
+  body[data-print-scope="current"] .print-page.print-selected { position: relative; display: flex; flex-direction: column; min-height: 277mm; padding-bottom: 20mm; }
+  body[data-print-scope="all"] .print-page[data-print-tab="pouring"],
+  body[data-print-scope="current"] .print-page.print-selected[data-print-tab="pouring"] { min-height: 190mm; }
   .print-document-header {
     display: grid;
     align-items: center;

@@ -311,10 +311,15 @@ function markdownExport() {
 function printHeader(title, sequence) {
   const member = activeMember();
   const identity = [state.overview.floor, member?.type, member?.id].filter(Boolean).join("｜") || "未指定構件";
-  return `<header class="print-document-header"><div><p>RC FORMWORK / FIELD REVIEW / ${sequence}</p><h1>${esc(title)}</h1></div><div class="print-header-meta"><strong>${esc(display(state.overview.project))}<br />${esc(identity)}</strong><img class="print-logo" src="./taisei.png" alt="" /></div></header>`;
+  return `<header class="print-document-header"><div class="print-header-title"><p>RC FORMWORK / FIELD REVIEW / ${sequence}</p><h1>${esc(title)}</h1></div><div class="print-header-meta-body"><div class="print-header-project-lines">
+    <div><span>工程名稱：</span><strong>${esc(display(state.overview.project))}</strong></div>
+    <div><span>施工日期：</span><strong>${esc(display(state.overview.date))}</strong></div>
+    <div><span>施工廠商：</span><strong>${esc(display(state.overview.contractor))}</strong></div>
+    <div><span>填表人：</span><strong>${esc(display(state.overview.reviewer))}</strong></div>
+  </div></div><div class="print-header-logo-wrap"><img class="print-logo" src="./taisei.png" alt="大成建設標誌" /><strong class="print-header-identity">${esc(identity)}</strong></div></header>`;
 }
 
-function printFooter() { return `<footer class="print-footer">資料版本：${APP_VERSION}｜輸出時間：${esc(new Date().toLocaleString("zh-TW", { hour12: false }))}<br />本文件為營造廠現場複核紀錄，正式效力依公司簽核流程辦理。</footer>`; }
+function printFooter() { return `<footer class="print-footer"><div class="print-footer-note">資料版本：${APP_VERSION}｜輸出時間：${esc(new Date().toLocaleString("zh-TW", { hour12: false }))}<br />本文件為營造廠現場複核紀錄，正式效力依公司簽核流程辦理。</div><div class="print-signature-grid" aria-label="簽名欄"><div><span>所長</span><span aria-hidden="true"></span></div><div><span>副所長</span><span aria-hidden="true"></span></div><div><span>擔當者</span><span aria-hidden="true"></span></div></div></footer>`; }
 function printValue(value) { return esc(display(value)); }
 
 function renderPrint() {
