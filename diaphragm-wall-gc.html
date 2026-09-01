@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="營造廠查驗" />
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./app.css?v=43" />
+    <link rel="stylesheet" href="./app.css?v=45" />
     <title>連續壁營造廠查驗表｜Project Portal</title>
   </head>
   <body data-active-tab="overview" data-print-scope="none">
@@ -236,18 +236,15 @@
       </div>
     </aside>
 
-    <dialog class="sheet-dialog help-dialog" id="help-dialog">
+    <dialog class="sheet-dialog help-dialog help-dialog-compact" id="help-dialog">
       <div class="dialog-header"><div><span>HELP</span><h2>使用說明</h2></div><button type="button" data-close-dialog aria-label="關閉使用說明">×</button></div>
       <div class="dialog-body help-content">
-        <section><h3>本表定位</h3><p>本表是營造廠（總包）的二級品管查驗紀錄，只填寫營造廠必須親自實測與簽認的項目。逐車出土時間、泥漿池操作、逐車澆置日誌等一級自主品管項目由專業分包商填報，以附件檢附即可，不在本表重複填寫。</p></section>
-        <section><h3>選擇紀錄工具</h3><p>使用頁面上方的「導溝／鋼筋籠／連續壁」切換表單；所有內容都在同一個 App 內填寫。</p></section>
-        <section><h3>四大停檢點</h3><p>連續壁依「成槽放行、吊放放行、澆置成品、監測結論」四個關鍵停檢點填寫。未經該停檢點檢驗合格，不得進行下一道工序。</p></section>
-        <section><h3>標準值與自動警示</h3><p>請先在「設計基準」填入設計參數並確認本公司標準值。實測值填入後，系統會自動換算深度誤差、籠頂高程偏差、超方率與超打高度，超出標準時該項目會標示警示。</p></section>
-        <section><h3>資料與輸出</h3><p>本工具沒有儲存或同步功能，重新整理或關閉頁面後資料會清空。完成後請由底部「檔案」選擇 PDF、JSON 或 Markdown；JSON 可匯回本頁的全部分頁。匯入廠商版（連續壁施工紀錄）的 JSON 時，只會帶入工程名稱與設計參數，實測值一律由營造廠自行填寫。</p></section>
-        <section class="help-examples"><h3>已填妥範例輸出</h3><p>先查看實際輸出外觀，再開始填寫現場查驗；連續壁範例已包含四大停檢點、自動換算結果與查驗簽認欄。</p><div class="example-actions">
-          <a class="example-button" href="./examples/diaphragm-wall-gc-example.pdf" target="_blank" rel="noopener"><span>連續壁查驗表</span><small>開啟 PDF 範例</small></a>
-          <a class="example-button" href="./examples/gc-guide-wall-example.pdf" target="_blank" rel="noopener"><span>導溝</span><small>開啟 PDF 範例</small></a>
-          <a class="example-button" href="./examples/gc-rebar-cage-example.pdf" target="_blank" rel="noopener"><span>鋼筋籠</span><small>開啟 PDF 範例</small></a>
+        <section><h3>本表定位</h3><p>營造廠二級品管查驗表。逐車出土、泥漿池操作與澆置日誌屬分包商一級品管，以附件檢附。</p></section>
+        <section><h3>填寫與輸出</h3><p>先在「設計基準」填設計參數與標準值，再依成槽放行 → 吊放放行 → 澆置成品 → 監測結論逐點查驗；深度誤差、籠頂偏差、超方率與超打高度自動換算，超標即警示。資料不儲存，重整即清空；底部「檔案」輸出 PDF／JSON／Markdown。</p></section>
+        <section class="help-examples"><h3>已填妥範例輸出</h3><div class="example-actions">
+          <a class="example-button" href="./examples/diaphragm-wall-gc-example.pdf" target="_blank" rel="noopener"><span>查驗表</span></a>
+          <a class="example-button" href="./examples/gc-guide-wall-example.pdf" target="_blank" rel="noopener"><span>導溝</span></a>
+          <a class="example-button" href="./examples/gc-rebar-cage-example.pdf" target="_blank" rel="noopener"><span>鋼筋籠</span></a>
         </div></section>
       </div>
     </dialog>

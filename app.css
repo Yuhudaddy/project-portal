@@ -757,6 +757,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 
 @media (max-width: 560px) {
   .example-actions { grid-template-columns: 1fr; }
+  /* 營造廠查驗表的使用說明較長，窄螢幕收緊間距並讓範例按鈕維持三欄，避免對話框出現捲軸。 */
+  .help-dialog-compact .example-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .help-dialog-compact .help-content { gap: 10px; }
+  .help-dialog-compact .help-content section { padding-bottom: 8px; }
   .quality-card-fields { grid-template-columns: 1fr; margin-left: 0; }
   .quality-card > p { margin-left: 0; }
   .quality-standard-heading { display: block; }
