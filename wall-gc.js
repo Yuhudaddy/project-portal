@@ -1,4 +1,4 @@
-const APP_VERSION = "1.3";
+const APP_VERSION = "1.4";
 
 const TAB_LABELS = {
   overview: "工程概要",
@@ -38,7 +38,7 @@ const STANDARD_CONFIG = [
   { key: "centerline", label: "放樣中心線偏差上限", unit: "mm", options: ["10", "15", "20", "25", "30"], default: "20" },
   { key: "guideClearMin", label: "導溝淨寬加大下限", unit: "cm", options: ["2", "3", "4"], default: "3" },
   { key: "guideClearMax", label: "導溝淨寬加大上限", unit: "cm", options: ["4", "5", "6", "8"], default: "5" },
-  { key: "verticalDenominator", label: "槽壁垂直度分母下限", unit: "－", options: ["100", "200", "300", "400", "500"], default: "300" },
+  { key: "verticalDenominator", label: "槽壁垂直精度（10／D）", unit: "1/n", options: ["100", "200", "300", "400", "500", "10/D"], default: "300" },
   { key: "deflection", label: "最大偏擺位移上限", unit: "cm", options: ["5", "10", "15", "20"], default: "10" },
   { key: "sediment", label: "孔底沉泥厚度上限", unit: "cm", options: ["5", "10", "15", "20"], default: "10" },
   { key: "slurryDensityMin", label: "穩定液比重下限", unit: "－", options: ["0.95", "1.00", "1.05"], default: "1.00" },
@@ -70,6 +70,34 @@ const SLURRY_KEYS = {
   "高分子系": { sandContent: "sandContentPolymer", tremieEmbed: "tremieEmbedPolymer" }
 };
 const SLURRY_DEPENDENT = ["sandContentBentonite", "sandContentPolymer", "tremieEmbedBentonite", "tremieEmbedPolymer"];
+
+function verticalPrecisionFromDepth(depthValue) {
+  const depth = Number.parseFloat(depthValue);
+  if (!Number.isFinite(depth) || depth === 0) return null;
+  const depthCm = Math.abs(depth) * 100;
+  return { depthCm, ratio: 10 / depthCm, denominator: depthCm / 10 };
+}
+
+function verticalPrecision() {
+  return verticalPrecisionFromDepth(state.unit.designDepth);
+}
+
+function selectedVerticalPrecision() {
+  return state.standards.verticalDenominator === "10/D" ? verticalPrecision() : null;
+}
+
+function effectiveVerticalDenominator() {
+  const precision = selectedVerticalPrecision();
+  return precision ? precision.denominator : number(state.standards.verticalDenominator);
+}
+
+function verticalityStandardText() {
+  const selected = state.standards.verticalDenominator || "300";
+  if (selected !== "10/D") return `垂直斜率 ≤ 1/${selected}`;
+  const precision = selectedVerticalPrecision();
+  if (!precision) return "垂直斜率 ≤ 10 / D（D 為連續壁深度，單位 cm；請先填設計深度）";
+  return `垂直斜率 ≤ 10 / ${precision.depthCm.toFixed(0)} = ${precision.ratio.toFixed(5)}（約 1/${precision.denominator.toFixed(1)}）`;
+}
 
 const GUIDE_WALL_CHECKS = [
   ["放樣與單元中心線", "放樣點位、單元順序與核定圖說相符；應留存測量實測值"],
@@ -185,9 +213,9 @@ const HOLD_POINTS = [
       },
       {
         key: "verticality", item: "超音波槽壁垂直度", mode: "number", unit: "1/n", placeholder: "例如：420",
-        standard: () => `垂直斜率 ≤ 1/${state.standards.verticalDenominator}（填入斜率分母 n）`,
-        evaluate: value => value !== null && S("verticalDenominator") !== null && value < S("verticalDenominator")
-          ? `垂直斜率 1/${value} 劣於標準 1/${state.standards.verticalDenominator}`
+        standard: () => `${verticalityStandardText()}（填入斜率分母 n）`,
+        evaluate: value => value !== null && effectiveVerticalDenominator() !== null && value < effectiveVerticalDenominator()
+          ? `垂直斜率 1/${value} 劣於標準約 1/${effectiveVerticalDenominator().toFixed(1)}`
           : null
       },
       {
@@ -576,6 +604,7 @@ function updateUnitCalculation() {
   const heightInput = $("#design-height-value");
   if (heightInput) heightInput.value = height === null ? "" : height.toFixed(2);
   updateIdentity();
+  renderStandards();
   HOLD_POINTS.forEach(hold => renderHold(hold.id));
 }
 
@@ -942,7 +971,11 @@ function exportData() {
   const mapped = SLURRY_KEYS[state.unit.slurryType];
   const standards = Object.fromEntries(Object.entries(state.standards)
     .filter(([key]) => !mapped || !SLURRY_DEPENDENT.includes(key) || Object.values(mapped).includes(key))
-    .map(([key, value]) => [key, value]));
+    .map(([key, value]) => [key, key === "verticalDenominator" ? {
+      value,
+      calculated_value: value === "10/D" ? (selectedVerticalPrecision()?.denominator?.toFixed(1) || "") : value,
+      display: verticalityStandardText()
+    } : value]));
 
   return {
     app_version: APP_VERSION,
@@ -1258,7 +1291,7 @@ function importGcPayload(payload) {
   const standardValues = { ...STANDARD_DEFAULTS };
   Object.entries(payload.standards || {}).forEach(([key, value]) => {
     if (!Object.prototype.hasOwnProperty.call(standardValues, key)) return;
-    standardValues[key] = importText(value && typeof value === "object" ? value.value : value);
+    standardValues[key] = importText(value && typeof value === "object" ? (value.selection ?? value.value) : value);
   });
   state.standards = standardValues;
 

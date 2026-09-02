@@ -1,4 +1,4 @@
-const APP_VERSION = "1.3";
+const APP_VERSION = "1.4";
 
 const TAB_LABELS = {
   overview: "工程概要",
@@ -92,7 +92,7 @@ const QUALITY_STANDARD_CONFIG = [
   { key: "sediment", label: "沉泥厚度上限", unit: "cm", options: ["5", "10", "15", "20", "25"], default: "10" },
   { key: "sandContent", label: "含砂量上限", unit: "%", options: ["0.5", "1", "1.5", "2"], default: "1" },
   { key: "settlingTime", label: "靜置時間下限", unit: "hr", options: ["0.5", "1", "1.5", "2"], default: "0.5" },
-  { key: "verticalDenominator", label: "垂直壁體高度分母", unit: "－", options: ["100", "200", "300", "400", "500", "600"], default: "300" },
+  { key: "verticalDenominator", label: "垂直精度（10／D）", unit: "1/n", options: ["100", "200", "300", "400", "500", "10/D"], default: "300" },
   { key: "tremieClearance", label: "特密管端距上限", unit: "cm", options: ["20", "30", "40", "50"], default: "20" },
   { key: "embedmentMale", label: "公單元埋入深度下限", unit: "m", options: ["0.5", "1.0", "1.5", "2.0"], default: "1.5" },
   { key: "embedmentFemale", label: "母單元埋入深度下限", unit: "m", options: ["0.5", "1.0", "1.5", "2.0"], default: "1.5" },
@@ -110,11 +110,42 @@ const QUALITY_STANDARD_CONFIG = [
 
 const QUALITY_STANDARD_DEFAULTS = Object.fromEntries(QUALITY_STANDARD_CONFIG.map(item => [item.key, item.default]));
 
+function verticalPrecisionFromDepth(depthValue) {
+  const depth = Number.parseFloat(depthValue);
+  if (!Number.isFinite(depth) || depth === 0) return null;
+  const depthCm = Math.abs(depth) * 100;
+  return { depthCm, ratio: 10 / depthCm, denominator: depthCm / 10 };
+}
+
+function verticalPrecision() {
+  return verticalPrecisionFromDepth(state.wall.designDepth);
+}
+
+function selectedVerticalPrecision() {
+  return state.quality.standards.verticalDenominator === "10/D" ? verticalPrecision() : null;
+}
+
+function qualityStandardValue(key) {
+  if (key === "verticalDenominator") {
+    const selected = state.quality.standards.verticalDenominator || "";
+    const precision = selectedVerticalPrecision();
+    return precision ? precision.denominator.toFixed(1) : selected;
+  }
+  return state.quality.standards[key] ?? "";
+}
+
 function qualityStandardOptions(selected, options) {
   return options.map(value => `<option value="${esc(value)}" ${value === selected ? "selected" : ""}>${esc(value)}</option>`).join("");
 }
 
 function qualityStandardText(key) {
+  if (key === "verticalDenominator") {
+    const selected = state.quality.standards.verticalDenominator || "—";
+    if (selected !== "10/D") return `垂直壁體偏差 ≤ 1/${selected}`;
+    const precision = selectedVerticalPrecision();
+    if (!precision) return "垂直精度 ≤ 10 / D（D 為連續壁深度，單位 cm）";
+    return `垂直精度 ≤ 10 / ${precision.depthCm.toFixed(0)} = ${precision.ratio.toFixed(5)}（約 1/${precision.denominator.toFixed(1)}）`;
+  }
   const value = state.quality.standards[key] || "—";
   const format = {
     slump: `坍度 ${value} cm`,
@@ -296,6 +327,7 @@ function updateWallCalculation() {
   const heightInput = $("#design-height-value");
   if (heightInput) heightInput.value = height === null ? "" : height.toFixed(2);
   updateIdentity();
+  renderQualityStandards();
   renderExcavation();
   renderPouring();
 }
@@ -792,7 +824,7 @@ function renderPrint() {
     const unitType = state.wall.unitType;
     const selectedKey = unitType === "公單元" ? "embedmentMale" : unitType === "母單元" ? "embedmentFemale" : unitType === "公母單元" ? "embedmentBoth" : null;
     if (config.key.startsWith("embedment") && selectedKey && config.key !== selectedKey) return "";
-    return `<tr><td class="text-left">${esc(config.label)}</td><td class="text-left">${esc(qualityStandardText(config.key))}</td><td>${esc(state.quality.standards[config.key])}</td><td>${esc(config.unit)}</td></tr>`;
+    return `<tr><td class="text-left">${esc(config.label)}</td><td class="text-left">${esc(qualityStandardText(config.key))}</td><td>${esc(qualityStandardValue(config.key))}</td><td>${esc(config.unit)}</td></tr>`;
   }).filter(Boolean).join("");
   const qualityProject = state.overview.project;
   const qualityIdentity = [state.wall.unitType, state.wall.unitNo].filter(Boolean).join("｜") || "未指定單元";
@@ -914,7 +946,7 @@ function exportData() {
   const selectedEmbedmentKey = embedmentKeys[state.wall.unitType] || null;
   const qualityStandards = Object.fromEntries(Object.entries(state.quality.standards)
     .filter(([key]) => !key.startsWith("embedment") || key === selectedEmbedmentKey)
-    .map(([key, value]) => [key, { value, display: qualityStandardText(key) }]));
+    .map(([key, value]) => [key, { value, calculated_value: qualityStandardValue(key), display: qualityStandardText(key) }]));
 
   return {
     app_version: APP_VERSION,
@@ -1250,7 +1282,7 @@ function importJsonPayload(payload) {
   const standardValues = { ...QUALITY_STANDARD_DEFAULTS };
   Object.entries(quality.standards || {}).forEach(([key, value]) => {
     if (!Object.prototype.hasOwnProperty.call(standardValues, key)) return;
-    standardValues[key] = importText(value && typeof value === "object" ? value.value : value);
+    standardValues[key] = importText(value && typeof value === "object" ? (value.selection ?? value.value) : value);
   });
   state.quality = {
     note: importText(quality.note),
