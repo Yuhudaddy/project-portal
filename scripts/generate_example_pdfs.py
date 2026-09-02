@@ -41,7 +41,7 @@ def P(text, style="BodyTC"):
     return Paragraph(str(text).replace("\n", "<br/>"), styles[style])
 
 
-def header(title, code, identity, project="Example Construction Project", contractor="Example Contractor", date="2026/08/28", reviewer="Site Engineer"):
+def header(title, code, identity, project="Example Construction Project", contractor="○○營造股份有限公司", date="2026/08/28", reviewer="Site Engineer"):
     meta = Table([
         [P("工程名稱：" + project, "Meta"), P("施工日期：" + date, "Meta")],
         [P("施工廠商：" + contractor, "Meta"), P("填表人：" + reviewer, "Meta")],
@@ -149,7 +149,7 @@ def document(path, flowables):
 
 def template_pdf():
     story = [header("模板施工複核表", "RC FORMWORK / FIELD REVIEW / 01–02", "3F｜柱 C1-03")]
-    story += [section("01｜工程概要"), meta_grid([("工程名稱", "Example Construction Project"), ("施工廠商", "Example Formwork Co."), ("施工日期", "2026/08/28"), ("檢查日期", "2026/08/28"), ("填表人", "Site Engineer"), ("檢查樓層", "3F"), ("施工區域／軸線", "A～C／1～3 軸"), ("施工圖／版次", "S-203 Rev.2"), ("檢查階段", "模板組立完成")]),
+    story += [section("01｜工程概要"), meta_grid([("工程名稱", "Example Construction Project"), ("施工廠商", "○○營造股份有限公司"), ("施工日期", "2026/08/28"), ("檢查日期", "2026/08/28"), ("填表人", "Site Engineer"), ("檢查樓層", "3F"), ("施工區域／軸線", "A～C／1～3 軸"), ("施工圖／版次", "S-203 Rev.2"), ("檢查階段", "模板組立完成")]),
              Spacer(1, 3*mm), section("02｜構件資訊"), data_table(["項次", "類型", "構件編號", "軸線／位置", "設計寬度／厚度(mm)", "設計高度(mm)", "設計高程(mm)", "表面類型"], [["1", "柱", "C1-03", "A-1／B-C", "600", "800", "3200", "一般表面"], ["2", "梁", "G3-12", "B-2／3F", "300", "600", "3000", "一般表面"]], [10*mm, 14*mm, 21*mm, 28*mm, 27*mm, 22*mm, 22*mm, 32*mm], small=True),
              Spacer(1, 3*mm), section("配筋／預埋介面摘要"), note("柱模清潔口、預埋件及機電套管位置已與施工圖核對；澆置前應再確認模板內部清潔與巡檢動線。"), PageBreak()]
     story += [header("模板安裝與尺寸複核", "RC FORMWORK / FIELD REVIEW / 03–04", "3F｜柱 C1-03"), section("03｜模板安裝複核")]
@@ -170,8 +170,8 @@ def template_pdf():
 
 
 def rebar_pdf():
-    common = [("工程名稱", "Example Construction Project"), ("施工廠商", "Example Rebar Co."), ("施工日期", "2026/08/28"), ("檢查日期", "2026/08/28"), ("填表人", "Site Engineer"), ("檢查樓層／區域", "3F／A～C軸"), ("施工圖／版次", "S-203 Rev.2"), ("查驗階段", "綁紮完成")]
-    rheader = lambda title, code, identity: header(title, code, identity, project="Example Construction Project", contractor="Example Rebar Co.", date="2026/08/28", reviewer="Site Engineer")
+    common = [("工程名稱", "Example Construction Project"), ("施工廠商", "○○營造股份有限公司"), ("施工日期", "2026/08/28"), ("檢查日期", "2026/08/28"), ("填表人", "Site Engineer"), ("檢查樓層／區域", "3F／A～C軸"), ("施工圖／版次", "S-203 Rev.2"), ("查驗階段", "綁紮完成")]
+    rheader = lambda title, code, identity: header(title, code, identity, project="Example Construction Project", contractor="○○營造股份有限公司", date="2026/08/28", reviewer="Site Engineer")
     member_matrix = [["1", "柱", "C1-03", "A-1／B-C", "SD420", "60 × 80", "主筋 D25 × 12支<br/>箍筋 D13 @10cm", "4.0", "合格", "四面配置"], ["2", "柱", "C1-04", "A-2／B-C", "SD420", "60 × 80", "主筋 D25 × 12支<br/>箍筋 D13 @10cm", "4.0", "合格", ""], ["3", "梁", "G3-12", "B-2／3F", "SD420", "30 × 60", "上 D25 × 3支／下 D25 × 4支<br/>箍筋 D13 @10cm", "4.0", "合格", "梁底主筋已固定"], ["4", "板", "S3-02", "B～C／3F", "SD420", "厚 18", "短向 D13 @15cm<br/>長向 D13 @20cm", "2.0", "合格", "開口補強完成"]]
     story = [rheader("鋼筋工程查驗表", "RC REBAR / FIELD REVIEW / 01–02", "3F｜柱 C1-03"), section("01｜工程概要"), meta_grid(common), Spacer(1, 3*mm), section("02｜配筋明細"), data_table(["項次", "類型", "構件編號", "軸線／位置", "強度", "尺寸(cm)", "配筋明細", "保護層(cm)", "結果", "備註"], member_matrix, [8*mm, 12*mm, 20*mm, 24*mm, 15*mm, 19*mm, 48*mm, 19*mm, 14*mm, 27*mm], small=True), PageBreak()]
     material_rows = [[str(i), label, standard, actual, "合格"] for i, (label, standard, actual) in enumerate([("無輻射證明", "應有無輻射污染證明文件", "RAD-2026-0811"), ("材料證明與爐號", "材質、強度、號數及爐號可追溯", "MTC-0811-03"), ("物理性檢驗", "抗拉、降伏及伸長率符合標準", "TEST-0811-03"), ("化學性檢驗", "化學成分符合標準", "TEST-0811-C"), ("進場堆置與防鏽", "分類堆置、離地墊高", "已確認"), ("機械式續接器文件", "型錄、試驗報告及施工方式已確認", "不適用"), ("配筋圖與現場版本", "圖號、版次及變更已核准", "S-203 Rev.2")])]
@@ -186,7 +186,7 @@ def rebar_pdf():
 
 
 def steel_pdf():
-    base = [("工程名稱", "Example Construction Project"), ("施工廠商", "Example Steel Co."), ("施工日期", "2026/08/28"), ("填表人", "Site Engineer")]
+    base = [("工程名稱", "Example Construction Project"), ("施工廠商", "○○營造股份有限公司"), ("施工日期", "2026/08/28"), ("填表人", "Site Engineer")]
     story = [header("鋼構施工複核表", "STEEL STRUCTURE / FIELD REVIEW / 01", "3F｜柱 C1-03"), section("工程概要"), meta_grid(base, cols=4), Spacer(1, 3*mm), section("營造廠複核範圍"), note("確認設計、進場、安裝、關鍵檢測證據與放行條件；逐支螺栓及逐道銲接製程紀錄由專業廠商保存，本表記錄文件及抽查結果。"), PageBreak()]
     story += [header("構件進場確認", "STEEL STRUCTURE / FIELD REVIEW / 02", "進場批次 ST-2026-0811"), section("構件清單"), meta_grid([("進場日期", "2026/08/28"), ("進場批次／文件", "ST-2026-0811"), ("複核人", "Site Engineer"), ("工程名稱", "Example Construction Project")], cols=4), Spacer(1, 2*mm), data_table(["項次", "類型", "構件編號", "規格／材質", "數量", "材料文件", "外觀／堆置", "結果"], [["1", "鋼柱", "C1-03", "BOX-600×600×25／SN490", "1", "MTC-0811-03", "符合／符合", "符合"], ["2", "鋼梁", "G3-12", "H-600×300×12×20／SN490", "1", "MTC-0811-12", "符合／符合", "符合"]], [9*mm, 15*mm, 22*mm, 38*mm, 14*mm, 29*mm, 30*mm, 19*mm], small=True), PageBreak()]
     rows = [[str(i), label, standard, actual, "符合"] for i,(label,standard,actual) in enumerate([("螺栓規格、數量與位置", "與施工圖及材料資料一致", "M24／4支"), ("螺栓定位與偏心", "偏移在容許值內", "3 mm"), ("螺栓露出與螺紋保護", "露出高度及完整螺紋符合", "已確認"), ("鋼筋干涉與固定方式", "未錯誤焊接或切斷鋼筋", "已確認"), ("柱腳底板與標高", "位置、標高及接觸面符合", "12.000／12.004 m"), ("無收縮灌漿與完成狀況", "材料、施工及養護紀錄齊全", "GR-0811")])]

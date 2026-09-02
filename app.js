@@ -1,4 +1,4 @@
-const APP_VERSION = "1.1";
+const APP_VERSION = "1.3";
 
 const TAB_LABELS = {
   overview: "工程概要",
@@ -27,14 +27,25 @@ const PRINT_TAB_GROUPS = {
 };
 
 const GUIDE_WALL_CHECKS = [
-  ["單元位置與中心線", "放樣點位、單元順序與核定圖說相符"],
-  ["導溝寬度與淨寬", "依核定施工圖；尺寸容許差依圖說"],
-  ["導溝頂高程／深度", "依核定施工圖與測量基準"],
-  ["壁面與底部完整性", "無鬆動、剝落、裂縫；底部無堆積物"],
+  ["放樣與單元中心線", "放樣點位、單元順序與核定圖說相符；應留存測量實測值"],
+  ["地下管線位置確認", "依竣工圖、探測或試掘結果確認，導溝位置不得與既有管線衝突"],
+  ["導溝寬度／淨寬", "實測導溝內面淨寬符合設計壁厚及核定加寬值"],
+  ["導溝深度與底高程", "導溝深度至少 1.8 m，且深入原土層 30 cm 以上；底高程及測量基準符合核定施工圖"],
+  ["導溝牆壁厚度", "導溝牆厚、斷面及結構尺寸符合核定圖說"],
+  ["導溝鋼筋號數與間距", "鋼筋號數、支數／間距與核定配筋圖一致；於下方欄位填寫實測或圖說值"],
+  ["回撐木配置與間距", "回撐木間距 @200 cm（如核定支撐計畫另有規定，依核定計畫），固定牢靠且可防止導溝變形"],
+  ["導溝混凝土強度", "混凝土強度符合設計要求，並可追溯出廠或試驗紀錄"],
+  ["導溝垂直與壁面完整性", "導溝壁面垂直度 1/300，且無鬆動、剝落、裂縫；底部無堆積物"],
   ["單元界面與接頭區", "界面位置、接頭區淨空可供後續施工"],
-  ["施工平台與排水", "平台平整，排水及運輸動線無阻"],
+  ["開挖坡面與鄰產保護", "開挖坡面應維持臨時穩定；鄰產及地下管線位置已確認，並採必要保護措施"],
   ["成槽前放行條件", "測量複核、現場條件及廠商自檢紀錄齊備"]
 ];
+const GUIDE_REBAR_SIZES = ["D10", "D13", "D16", "D19", "D22", "D25", "D29", "D32", "D35", "D38", "D41", "D51"];
+const createGuideWallCheck = ([item, standard]) => ({ item, standard, actual: "", barNo: "", barSpacing: "", result: "待確認" });
+
+function guideRebarSizeOptions(selected) {
+  return [`<option value="">請選擇</option>`, ...GUIDE_REBAR_SIZES.map(value => `<option value="${esc(value)}" ${value === selected ? "selected" : ""}>${esc(value)}</option>`)].join("");
+}
 
 const REBAR_CAGE_PARTS = [
   "A 面縱向主筋", "B 面縱向主筋", "A 面水平分布筋", "B 面水平分布筋",
@@ -169,7 +180,7 @@ const state = {
   trucks: [],
   guideWall: {
     project: "", contractor: "", date: today, unitNo: "", reviewer: "", note: "",
-    checks: GUIDE_WALL_CHECKS.map(([item, standard]) => ({ item, standard, actual: "", result: "待確認" }))
+    checks: GUIDE_WALL_CHECKS.map(createGuideWallCheck)
   },
   rebarCage: {
     project: "", date: today, unitNo: "", cageNo: "", reviewer: "", note: "",
@@ -197,6 +208,7 @@ const number = value => {
 };
 const fixed = value => Number.isFinite(value) ? value.toFixed(2) : "—";
 const display = value => String(value ?? "").trim() || "—";
+const guideCheckActual = check => [display(check.actual) === "—" ? "" : display(check.actual), check.barNo ? `號數 ${check.barNo}` : "", check.barSpacing ? `間距 ${check.barSpacing} cm` : ""].filter(Boolean).join("；") || "—";
 const esc = value => String(value ?? "")
   .replaceAll("&", "&amp;")
   .replaceAll("<", "&lt;")
@@ -449,6 +461,10 @@ function renderCheckCards(type) {
         <label class="field"><span>現場紀錄／實測</span><input type="text" value="${esc(check.actual)}" data-check-item="${type}" data-check-index="${index}" data-check-field="actual" /></label>
         <label class="field result-field"><span>複核結果</span><select data-check-item="${type}" data-check-index="${index}" data-check-field="result">${resultOptions(check.result)}</select></label>
       </div>
+      ${type === "guideWall" && check.item.includes("鋼筋") ? `<div class="guide-rebar-fields">
+        <label class="field"><span>鋼筋號數</span><select data-check-item="${type}" data-check-index="${index}" data-check-field="barNo">${guideRebarSizeOptions(check.barNo)}</select></label>
+        <label class="field"><span>間距（cm）</span><input type="number" min="0" step="0.5" inputmode="decimal" placeholder="例如：20" value="${esc(check.barSpacing)}" data-check-item="${type}" data-check-index="${index}" data-check-field="barSpacing" /></label>
+      </div>` : ""}
     </article>`).join("");
   const completed = state[type].checks.filter(check => check.result !== "待確認").length;
   if (type === "guideWall") {
@@ -549,7 +565,7 @@ function clearAllData() {
   state.trucks = [];
   state.guideWall = {
     project: "", contractor: "", date: "", unitNo: "", reviewer: "", note: "",
-    checks: GUIDE_WALL_CHECKS.map(([item, standard]) => ({ item, standard, actual: "", result: "待確認" }))
+    checks: GUIDE_WALL_CHECKS.map(createGuideWallCheck)
   };
   state.rebarCage = {
     project: "", date: "", unitNo: "", cageNo: "", reviewer: "", note: "",
@@ -821,7 +837,7 @@ function renderPrint() {
         <div><span>預估／實測／差異(m)</span><strong>${fixed(lastTruck?.expected ?? null)} ／ ${fixed(lastTruck?.measured ?? null)} ／ ${fixed(lastTruck?.difference ?? null)}</strong></div>
       </div></section><section class="print-section pouring-table-section"><h2>逐車混凝土澆置紀錄</h2><table class="print-table"><thead><tr><th>車次</th><th>車號</th><th>卸料</th><th>結束</th><th>方量(m³)</th><th>累積(m³)</th><th>預估高度(m)</th><th>實測高度(m)</th><th>差異(m)</th></tr></thead><tbody>${pouringRows}</tbody></table></section></div><section class="print-section pouring-chart-section"><h2>澆置高度曲線</h2>${pouringChartSvg(truckRows)}</section></div>${printFooter()}`;
 
-  const guideWallRows = state.guideWall.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(display(check.actual))}</td><td>${esc(check.result)}</td></tr>`).join("");
+  const guideWallRows = state.guideWall.checks.map((check, index) => `<tr><td>${index + 1}</td><td class="text-left">${esc(check.item)}</td><td class="text-left">${esc(check.standard)}</td><td class="text-left">${esc(guideCheckActual(check))}</td><td>${esc(check.result)}</td></tr>`).join("");
   $("#print-guide-wall").innerHTML = `${printHeader("導溝施工複核表", "07", state.guideWall.project, state.guideWall.unitNo || "未指定單元", { project: state.guideWall.project, contractor: state.guideWall.contractor, date: state.guideWall.date, reviewer: state.guideWall.reviewer })}
     <section class="print-section"><h2>導溝資料</h2><div class="print-meta-grid three">
       <div><span>單元編號</span><strong>${esc(display(state.guideWall.unitNo))}</strong></div>
@@ -902,7 +918,7 @@ function exportData() {
 
   return {
     app_version: APP_VERSION,
-    schema_version: "1.0",
+    schema_version: "1.1",
     record_type: "diaphragm_wall_field_record",
     exported_at: new Date().toISOString(),
     export_context: {
@@ -970,6 +986,8 @@ function exportData() {
         item: check.item,
         standard: check.standard,
         actual: check.actual || null,
+        bar_size: check.barNo || null,
+        bar_spacing_cm: toNumberOrText(check.barSpacing),
         result: check.result
       }))
     },
@@ -1108,7 +1126,7 @@ function exportMarkdown() {
     ``,
     `## Guide Wall／導溝複核`,
     ``,
-    ...data.guide_wall_review.items.map(item => `- ${item.item_no}. ${item.item}：${item.result}；現場紀錄：${markdownCell(item.actual)}`),
+    ...data.guide_wall_review.items.map(item => `- ${item.item_no}. ${item.item}：${item.result}；現場紀錄：${markdownCell([item.actual, item.bar_size ? `號數 ${item.bar_size}` : "", item.bar_spacing_cm !== null && item.bar_spacing_cm !== undefined ? `間距 ${item.bar_spacing_cm} cm` : ""].filter(Boolean).join("；"))}`),
     ``,
     `## Rebar Cage／鋼筋籠複核`,
     ``,
@@ -1148,6 +1166,31 @@ function importChecklistItems(definitions, items) {
       standard: importText(record.standard) || standard,
       placeholder: placeholder || "",
       actual: importText(record.actual),
+      barNo: importText(record.bar_size || record.bar_no),
+      barSpacing: importText(record.bar_spacing_cm || record.bar_spacing),
+      result: importResult(record.result)
+    };
+  });
+}
+
+const GUIDE_WALL_LEGACY_ALIASES = {
+  "放樣與單元中心線": ["單元位置與中心線"],
+  "導溝寬度／淨寬": ["導溝寬度與淨寬", "導溝內面淨寬實測"],
+  "導溝深度與底高程": ["導溝頂高程／深度", "導溝頂基準高程實測"],
+  "壁面與底部完整性": ["壁面與底部完整性"]
+};
+
+function importGuideWallItems(items) {
+  const source = Array.isArray(items) ? items : [];
+  return GUIDE_WALL_CHECKS.map(([item, standard]) => {
+    const labels = [item, ...(GUIDE_WALL_LEGACY_ALIASES[item] || [])];
+    const record = source.find(entry => labels.includes(entry?.item)) || {};
+    return {
+      item,
+      standard: importText(record.standard) || standard,
+      actual: importText(record.actual),
+      barNo: importText(record.bar_size || record.bar_no),
+      barSpacing: importText(record.bar_spacing_cm || record.bar_spacing),
       result: importResult(record.result)
     };
   });
@@ -1221,7 +1264,7 @@ function importJsonPayload(payload) {
     unitNo: importText(guideWall.unit_no),
     reviewer: importText(guideWall.reviewer),
     note: importText(guideWall.note),
-    checks: importChecklistItems(GUIDE_WALL_CHECKS, guideWall.items)
+    checks: importGuideWallItems(guideWall.items)
   };
 
   const importedRebars = Array.isArray(rebarCage.rebar_items) ? rebarCage.rebar_items : [];

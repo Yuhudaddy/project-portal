@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="施工紀錄" />
     <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="stylesheet" href="./app.css?v=45" />
+    <link rel="stylesheet" href="./app.css?v=46" />
     <title>連續壁施工紀錄｜Project Portal</title>
   </head>
   <body data-active-tab="overview" data-print-scope="none">
@@ -186,8 +186,8 @@
             <label class="field span-two"><span>營造廠複核人</span><input type="text" data-check-bind="guideWall.reviewer" /></label>
           </div>
           <dl class="check-progress" aria-live="polite">
-            <div><dt>已完成複核</dt><dd id="guide-wall-progress">0 / 7</dd></div>
-            <div><dt>尚待確認</dt><dd id="guide-wall-pending">7</dd></div>
+            <div><dt>已完成複核</dt><dd id="guide-wall-progress">0 / 12</dd></div>
+            <div><dt>尚待確認</dt><dd id="guide-wall-pending">12</dd></div>
           </dl>
           <section class="record-section" aria-labelledby="guide-wall-check-heading">
             <div class="record-heading"><div><span>01</span><h3 id="guide-wall-check-heading">導溝複核項目</h3></div></div>
@@ -273,7 +273,7 @@
         <div class="dialog-header"><div><span>DEPTH CHECK</span><h2 id="depth-dialog-title">新增深度確認</h2></div><button type="button" data-close-dialog aria-label="關閉">×</button></div>
         <div class="dialog-body compact-form two-fields">
           <label class="field"><span>確認時間</span><span class="native-field-wrap"><input id="depth-time" type="time" required /><span class="native-field-display" aria-hidden="true"></span></span></label>
-          <label class="field"><span>深度值（m）</span><input id="depth-value" type="number" min="0" step="0.01" inputmode="decimal" required /></label>
+          <label class="field"><span>深度值（GL, m）</span><input id="depth-value" type="number" step="0.01" inputmode="decimal" placeholder="例如：-35.6" required /></label>
         </div>
         <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>取消</button><button class="confirm-button" type="submit">確認加入</button></div>
       </form>
